@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="release" name="Create Runnable Jar for Project Sepia">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="release">
+        <jar destfile="SepiaGui.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="edu.cwru.sepia.Main"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="../Sepia/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="../Sepia/lib/commons-configuration-1.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="../Sepia/lib/commons-logging-1.1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="../Sepia/lib/commons-logging-adapters-1.1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="../Sepia/lib/commons-lang-2.6.jar"/>
+            <fileset dir="../SepiaAgents/bin"/>
+            <fileset dir="../SepiaGui/bin"/>
+        </jar>
+    </target>
+</project>

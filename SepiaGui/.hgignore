@@ -1,0 +1,5 @@
+syntax: glob
+bin
+*.class
+saves
+SepiaGui.jar

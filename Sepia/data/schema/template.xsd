@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified">
+<xs:element name="templates">
+    <xs:complexType>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="template" type="Template"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:complexType name="UnitTemplate">
+	<xs:complexContent>
+			<xs:extension base="Template">
+			<xs:sequence>
+				<xs:element name="baseHealth" type="xs:int" />
+				<xs:element name="baseAttack" type="xs:int" />
+				<xs:element name="piercingAttack" type="xs:int" />
+				<xs:element name="range" type="xs:int" />
+				<xs:element name="armor" type="xs:int" />
+				<xs:element name="sightRange" type="xs:int" />
+				<xs:element name="canGather" type="xs:boolean" />
+				<xs:element name="canBuild" type="xs:boolean" />
+				<xs:element name="canMove" type="xs:boolean" />
+				<xs:element name="canAcceptGold" type="xs:boolean" />
+				<xs:element name="canAcceptWood" type="xs:boolean" />
+				<xs:element name="foodProvided" type="xs:int" />
+				<xs:element name="character" type="xs:short" />
+				<xs:element name="goldGatherRate" type="xs:int" />
+				<xs:element name="woodGatherRate" type="xs:int" />
+				<xs:element name="durationGatherWood" type="xs:int" />
+				<xs:element name="durationGatherGold" type="xs:int" />
+				<xs:element name="durationMove" type="xs:int" />
+				<xs:element name="durationAttack" type="xs:int" />
+				<xs:element name="durationDeposit" type="xs:int" />
+				<xs:sequence minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="produces" type="xs:int" />
+				</xs:sequence>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="Template" abstract="true">
+	<xs:sequence>
+		<xs:element name="ID" type="xs:int" />
+		<xs:element name="foodCost" type="xs:int" />
+		<xs:element name="goldCost" type="xs:int" />
+		<xs:element name="woodCost" type="xs:int" />
+		<xs:element name="timeCost" type="xs:int" />
+		<xs:element name="name" type="xs:string" />
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="upgradePrerequisite" type="xs:int" />
+		</xs:sequence>
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="unitPrerequisite" type="xs:int" />
+		</xs:sequence>
+	</xs:sequence>
+</xs:complexType>
+<xs:complexType name="UpgradeTemplate">
+	<xs:complexContent>
+		<xs:extension base="Template">
+			<xs:sequence>
+				<xs:element name="basicAttackChange" type="xs:int" />
+				<xs:element name="piercingAttackChange" type="xs:int"></xs:element>
+				<xs:element name="armorChange" type="xs:int" />
+				<xs:element name="healthChange" type="xs:int"></xs:element>
+                    <xs:element name="sightRangeChange" type="xs:int"></xs:element>
+                    <xs:element name="rangeChange" type="xs:int"></xs:element>
+				<xs:sequence minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="affectedUnitTypes"
+						type="xs:int" />
+				</xs:sequence>
+			</xs:sequence>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+</xs:schema>
