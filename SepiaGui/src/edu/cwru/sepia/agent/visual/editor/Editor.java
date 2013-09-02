@@ -509,7 +509,7 @@ public class Editor extends JFrame {
 		gamePanel.updateState(state.getView(Agent.OBSERVER_ID), null);
 	}
 	public static void main(String[] args) throws FileNotFoundException, JAXBException {
-		String templates = "data/templates.xml";
+		String templates = "../Sepia/data/templates.xml";
 		
 		State state = null;
 		for (int argInd = 0; argInd < args.length; argInd++)
