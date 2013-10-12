@@ -21,40 +21,75 @@ package edu.cwru.sepia.model.history;
 
 import java.io.Serializable;
 
-import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.util.DeepEquatable;
 
 /**
- * A read only class that represents the revealing of units at the start of the game
+ * A read only class that represents the revealing of units at the start of the
+ * game
+ * 
  * @author The Condor
- *
+ * 
  */
 public class RevealedResourceNodeLog implements Serializable, DeepEquatable {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 	private int nodex;
 	private int nodey;
-	private ResourceNode.Type nodetype;
-	public RevealedResourceNodeLog(int resourcenodex, int resourcenodey, ResourceNode.Type resoucenodetype) {
-		this.nodex=resourcenodex;
-		this.nodey=resourcenodey;
+	private ResourceNodeType nodetype;
+
+	public RevealedResourceNodeLog(int resourcenodex, int resourcenodey,
+			ResourceNodeType resoucenodetype) {
+		this.nodex = resourcenodex;
+		this.nodey = resourcenodey;
 		this.nodetype = resoucenodetype;
 	}
+
 	public int getResourceNodeXPosition() {
 		return nodex;
 	}
+
 	public int getResourceNodeYPosition() {
 		return nodey;
 	}
-	public ResourceNode.Type getResourceNodeType() {
+
+	public ResourceNodeType getResourceNodeType() {
 		return nodetype;
 	}
+
 	@Override
 	public boolean deepEquals(Object other) {
-		if (this == other)
+		return equals(other);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((nodetype == null) ? 0 : nodetype.hashCode());
+		result = prime * result + nodex;
+		result = prime * result + nodey;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
 			return true;
-		if (other == null || !this.getClass().equals(other.getClass()))
+		if (obj == null)
 			return false;
-		RevealedResourceNodeLog o = (RevealedResourceNodeLog)other;
-		return nodex==o.nodex && nodey==o.nodey && nodetype==o.nodetype;
+		if (getClass() != obj.getClass())
+			return false;
+		RevealedResourceNodeLog other = (RevealedResourceNodeLog) obj;
+		if (nodetype == null) {
+			if (other.nodetype != null)
+				return false;
+		} else if (!nodetype.equals(other.nodetype))
+			return false;
+		if (nodex != other.nodex)
+			return false;
+		if (nodey != other.nodey)
+			return false;
+		return true;
 	}
 }

@@ -68,28 +68,7 @@ public class Unit extends Target /*implements Cloneable*/ {
 		return true;
 		
 	}
-	/*
-	 removed because it is unused
-	 also, it isn't clear whether the template should be a clone
-	@Override
-	protected Object clone() {
-		Unit unit = new Unit(template, ID);
-		unit.currentHealth = currentHealth;
-		unit.xPosition = xPosition;
-		unit.yPosition = yPosition;
-		unit.cargoType = cargoType;
-		unit.task = task;
-		unit.cargoAmount = cargoAmount;
-		unit.currentDurativePrimitive = currentDurativePrimitive;
-		unit.currentDurativeProgress = currentDurativeProgress;
-		return unit;
-	}
 	
-	public Unit copyOf() {
-		Unit copy = (Unit)clone();		
-		return copy;
-	}
-	*/
 	public int getPlayer() {
 		return template.getPlayer();
 	}
@@ -101,7 +80,7 @@ public class Unit extends Target /*implements Cloneable*/ {
 		return currentHealth;
 	}
 
-	public int getxPosition() {
+	public int getXPosition() {
 		return xPosition;
 	}
 	/**
@@ -109,12 +88,12 @@ public class Unit extends Target /*implements Cloneable*/ {
 	 * DO NOT USE THIS TO MOVE UNITS
 	 * @param x
 	 */
-	public void setxPosition(int x) {
+	public void setXPosition(int x) {
 		xPosition = x;
 		
 	}
 	
-	public int getyPosition() {
+	public int getYPosition() {
 		return yPosition;
 	}
 	/**
@@ -122,9 +101,19 @@ public class Unit extends Target /*implements Cloneable*/ {
 	 * DO NOT USE THIS TO MOVE UNITS
 	 * @param y
 	 */
-	public void setyPosition(int y) {
+	public void setYPosition(int y) {
 		yPosition = y;
 	}
+	
+	public boolean occupiesLocation(int x, int y) {
+		return between(x, xPosition, xPosition + getTemplate().getWidth() - 1) &&
+				between(y, yPosition, yPosition + getTemplate().getHeight() - 1);
+	}
+	
+	private boolean between(int value, int left, int right) {
+		return value >= left && value <= right;
+	}
+	
 	public UnitTemplate getTemplate() {
 		return template;
 	}

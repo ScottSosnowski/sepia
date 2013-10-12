@@ -18,6 +18,12 @@
     along with SEPIA.  If not, see <http://www.gnu.org/licenses/>.
  */
 package edu.cwru.sepia.model.state;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.cwru.sepia.util.Pair;
+
 /**
  * A basic enumeration of the eight directions in which a primitive action can be taken.
  * Directions are treated the same as screen coordinates: East is positive x, South is positive y.
@@ -64,6 +70,41 @@ public enum Direction {
 				return 0;
 		}
 	}
+
+	public List<Pair<Integer, Integer>> adjacentTiles(int tlx, int tly, int width, int height) {
+		List<Pair<Integer, Integer>> tiles = new ArrayList<>();
+		switch(this) {
+			case NORTHWEST:
+				tiles.add(new Pair<>(tlx - 1, tly - 1));
+				break;
+			case NORTHEAST:
+				tiles.add(new Pair<>(tlx + width, tly - 1));
+				break;
+			case SOUTHEAST:
+				tiles.add(new Pair<>(tlx + width, tly + height));
+				break;
+			case SOUTHWEST:
+				tiles.add(new Pair<>(tlx - 1, tly + height));
+				break;
+			case NORTH:
+				for(int i = tlx; i < tlx + width; i++)
+					tiles.add(new Pair<>(i, tly - 1));
+				break;
+			case SOUTH:
+				for(int i = tlx; i < tlx + width; i++)
+					tiles.add(new Pair<>(i, tly + height));
+				break;
+			case WEST:
+				for(int j = tly; j < tly + height; j++)
+					tiles.add(new Pair<>(tlx - 1, j));
+				break;
+			case EAST:
+				for(int j = tly; j < tly + height; j++)
+					tiles.add(new Pair<>(tlx  + width, j));
+		}
+		return tiles;
+	}
+	
 	/**
 	 * Get a direction for an x and y direction.
 	 * @param x

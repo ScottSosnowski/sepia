@@ -29,8 +29,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.cwru.sepia.action.Action;
-import edu.cwru.sepia.model.LessSimpleModel;
+import edu.cwru.sepia.model.SimpleDurativeModel;
 import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.Template;
@@ -41,7 +42,7 @@ import edu.cwru.sepia.util.TypeLoader;
 
 
 public class ScriptedGoalAgentTest {
-	static LessSimpleModel model;
+	static SimpleDurativeModel model;
 	static SimplePlanner planner;
 	static List<Template<?>> templates;
 	static State state;
@@ -66,22 +67,22 @@ public class ScriptedGoalAgentTest {
 		{
 			
 			Unit u = ((UnitTemplate)builder.getTemplate(player, "Peasant")).produceInstance(state);
-			u.setxPosition(5);
-			u.setyPosition(5);
+			u.setXPosition(5);
+			u.setYPosition(5);
 			founder = u;
-			builder.addUnit(u,u.getxPosition(),u.getyPosition());
+			builder.addUnit(u,u.getXPosition(),u.getYPosition());
 		}
 		{
-			ResourceNode rn = new ResourceNode(ResourceNode.Type.GOLD_MINE, 2, 2, 70000,state.nextTargetId());
+			ResourceNode rn = new ResourceNode(new ResourceNodeType("GOLD_MINE", new ResourceType("GOLD")), 2, 2, 70000,state.nextTargetId());
 			builder.addResource(rn);
 		}
 		{
-			ResourceNode rn = new ResourceNode(ResourceNode.Type.TREE, 1, 1, 70000,state.nextTargetId());
+			ResourceNode rn = new ResourceNode(new ResourceNodeType("TREE", new ResourceType("WOOD")), 1, 1, 70000,state.nextTargetId());
 			builder.addResource(rn);
 		}
 		
 		planner = new SimplePlanner(state);
-		model=new LessSimpleModel(state, null, new BaseConfiguration());
+		model = new SimpleDurativeModel(state, null, new BaseConfiguration());
 	}
 	
 	public void setUp() throws Exception {
@@ -147,7 +148,7 @@ public class ScriptedGoalAgentTest {
 			System.out.println("Assets("+state.getUnits(player).values().size()+"):");
 			Collection<Unit> units = state.getUnits(player).values();
 			for (Unit u : units) {
-				System.out.println(u.getTemplate().getName() + " (ID: "+u.id+") at "+u.getxPosition() + "," + u.getyPosition());
+				System.out.println(u.getTemplate().getName() + " (ID: "+u.id+") at "+u.getXPosition() + "," + u.getYPosition());
 				System.out.println("Carrying: " + u.getCurrentCargoAmount() + " (" + u.getCurrentCargoType() + ")");
 			}
 			System.out.println("Resources:");

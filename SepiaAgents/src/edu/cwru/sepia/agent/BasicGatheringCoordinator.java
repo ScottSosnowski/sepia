@@ -26,14 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Random;
 
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.agent.ScriptedGoalAgent.RelevantStateView;
-import edu.cwru.sepia.model.state.ResourceNode;
-import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.ResourceNode.ResourceView;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Unit.UnitView;
@@ -165,7 +163,7 @@ public class BasicGatheringCoordinator implements Serializable {
 				//if it is not, find the nearest appropriate resource and tell it to go there
 				int closestDist = Integer.MAX_VALUE;
 				int closestID = Integer.MIN_VALUE;
-				for (Integer mineID :state.getResourceNodeIds(ResourceNode.Type.GOLD_MINE)) {
+				for (Integer mineID :state.getResourceNodeIds("GOLD_MINE")) {
 					ResourceView mine = state.getResourceNode(mineID);
 					int dist = Math.abs(miner.getXPosition() - mine.getXPosition()) + Math.abs(miner.getYPosition() - mine.getYPosition());
 					if (dist < closestDist) {
@@ -202,7 +200,7 @@ public class BasicGatheringCoordinator implements Serializable {
 				//if it is not, find the nearest appropriate resource and tell it to go there
 				int closestDist = Integer.MAX_VALUE;
 				int closestID = Integer.MIN_VALUE;
-				for (Integer treeID :state.getResourceNodeIds(ResourceNode.Type.TREE)) {
+				for (Integer treeID :state.getResourceNodeIds("TREE")) {
 					ResourceView tree = state.getResourceNode(treeID);
 					int dist = Math.abs(lumberjack.getXPosition() - tree.getXPosition()) + Math.abs(lumberjack.getYPosition() - tree.getYPosition());
 					if (dist < closestDist) {
@@ -228,7 +226,7 @@ public class BasicGatheringCoordinator implements Serializable {
 			}
 			UnitView potentialStoragePit = state.getUnit(potentialStoragePitID);
 			//it can still be carrying the other resource, it is better to have it choose to return with what it has than just go straight for the other resource
-			if (worker.getCargoType() == ResourceType.GOLD && potentialStoragePit.getTemplateView().canAcceptGold() || worker.getCargoType() == ResourceType.WOOD && potentialStoragePit.getTemplateView().canAcceptWood())
+			if (potentialStoragePit.getTemplateView().canAccept(worker.getCargoType().getName()))
 			{
 				int dist = Math.abs(worker.getXPosition() - potentialStoragePit.getXPosition()) + Math.abs(worker.getYPosition() - potentialStoragePit.getYPosition());
 				if (dist < closestDist)

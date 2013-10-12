@@ -38,6 +38,8 @@ import edu.cwru.sepia.model.history.RevealedResourceNodeLog;
 import edu.cwru.sepia.model.state.Direction;
 import edu.cwru.sepia.model.state.ResourceNode;
 import edu.cwru.sepia.model.state.ResourceNode.ResourceView;
+import edu.cwru.sepia.model.state.ResourceNodeType;
+import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Template;
@@ -122,7 +124,8 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 	{
 		for (int j = 0; j < state.getYExtent(); j++)
 		{
-			nodegrid[i][j]=new ResourceNode(ResourceNode.Type.GOLD_MINE,i,j,2344,state.nextTargetId());
+			nodegrid[i][j]=new ResourceNode(new ResourceNodeType("GOLD_MINE", new ResourceType("GOLD")),
+					i,j,2344,state.nextTargetId());
 			unitgrid[i][j]=new Unit(enemytemplate,state.nextTargetId());
 			state.addUnit(unitgrid[i][j], i, j);
 			state.addResource(nodegrid[i][j]);
@@ -152,7 +155,7 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 		for (Unit u : myunits)
 		{
 		Direction d = Direction.values()[r.nextInt(Direction.values().length)];
-		if (state.inBounds(u.getxPosition()+d.xComponent(), u.getyPosition()+d.yComponent()))
+		if (state.inBounds(u.getXPosition()+d.xComponent(), u.getYPosition()+d.yComponent()))
 			state.moveUnit(u, d);
 		}
 		System.out.println("Step: "+n);
@@ -188,8 +191,8 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 		for (int i = 0; i < unitgrid.length; i++)
 			for (int j = 0; j < unitgrid[i].length; j++)
 			{
-				int x = unitgrid[i][j].getxPosition();
-				int y = unitgrid[i][j].getyPosition();
+				int x = unitgrid[i][j].getXPosition();
+				int y = unitgrid[i][j].getYPosition();
 				boolean cansee = view.canSee(x, y);
 				assertTrue(cansee == allunits.contains(unitgrid[i][j].id) );
 			}
@@ -223,7 +226,7 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 		for (Unit u : myunits)
 		{
 			Direction d = Direction.values()[r.nextInt(Direction.values().length)];
-			if (state.inBounds(u.getxPosition()+d.xComponent(), u.getyPosition()+d.yComponent()))
+			if (state.inBounds(u.getXPosition()+d.xComponent(), u.getYPosition()+d.yComponent()))
 				state.moveUnit(u, d);
 		}
 		
@@ -238,7 +241,7 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 				boolean inrange = false;
 				for (Unit u : myunits)
 				{
-					if( DistanceMetrics.chebyshevDistance(i, j, u.getxPosition(), u.getyPosition())<=u.getTemplate().getSightRange())
+					if( DistanceMetrics.chebyshevDistance(i, j, u.getXPosition(), u.getYPosition())<=u.getTemplate().getSightRange())
 					{
 						inrange = true;
 						break;
@@ -252,7 +255,7 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 		for (int i = 0; i<unitgrid.length;i++)
 			for (int j = 0; j<unitgrid[i].length;j++)
 			{
-				boolean cansee = view.canSee(unitgrid[i][j].getxPosition(),unitgrid[i][j].getyPosition());
+				boolean cansee = view.canSee(unitgrid[i][j].getXPosition(),unitgrid[i][j].getYPosition());
 				UnitView unitseen = view.getUnit(unitgrid[i][j].id);
 				Integer idseen = unitseen==null?null:unitseen.getID();
 				assertTrue(idseen == null && !cansee || idseen == unitgrid[i][j].id && cansee);
@@ -282,8 +285,8 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 		for (int i = 0; i < unitgrid.length; i++)
 			for (int j = 0; j < unitgrid[i].length; j++)
 			{
-				int x = unitgrid[i][j].getxPosition();
-				int y = unitgrid[i][j].getyPosition();
+				int x = unitgrid[i][j].getXPosition();
+				int y = unitgrid[i][j].getYPosition();
 				boolean cansee = view.canSee(x, y);
 				assertTrue(cansee == allunits.contains(unitgrid[i][j].id) );
 			}
@@ -322,7 +325,7 @@ public String printView(List<Unit> myunits,StateView v)
 			boolean unitthere = false;
 			for (Unit u : myunits)
 			{
-				if (u.getxPosition() == i && u.getyPosition() == j)
+				if (u.getXPosition() == i && u.getYPosition() == j)
 				{	
 					unitthere = true;
 					break;
@@ -362,9 +365,9 @@ private void revealedStatusChecker(int step, List<RevealedResourceNodeLog> revea
 				numgoldalreadythere = alreadythere.i1;
 				numtreealreadythere = alreadythere.i2;
 			}
-			if (log.getResourceNodeType()==ResourceNode.Type.GOLD_MINE)
+			if (log.getResourceNodeType().getName().equals("GOLD_MINE"))
 				numgoldalreadythere++;
-			else if (log.getResourceNodeType()==ResourceNode.Type.TREE)
+			else if (log.getResourceNodeType().getName().equals("TREE"))
 				numtreealreadythere++;
 			revealedResourcePositioning.put(pos,new Pair(numgoldalreadythere,numtreealreadythere));
 		}

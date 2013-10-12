@@ -27,6 +27,8 @@ import java.util.Random;
 import org.junit.Test;
 
 import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
+import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.StateCreator;
 public class RawStateCreatorTest {
@@ -62,14 +64,14 @@ public class RawStateCreatorTest {
 		assertTrue("Bad copy made",state.deepEquals(stateCopy));
 		assertTrue("Bad copy made",state.deepEquals(stateCopy2));
 		
-		
+		ResourceNodeType mine = new ResourceNodeType("GOLD_MINE", new ResourceType("GOLD"));
 		//Make sure that the new are not linked to the old one 
-		state.addResource(new ResourceNode(ResourceNode.Type.GOLD_MINE, 4, 4, 343, state.nextTargetId()));
+		state.addResource(new ResourceNode(mine, 4, 4, 343, state.nextTargetId()));
 		assertFalse("Copy linked to original",state.deepEquals(stateCopy));
 		assertFalse("Copy linked to original",state.deepEquals(stateCopy2));
 		
 		//Do the same thing to a copy 
-		stateCopy.addResource(new ResourceNode(ResourceNode.Type.GOLD_MINE, 4, 4, 343, stateCopy.nextTargetId()));
+		stateCopy.addResource(new ResourceNode(mine, 4, 4, 343, stateCopy.nextTargetId()));
 		
 		assertTrue("Deep Equals not doing equivalent",stateCopy.deepEquals(state));
 		assertFalse("Copies linked to each other",stateCopy.deepEquals(stateCopy2));

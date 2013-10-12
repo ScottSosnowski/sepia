@@ -23,18 +23,20 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import edu.cwru.sepia.model.persistence.ResourceNodeAdapter;
+import edu.cwru.sepia.model.persistence.ResourceAdapter;
 import edu.cwru.sepia.model.persistence.generated.XmlResourceNode;
 import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
+import edu.cwru.sepia.model.state.ResourceType;
 
 public class ResourceNodeAdapterTest {
 
+	private ResourceNodeType mine = new ResourceNodeType("GOLD_MINE", new ResourceType("GOLD"));
 	@Test
 	public void testToXml() {
-		ResourceNodeAdapter adapter = new ResourceNodeAdapter();
-		ResourceNode node = new ResourceNode(ResourceNode.Type.GOLD_MINE, 1, 2, 1000,34);
+		ResourceNode node = new ResourceNode(mine, 1, 2, 1000,34);
 		
-		XmlResourceNode xml = adapter.toXml(node);
+		XmlResourceNode xml = ResourceAdapter.toXml(node);
 		
 		assertEquals("resource type did not match!", node.getType(), xml.getType());
 		assertEquals("x position did not match!", node.getxPosition(), xml.getXPosition());
@@ -44,14 +46,13 @@ public class ResourceNodeAdapterTest {
 	
 	@Test
 	public void testFromXml() {
-		ResourceNodeAdapter adapter = new ResourceNodeAdapter();
 		XmlResourceNode xml = new XmlResourceNode();
-		xml.setType(ResourceNode.Type.TREE);
+		xml.setType(ResourceAdapter.toXml(mine));
 		xml.setXPosition(1);
 		xml.setYPosition(2);
 		xml.setAmountRemaining(100);
 		xml.setID(34);
-		ResourceNode node = adapter.fromXml(xml);
+		ResourceNode node = ResourceAdapter.fromXml(xml);
 
 		assertEquals("resource type did not match!", xml.getType(), node.getType());
 		assertEquals("x position did not match!", xml.getXPosition(), node.getxPosition());

@@ -34,7 +34,6 @@ import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.action.ActionType;
 import edu.cwru.sepia.action.TargetedAction;
 import edu.cwru.sepia.model.history.History;
-import edu.cwru.sepia.model.state.ResourceNode.Type;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Template.TemplateView;
@@ -112,7 +111,7 @@ public class ResourceCollectionAgent extends Agent {
 				if(currentState.getUnit(peasantId).getCargoAmount()>0)
 					b = new TargetedAction(peasantId, ActionType.COMPOUNDDEPOSIT, townhallId);
 				else {
-					List<Integer> resourceIds = currentState.getResourceNodeIds(Type.TREE);
+					List<Integer> resourceIds = currentState.getResourceNodeIds("TREE");
 					b = new TargetedAction(peasantId, ActionType.COMPOUNDGATHER, resourceIds.get(0));
 				}
 				builder.add(b);
@@ -124,7 +123,7 @@ public class ResourceCollectionAgent extends Agent {
 				if(currentState.getUnit(peasantId).getCargoType() == ResourceType.GOLD && currentState.getUnit(peasantId).getCargoAmount()>0)
 					b = new TargetedAction(peasantId, ActionType.COMPOUNDDEPOSIT, townhallId);
 				else {
-					List<Integer> resourceIds = currentState.getResourceNodeIds(Type.GOLD_MINE);
+					List<Integer> resourceIds = currentState.getResourceNodeIds("GOLD_MINE");
 					b = new TargetedAction(peasantId, ActionType.COMPOUNDGATHER, resourceIds.get(0));
 				}
 				builder.add(b);
@@ -151,7 +150,7 @@ public class ResourceCollectionAgent extends Agent {
 				if(currentState.getUnit(peasantId).getCargoType() == ResourceType.GOLD && currentState.getUnit(peasantId).getCargoAmount()>0)
 					b = new TargetedAction(peasantId, ActionType.COMPOUNDDEPOSIT, townhallId);
 				else {
-					List<Integer> resourceIds = currentState.getResourceNodeIds(Type.GOLD_MINE);
+					List<Integer> resourceIds = currentState.getResourceNodeIds("GOLD_MINE");
 					b = new TargetedAction(peasantId, ActionType.COMPOUNDGATHER, resourceIds.get(0));
 				}
 				builder.add(b);

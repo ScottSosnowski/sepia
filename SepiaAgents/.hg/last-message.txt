@@ -1,1 +1,0 @@
-Created very simple gold-gathering agent.

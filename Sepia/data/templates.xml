@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <templates>
         <template xsi:type="UpgradeTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            
             <foodCost>0</foodCost>
             <goldCost>100</goldCost>
             <woodCost>50</woodCost>
@@ -12,7 +11,6 @@
             <affectedUnitTypes>Footman</affectedUnitTypes>
         </template>
         <template xsi:type="UpgradeTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            
             <foodCost>0</foodCost>
             <goldCost>200</goldCost>
             <woodCost>100</woodCost>
@@ -24,7 +22,6 @@
             <affectedUnitTypes>Footman</affectedUnitTypes>
         </template>
         <template xsi:type="UpgradeTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            
             <foodCost>0</foodCost>
             <goldCost>100</goldCost>
             <woodCost>50</woodCost>
@@ -35,7 +32,6 @@
             <affectedUnitTypes>Footman</affectedUnitTypes>
         </template>
         <template xsi:type="UnitTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            
             <foodCost>0</foodCost>
             <goldCost>0</goldCost>
             <woodCost>0</woodCost>
@@ -50,8 +46,6 @@
             <canGather>false</canGather>
             <canBuild>false</canBuild>
             <canMove>false</canMove>
-            <canAcceptGold>true</canAcceptGold>
-            <canAcceptWood>true</canAcceptWood>
             <foodProvided>3</foodProvided>
             <character>72</character>
             <goldGatherRate>0</goldGatherRate>
@@ -61,10 +55,11 @@
             <durationMove>1</durationMove>
             <durationAttack>1</durationAttack>
             <durationDeposit>1</durationDeposit>
+            <accepts>GOLD</accepts>
+            <accepts>WOOD</accepts>
             <produces>Peasant</produces>
         </template>
         <template xsi:type="UnitTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            
             <foodCost>1</foodCost>
             <goldCost>0</goldCost>
             <woodCost>0</woodCost>
@@ -79,8 +74,6 @@
             <canGather>false</canGather>
             <canBuild>false</canBuild>
             <canMove>true</canMove>
-            <canAcceptGold>false</canAcceptGold>
-            <canAcceptWood>false</canAcceptWood>
             <foodProvided>0</foodProvided>
             <character>102</character>
             <goldGatherRate>0</goldGatherRate>
@@ -92,7 +85,6 @@
             <durationDeposit>1</durationDeposit>
         </template>
         <template xsi:type="UnitTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            
             <foodCost>1</foodCost>
             <goldCost>0</goldCost>
             <woodCost>0</woodCost>
@@ -107,8 +99,6 @@
             <canGather>true</canGather>
             <canBuild>true</canBuild>
             <canMove>true</canMove>
-            <canAcceptGold>false</canAcceptGold>
-            <canAcceptWood>false</canAcceptWood>
             <foodProvided>0</foodProvided>
             <character>112</character>
             <goldGatherRate>50</goldGatherRate>
@@ -124,7 +114,6 @@
             <produces>Farm</produces>
         </template>
         <template xsi:type="UnitTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            
             <foodCost>1</foodCost>
             <goldCost>0</goldCost>
             <woodCost>0</woodCost>
@@ -139,8 +128,6 @@
             <canGather>false</canGather>
             <canBuild>false</canBuild>
             <canMove>true</canMove>
-            <canAcceptGold>false</canAcceptGold>
-            <canAcceptWood>false</canAcceptWood>
             <foodProvided>0</foodProvided>
             <character>107</character>
             <goldGatherRate>0</goldGatherRate>
@@ -167,8 +154,6 @@
             <canGather>false</canGather>
             <canBuild>false</canBuild>
             <canMove>false</canMove>
-            <canAcceptGold>false</canAcceptGold>
-            <canAcceptWood>false</canAcceptWood>
             <foodProvided>4</foodProvided>
             <character>70</character>
             <goldGatherRate>0</goldGatherRate>
@@ -195,8 +180,6 @@
             <canGather>false</canGather>
             <canBuild>false</canBuild>
             <canMove>false</canMove>
-            <canAcceptGold>false</canAcceptGold>
-            <canAcceptWood>false</canAcceptWood>
             <foodProvided>0</foodProvided>
             <character>66</character>
             <goldGatherRate>0</goldGatherRate>
@@ -225,8 +208,6 @@
             <canGather>false</canGather>
             <canBuild>false</canBuild>
             <canMove>false</canMove>
-            <canAcceptGold>false</canAcceptGold>
-            <canAcceptWood>false</canAcceptWood>
             <foodProvided>0</foodProvided>
             <character>76</character>
             <goldGatherRate>0</goldGatherRate>
@@ -256,8 +237,6 @@
             <canGather>false</canGather>
             <canBuild>false</canBuild>
             <canMove>true</canMove>
-            <canAcceptGold>false</canAcceptGold>
-            <canAcceptWood>false</canAcceptWood>
             <foodProvided>0</foodProvided>
             <character>97</character>
             <goldGatherRate>0</goldGatherRate>

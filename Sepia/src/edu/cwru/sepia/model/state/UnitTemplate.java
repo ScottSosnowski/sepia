@@ -21,19 +21,21 @@ package edu.cwru.sepia.model.state;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import edu.cwru.sepia.model.state.ResourceNode.Type;
-import edu.cwru.sepia.util.DeepEquatableUtil;
 /**
  * Contains information shared between units of the same type.
+ * 
  * @author Tim
- *
+ * 
  */
 
-public class UnitTemplate extends Template<Unit> implements Serializable
-{
+public class UnitTemplate extends Template<Unit> implements Serializable {
 	/**
 	 * 
 	 */
@@ -47,26 +49,26 @@ public class UnitTemplate extends Template<Unit> implements Serializable
 	protected boolean canGather;
 	protected boolean canBuild;
 	protected boolean canMove;
-	protected boolean canAcceptGold;
-	protected boolean canAcceptWood;
 	protected int foodProvided;
 	protected char character;
-	protected int goldCapacity;
-	protected int woodCapacity;
-	protected int goldGatherRate;
-	protected int woodGatherRate;
-	protected int durationGoldGather;
-	protected int durationWoodGather;
 	protected int durationMove;
 	protected int durationAttack;
 	protected int durationDeposit;
+
 	private UnitTemplateView view;
-	private List<Integer> producesID;
-	public UnitTemplate(int ID)
-	{
+	private List<String> producesNames;
+	protected List<ResourceType> accepts = new ArrayList<ResourceType>();
+	protected Map<ResourceType, Integer> capacity = new HashMap<ResourceType, Integer>();
+	protected Map<ResourceType, Integer> gatherRate = new HashMap<ResourceType, Integer>();
+	protected Map<ResourceType, Integer> gatherDuration = new HashMap<ResourceType, Integer>();
+	protected int width = 1;
+	protected int height = 1;
+
+	public UnitTemplate(int ID) {
 		super(ID);
-		producesID = new ArrayList<Integer>();
+		producesNames = new ArrayList<String>();
 	}
+
 	/**
 	 * Create a cloned unit template out of a view
 	 */
@@ -81,250 +83,307 @@ public class UnitTemplate extends Template<Unit> implements Serializable
 		setCanGather(view.canGather);
 		setCanBuild(view.canBuild);
 		setCanMove(view.canMove);
-		setCanAcceptGold(view.acceptsGold);
-		setCanAcceptWood(view.acceptsWood);
+		setAccepts(view.accepts);
 		setFoodProvided(view.foodProvided);
 		setCharacter(view.character);
-		setGoldCapacity(view.goldCapacity);
-		setWoodCapacity(view.woodCapacity);
-		setGoldGatherRate(view.goldGatherRate);
-		setWoodGatherRate(view.woodGatherRate);
-		
-		
-		setDurationGatherGold(view.durationGatherGold);
-		setDurationGatherWood(view.durationGatherWood);
+
+		setCapacity(view.capacity);
+		setGatherRate(view.gatherRate);
+		setGatherDuration(view.gatherDuration);
+
 		setDurationMove(view.durationMove);
 		setDurationAttack(view.durationAttack);
 		setDurationDeposit(view.durationDeposit);
-		for (Integer produced : view.producesID)
+		for(String produced : view.producesNames)
 			addProductionItem(produced);
-		
-		
+
 	}
+
 	@Override
 	public Unit produceInstance(IdDistributor idsource) {
 		Unit unit = new Unit(this, idsource.nextTargetId());
 		return unit;
 	}
+
 	public int getBaseHealth() {
 		return baseHealth;
 	}
+
 	public void setBaseHealth(int baseHealth) {
 		this.baseHealth = baseHealth;
+    }
+
+	public int getWidth() {
+		return width;
 	}
+
 	public char getCharacter() {
 		return character;
+    }
+
+	public void setWidth(int width) {
+		this.width = width;
 	}
+
 	public void setCharacter(char character) {
 		this.character = character;
+    }
+
+    public int getHeight() {
+		return height;
 	}
+
 	public int getBasicAttack() {
 		return basicAttack;
+    }
+
+    public void setHeight(int height) {
+		this.height = height;
 	}
+
 	public void setBasicAttack(int basicAttack) {
 		this.basicAttack = basicAttack;
 	}
+
 	public int getPiercingAttack() {
 		return piercingAttack;
 	}
+
 	public void setPiercingAttack(int piercingAttack) {
 		this.piercingAttack = piercingAttack;
 	}
+
 	public int getRange() {
 		return range;
 	}
+
 	public void setRange(int range) {
 		this.range = range;
 	}
+
 	public int getArmor() {
 		return armor;
 	}
+
 	public void setArmor(int armor) {
 		this.armor = armor;
 	}
+
 	public int getSightRange() {
 		return sightRange;
 	}
+
 	public void setSightRange(int sightRange) {
 		this.sightRange = sightRange;
 	}
+
 	public boolean canAttack() {
 		return basicAttack > 0 || piercingAttack > 0;
 	}
-	public boolean canAcceptGold() {
-		return canAcceptGold;
+	
+	public List<ResourceType> getAccepts() {
+		return Collections.unmodifiableList(accepts);
 	}
-	public boolean canAcceptWood() {
-		return canAcceptWood;
+
+	public boolean canAccept(ResourceType resource) {
+		return accepts.contains(resource);
 	}
-	public void setCanAcceptGold(boolean canAcceptGold) {
-		this.canAcceptGold=canAcceptGold;
+
+	public void setAccepts(List<ResourceType> accepts) {
+		this.accepts = accepts;
 	}
-	public void setCanAcceptWood(boolean canAcceptWood) {
-		this.canAcceptWood=canAcceptWood;
-	}
+
 	public int getFoodProvided() {
 		return foodProvided;
 	}
+
 	public void setFoodProvided(int numFoodProvided) {
 		this.foodProvided = numFoodProvided;
 	}
-	public void setGoldGatherRate(int goldpertrip) {
-		this.goldGatherRate = goldpertrip;
+
+	public Collection<ResourceType> getGatherableResources() {
+		return gatherRate.keySet();
 	}
-	public void setGoldCapacity(int goldCarried) {
-		this.goldCapacity = goldCarried;
+
+	public void setGatherRate(Map<ResourceType, Integer> gatherRate) {
+		this.gatherRate = gatherRate;
 	}
-	public void setWoodGatherRate(int woodpertrip) {
-		this.woodGatherRate = woodpertrip;
-		
+
+	public void setGatherDuration(Map<ResourceType, Integer> gatherDuration) {
+		this.gatherDuration = gatherDuration;
 	}
-	public void setWoodCapacity (int woodCarried) {
-		this.woodCapacity = woodCarried;
+
+	public void setCapacity(Map<ResourceType, Integer> capacity) {
+		this.capacity = capacity;
 	}
-	public int getGatherRate(ResourceNode.Type type) {
-		if (type == ResourceNode.Type.GOLD_MINE) {
-			return goldGatherRate;
-		}
-		else if (type == ResourceNode.Type.TREE) {
-			return woodGatherRate;
-		}
-			
-		return 0;
+
+	public int getGatherRate(ResourceType type) {
+		Integer value = gatherRate.get(type);
+		if(value != null)
+			return value;
+		else
+			return 0;
 	}
+
+	public int getGatherDuration(ResourceType type) {
+		Integer value = gatherDuration.get(type);
+		if(value != null)
+			return value;
+		else
+			return 0;
+	}
+
+	public int getCapacity(ResourceType type) {
+		Integer value = capacity.get(type);
+		if(value != null)
+			return value;
+		else
+			return 0;
+	}
+
 	/**
 	 * Return the amount of resource that you can gather from each node type.
-	 * @param type The type of resource node to gather from.
+	 * 
+	 * @param type
+	 *            The type of resource node to gather from.
 	 * @return
 	 */
-	public int getCarryingCapacity(ResourceNode.Type type) {
-		if (type == ResourceNode.Type.GOLD_MINE) {
-			return goldCapacity;
-		}
-		else if (type == ResourceNode.Type.TREE) {
-			return woodCapacity;
-		}
-			
-		return 0;
+	public int getCarryingCapacity(ResourceNodeType type) {
+		Integer value = capacity.get(type.getResource());
+		if(value != null)
+			return value;
+		else
+			return 0;
 	}
-	public boolean canGather() { return canGather; }
-	public void setCanGather(boolean canGather) { this.canGather = canGather; } 
-	public boolean canBuild() { return canBuild; }
-	public void setCanBuild(boolean canBuild) { this.canBuild = canBuild; }
-	public boolean canMove() { return canMove; }
-	public void setCanMove(boolean canMove) { this.canMove = canMove; }
-	/**
-	 * Get the number of steps needed to make a single gather on a mine.
-	 * @return
-	 */
-	public int getDurationGatherGold() {
-		return durationGoldGather;
+
+	public boolean canGather() {
+		return canGather;
 	}
-	/**
-	 * Set the number of steps needed to make a single gather on a mine.
-	 * @param durationGoldGather
-	 */
-	public void setDurationGatherGold(int durationGoldGather) {
-		this.durationGoldGather = durationGoldGather;
+
+	public void setCanGather(boolean canGather) {
+		this.canGather = canGather;
 	}
-	/**
-	 * Get the number of steps needed to make a single gather on a tree.
-	 * @return
-	 */
-	public int getDurationGatherWood() {
-		return durationWoodGather;
+
+	public boolean canBuild() {
+		return canBuild;
 	}
-	/**
-	 * Set the number of steps needed to make a single gather on a tree.
-	 * @param durationWoodGather
-	 */
-	public void setDurationGatherWood(int durationWoodGather) {
-		this.durationWoodGather = durationWoodGather;
+
+	public void setCanBuild(boolean canBuild) {
+		this.canBuild = canBuild;
 	}
+
+	public boolean canMove() {
+		return canMove;
+	}
+
+	public void setCanMove(boolean canMove) {
+		this.canMove = canMove;
+	}
+
 	/**
 	 * Get the number of steps needed to make a single move.
+	 * 
 	 * @return
 	 */
 	public int getDurationMove() {
 		return durationMove;
 	}
+
 	/**
 	 * Set the number of steps needed to make a single move.
+	 * 
 	 * @param durationMove
 	 */
 	public void setDurationMove(int durationMove) {
 		this.durationMove = durationMove;
 	}
+
 	/**
 	 * Get the number of steps needed to make a single attack
+	 * 
 	 * @return
 	 */
 	public int getDurationAttack() {
 		return durationAttack;
 	}
+
 	/**
 	 * Set the number of steps needed to make a single attack
+	 * 
 	 * @param durationAttack
 	 */
 	public void setDurationAttack(int durationAttack) {
 		this.durationAttack = durationAttack;
 	}
+
 	/**
 	 * Get the number of steps needed to make a single deposit.
+	 * 
 	 * @return
 	 */
 	public int getDurationDeposit() {
 		return durationDeposit;
 	}
+
 	/**
 	 * Set the number of steps needed to make a single deposit.
+	 * 
 	 * @param durationDeposit
 	 */
 	public void setDurationDeposit(int durationDeposit) {
 		this.durationDeposit = durationDeposit;
 	}
-	public void addProductionItem(Integer item) {
-		this.producesID.add(item);
+
+	public void addProductionItem(String item) {
+		this.producesNames.add(item);
 	}
+
 	/**
-	 * Get a list of IDs of templates that this unit can make.
-	 * <br>Changing this list will alter the data of this template.
-	 * @return A list of IDs for templates that can be produced/built by this unit. 
+	 * Get a list of IDs of templates that this unit can make. <br>
+	 * Changing this list will alter the data of this template.
+	 * 
+	 * @return A list of IDs for templates that can be produced/built by this
+	 *         unit.
 	 */
-	public List<Integer> getProduces() {
-		return this.producesID;
+	public List<String> getProduces() {
+		return Collections.unmodifiableList(this.producesNames);
 	}
+
 	/**
 	 * Return whether the unit is capable of producing a specific template
+	 * 
 	 * @param t
 	 * @return
 	 */
 	public boolean canProduce(@SuppressWarnings("rawtypes") Template t) {
-		if (t==null)
+		if(t == null)
 			return false;
-		for (Integer i : producesID)
-			if (t.getID() == i)
+		for(String s : producesNames)
+			if(t.getName().equals(s))
 				return true;
 		return false;
 	}
+
 	public String toString() {
 		return name;
 	}
+
 	@Override
 	public UnitTemplateView getView() {
-		if (view == null)
+		if(view == null)
 			view = new UnitTemplateView(this);
 		return view;
 	}
+
 	@Override
 	public void deprecateOldView() {
-		view = null;		
+		view = null;
 	}
 
 	/**
 	 * An immutable representation of a UnitTemplate.
 	 */
-	public static class UnitTemplateView extends TemplateView implements Serializable{
+	public static class UnitTemplateView extends TemplateView implements Serializable {
 		private final boolean canGather;
 		private final boolean canBuild;
 		private final boolean canMove;
@@ -335,24 +394,23 @@ public class UnitTemplate extends Template<Unit> implements Serializable
 		private final int range;
 		private final int armor;
 		private final int sightRange;
-		private final List<Integer> producesID;
 		private final char character;
-		private final boolean acceptsGold;
-		private final boolean acceptsWood;
 		private final int foodProvided;
 		private final int durationMove;
 		private final int durationAttack;
-		private final int durationGatherGold;
-		private final int durationGatherWood;
 		private final int durationDeposit;
-		private final int goldCapacity;
-		private final int goldGatherRate;
-		private final int woodCapacity;
-		private final int woodGatherRate;
+		private final int width;
+		private final int height;
+		private final List<String> producesNames;
+		private final List<ResourceType> accepts;
+		private final Map<ResourceType, Integer> capacity;
+		private final Map<ResourceType, Integer> gatherRate;
+		private final Map<ResourceType, Integer> gatherDuration;
 		private static final long serialVersionUID = 1L;
-		
+
 		/**
 		 * Copy all information from a template and save it.
+		 * 
 		 * @param template
 		 */
 		public UnitTemplateView(UnitTemplate template) {
@@ -367,274 +425,347 @@ public class UnitTemplate extends Template<Unit> implements Serializable
 			range = template.getRange();
 			armor = template.getArmor();
 			sightRange = template.getSightRange();
-			List<Integer> tproducesID = new ArrayList<Integer>(template.producesID.size());
-			for (Integer i : template.producesID)
-				tproducesID.add(i);
-				//note: get method currently relies on producesID being unmodifiable (as it returns it directly), so change that if you change this
-			producesID = Collections.unmodifiableList(tproducesID);
 			character = template.getCharacter();
-			acceptsGold = template.canAcceptGold;
-			acceptsWood = template.canAcceptWood;
 			foodProvided = template.getFoodProvided();
 			durationMove = template.getDurationMove();
 			durationAttack = template.getDurationAttack();
 			durationDeposit = template.getDurationDeposit();
-			durationGatherGold = template.getDurationGatherGold();
-			durationGatherWood = template.getDurationGatherWood();
-			goldCapacity = template.getCarryingCapacity(Type.GOLD_MINE);
-			goldGatherRate = template.getGatherRate(Type.GOLD_MINE);
-			woodCapacity = template.getCarryingCapacity(Type.TREE);
-			woodGatherRate = template.getGatherRate(Type.TREE);
-			
-		}
+			List<String> tproducesNames = new ArrayList<String>(template.producesNames.size());
+			for(String s : template.producesNames)
+				tproducesNames.add(s);
+			producesNames = Collections.unmodifiableList(tproducesNames);
+			List<ResourceType> taccepts = new ArrayList<ResourceType>(template.accepts.size());
+			for(ResourceType type : template.accepts)
+				taccepts.add(type);
+			accepts = Collections.unmodifiableList(taccepts);
+			capacity = new HashMap<ResourceType, Integer>();
+			capacity.putAll(template.capacity);
+			gatherDuration = new HashMap<ResourceType, Integer>();
+			gatherDuration.putAll(template.gatherDuration);
+			gatherRate = new HashMap<ResourceType, Integer>();
+			gatherRate.putAll(template.gatherRate);
+			width = template.getWidth();
+			height = template.getHeight();
+ 		}
+
 		/**
-		 * Get the amount of resources that the unit can carry after gathering from a node of a specific type. 
-		 * @param resourceNodeType 
-		 * @return 
-		 */
-		public int getCarryingCapacity(Type resourceNodeType) {
-			switch (resourceNodeType) {
-			case GOLD_MINE:
-				return goldCapacity;
-			case TREE:
-				return woodCapacity;
-			default:
-				throw new IllegalArgumentException("Type not supported by this method");
-			}
-		}
-		/**
-		 * Get the amount of resources that the unit can gather in a single action from a node of a specific type. 
-		 * @param resourceNodeType 
-		 * @return 
-		 */
-		public int getGatherRate(Type resourceNodeType) {
-			switch (resourceNodeType) {
-			case GOLD_MINE:
-				return goldGatherRate;
-			case TREE:
-				return woodGatherRate;
-			default:
-				throw new IllegalArgumentException("Type not supported by this method");
-			}
-		}
-		
-		public boolean canGather() { return canGather; }
-		/**
-		 * Get whether units with this template uses the build action to make things.  This is independent of whether the template can actually make anything.
-		 * @return true if this template makes units with build actions, false if produce actions are used instead.
-		 */
-		public boolean canBuild() { return canBuild; }
-		/**
-		 * Get whether units with this template can move
-		 * @return true if this template makes units that can move, false if it makes units that can't move (like buildings)
-		 */
-		public boolean canMove() { return canMove; }
-		/**
-		 * Get whether units with this template can make attacks.
-		 * @return true if this template makes units that can attack, false if it makes units that cannot attack.
-		 */
-		public boolean canAttack() { return canAttack; }
-		/**
-		 * Get the starting health of units with this template.
-		 * @return The amount of health/hit points that units made with this template start with.
-		 */
-		public int getBaseHealth() { return baseHealth;	}
-		/**
-		 * Get the Basic Attack of units with this template.  This is one of the fields used in damage calculations.  It represents the portion of the attack that can be mitigated with armor.
-		 * @return The Basic Attack of units with this template.
-		 */
-		public int getBasicAttack() { return basicAttack; }
-		/**
-		 * Get the Piercing Attack of units with this template.  This is one of the fields used in damage calculations.  It represents the portion of the attack that is unaffected by armor.
-		 * @return The Piercing Attack of units with this template.
-		 */
-		public int getPiercingAttack() { return piercingAttack;	}
-		/**
-		 * Get the maximum distance at which units with this template are able to make successful attacks.
-		 * @return The range of attack for units with this template.
-		 */
-		public int getRange() {	return range; }
-		/**
-		 * Get the armor of units with this template.  Higher armor causes greater reduction of the Basic Attack component of damage.
-		 * @return The amount of armor of units with this template.
-		 */
-		public int getArmor() {	return armor; }
-		/**
-		 * Get the sight range of units with this template.  A unit "sees" only units and events that occur at distances not exceeding it's sight range.  In partially observable maps, an agent is only able to observe events and units that can be seen by units it controls.
+		 * Get the amount of resources that the unit can carry after gathering
+		 * from a node of a specific type.
+		 * 
+		 * @param resourceNodeType
 		 * @return
 		 */
-		public int getSightRange() { return sightRange;	}
+		public int getCarryingCapacity(ResourceNodeType resourceNodeType) {
+			Integer value = capacity.get(resourceNodeType);
+			if(value != null)
+				return value;
+			else
+				return 0;
+		}
+
 		/**
-		 * Get whether units with this template are able to make a specific other template.  This includes making by either building or producing.
-		 * <br>Currently just a List.contains()
-		 * @param templateID The ID of the template that may be able to BE produced.
+		 * Get the amount of resources that the unit can gather in a single
+		 * action from a node of a specific type.
+		 * 
+		 * @param resourceNodeType
+		 * @return
+		 */
+		public int getGatherRate(ResourceNodeType resourceNodeType) {
+			Integer value = gatherRate.get(resourceNodeType);
+			if(value != null)
+				return value;
+			else
+				return 0;
+		}
+
+		public boolean canGather() {
+			return canGather;
+		}
+
+		/**
+		 * Get whether units with this template uses the build action to make
+		 * things. This is independent of whether the template can actually make
+		 * anything.
+		 * 
+		 * @return true if this template makes units with build actions, false
+		 *         if produce actions are used instead.
+		 */
+		public boolean canBuild() {
+			return canBuild;
+		}
+
+		/**
+		 * Get whether units with this template can move
+		 * 
+		 * @return true if this template makes units that can move, false if it
+		 *         makes units that can't move (like buildings)
+		 */
+		public boolean canMove() {
+			return canMove;
+		}
+
+		/**
+		 * Get whether units with this template can make attacks.
+		 * 
+		 * @return true if this template makes units that can attack, false if
+		 *         it makes units that cannot attack.
+		 */
+		public boolean canAttack() {
+			return canAttack;
+		}
+
+		/**
+		 * Get the starting health of units with this template.
+		 * 
+		 * @return The amount of health/hit points that units made with this
+		 *         template start with.
+		 */
+		public int getBaseHealth() {
+			return baseHealth;
+		}
+
+		/**
+		 * Get the Basic Attack of units with this template. This is one of the
+		 * fields used in damage calculations. It represents the portion of the
+		 * attack that can be mitigated with armor.
+		 * 
+		 * @return The Basic Attack of units with this template.
+		 */
+		public int getBasicAttack() {
+			return basicAttack;
+		}
+
+		/**
+		 * Get the Piercing Attack of units with this template. This is one of
+		 * the fields used in damage calculations. It represents the portion of
+		 * the attack that is unaffected by armor.
+		 * 
+		 * @return The Piercing Attack of units with this template.
+		 */
+		public int getPiercingAttack() {
+			return piercingAttack;
+		}
+
+		/**
+		 * Get the maximum distance at which units with this template are able
+		 * to make successful attacks.
+		 * 
+		 * @return The range of attack for units with this template.
+		 */
+		public int getRange() {
+			return range;
+		}
+
+		/**
+		 * Get the armor of units with this template. Higher armor causes
+		 * greater reduction of the Basic Attack component of damage.
+		 * 
+		 * @return The amount of armor of units with this template.
+		 */
+		public int getArmor() {
+			return armor;
+		}
+
+		/**
+		 * Get the sight range of units with this template. A unit "sees" only
+		 * units and events that occur at distances not exceeding it's sight
+		 * range. In partially observable maps, an agent is only able to observe
+		 * events and units that can be seen by units it controls.
+		 * 
+		 * @return
+		 */
+		public int getSightRange() {
+			return sightRange;
+		}
+
+		/**
+		 * Get whether units with this template are able to make a specific
+		 * other template. This includes making by either building or producing. <br>
+		 * Currently just a List.contains()
+		 * 
+		 * @param templateID
+		 *            The ID of the template that may be able to BE produced.
 		 * @return Whether this template can make the template in the parameter.
 		 */
-		public boolean canProduce(Integer templateID) {return producesID.contains(templateID);};
+		public boolean canProduce(Integer templateID) {
+			return producesNames.contains(templateID);
+		};
+
 		/**
-		 * Get a list of template ids that can be produced by this unit. 
-		 * <br>The list is unmodifiable.
+		 * Get a list of template ids that can be produced by this unit. <br>
+		 * The list is unmodifiable.
+		 * 
 		 * @return A list of ids of templates this unit can make.
 		 */
-		public List<Integer> getProduces() {
-			return producesID;
-			}
+		public List<String> getProduces() {
+			return producesNames;
+		}
+
 		/**
 		 * Get the character to be used in visualization.
+		 * 
 		 * @return The character to be used in visualization.
 		 */
-		public char getCharacter() { return character; }
+		public char getCharacter() {
+			return character;
+		}
+
 		/**
-		 * Get whether units with this template can successfully be the target of a deposit action by a unit carrying gold.
-		 * @return Whether this template makes units that can be the target of a gold deposit.
+		 * Get whether a unit with the template can accept a deposit of the
+		 * given resource.
+		 * 
+		 * @param resourceName
+		 * @return
 		 */
-		public boolean canAcceptGold() {return acceptsGold; }
-		/**
-		 * Get whether units with this template can successfully be the target of a deposit action by a unit carrying wood.
-		 * @return Whether this template makes units that can be the target of a wood deposit.
-		 */
-		public boolean canAcceptWood() {return acceptsWood; }
+		public boolean canAccept(String resourceName) {
+			return accepts.contains(new ResourceType(resourceName));
+		}
+
 		/**
 		 * Get the amount of food provided by a unit with this template.
-		 * @return The amount of food/supply that units made with this template provide.
+		 * 
+		 * @return The amount of food/supply that units made with this template
+		 *         provide.
 		 */
-		public int getFoodProvided() {return foodProvided; }
+		public int getFoodProvided() {
+			return foodProvided;
+		}
+
 		/**
-		 * Get the duration of a primitive move action.  This is the base amount for how many consecutive steps the primitive action needs to be repeated before it has an effect.
-		 * Actual number of steps may depend on other factors, determined by the Planner and Model being used. 
+		 * Get the duration of a primitive move action. This is the base amount
+		 * for how many consecutive steps the primitive action needs to be
+		 * repeated before it has an effect. Actual number of steps may depend
+		 * on other factors, determined by the Planner and Model being used.
+		 * 
 		 * @return The base duration of a primitive move action.
 		 */
-		public int getDurationMove() {return durationMove;};
+		public int getDurationMove() {
+			return durationMove;
+		};
+
 		/**
-		 * Get the duration of a primitive gather action on a gold mine.  This is the base amount for how many consecutive steps the primitive action needs to be repeated before it has an effect.
-		 * Actual number of steps may depend on other factors, determined by the Planner and Model being used. 
-		 * @return The base duration of a primitive gather action on a gold mine.
-		 */
-		public int getDurationGatherGold() {return durationGatherGold;};
-		/**
-		 * Get the duration of a primitive gather action on a tree.  This is the base amount for how many consecutive steps the primitive action needs to be repeated before it has an effect.
-		 * Actual number of steps may depend on other factors, determined by the Planner and Model being used. 
-		 * @return The base duration of a primitive gather action on a tree.
-		 */
-		public int getDurationGatherWood() {return durationGatherWood;};
-		/**
-		 * Get the duration of a primitive attack action.  This is the base amount for how many consecutive steps the primitive action needs to be repeated before it has an effect.
-		 * Actual number of steps may depend on other factors, determined by the Planner and Model being used. 
+		 * Get the duration of a primitive attack action. This is the base
+		 * amount for how many consecutive steps the primitive action needs to
+		 * be repeated before it has an effect. Actual number of steps may
+		 * depend on other factors, determined by the Planner and Model being
+		 * used.
+		 * 
 		 * @return The base duration of a primitive attack action.
 		 */
-		public int getDurationAttack() {return durationAttack;};
+		public int getDurationAttack() {
+			return durationAttack;
+		};
+
 		/**
-		 * Get the duration of a primitive deposit action.  This is the base amount for how many consecutive steps the primitive action needs to be repeated before it has an effect.
-		 * Actual number of steps may depend on other factors, determined by the Planner and Model being used. 
+		 * Get the duration of a primitive deposit action. This is the base
+		 * amount for how many consecutive steps the primitive action needs to
+		 * be repeated before it has an effect. Actual number of steps may
+		 * depend on other factors, determined by the Planner and Model being
+		 * used.
+		 * 
 		 * @return The base duration of a primitive deposit action.
 		 */
-		public int getDurationDeposit() {return durationDeposit;};
-	}
+		public int getDurationDeposit() {
+			return durationDeposit;
+		};
+	
+        public int getWidth() {
+			return width;
+		}
+		public int getHeight() {
+			return height;
+		};
+    }
+
 	@Override
 	public boolean deepEquals(Object other) {
-		//note, this method ignores the view.  Hopefully that is not an issue
-		
-		if (other == null || !this.getClass().equals(other.getClass()))
+		// note, this method ignores the view. Hopefully that is not an issue
+
+		if(other == null || !this.getClass().equals(other.getClass()))
 			return false;
-		UnitTemplate o = (UnitTemplate)other;
-		
-		
-		//Stuff common to all templates
-		if (this.getID() != o.getID())
+		UnitTemplate o = (UnitTemplate) other;
+
+		// Stuff common to all templates
+		if(this.getID() != o.getID())
 			return false;
-		
-		if (this.timeCost != o.timeCost)
+
+		if(this.timeCost != o.timeCost)
 			return false;
-		if (this.goldCost != o.goldCost)
+		if(this.goldCost != o.goldCost)
 			return false;
-		if (this.woodCost != o.woodCost)
+		if(this.woodCost != o.woodCost)
 			return false;
-		if (this.foodCost != o.foodCost)
+		if(this.foodCost != o.foodCost)
 			return false;
-		if (this.player != o.player)
+		if(this.player != o.player)
 			return false;
-		if (!DeepEquatableUtil.deepEqualsIntSet(this.buildPrerequisites, o.buildPrerequisites))
+		if(!Objects.equals(this.buildPrerequisites, o.buildPrerequisites))
 			return false;
-		if (!DeepEquatableUtil.deepEqualsIntSet(this.upgradePrerequisites, o.upgradePrerequisites))
+		if(!Objects.equals(this.upgradePrerequisites, o.upgradePrerequisites))
 			return false;
 		{
-			boolean thisnull = this.name== null;
+			boolean thisnull = this.name == null;
 			boolean othernull = o.name == null;
-			if ((thisnull == othernull)==false)
-			{
+			if((thisnull == othernull) == false) {
 				return false;
 			}
-			//if both aren't null, need to check deeper
-			if (!thisnull && !othernull)
-			{
-				if (!this.name.equals(o.name))
+			// if both aren't null, need to check deeper
+			if(!thisnull && !othernull) {
+				if(!this.name.equals(o.name))
 					return false;
 			}
 		}
-		
-		
-		//UnitTemplate specific stuff
-		if (this.baseHealth != o.baseHealth)
+
+		// UnitTemplate specific stuff
+		if(this.baseHealth != o.baseHealth)
 			return false;
-		if (this.basicAttack != o.basicAttack)
+		if(this.basicAttack != o.basicAttack)
 			return false;
-		if (this.piercingAttack != o.piercingAttack)
+		if(this.piercingAttack != o.piercingAttack)
 			return false;
-		if (this.range != o.range)
+		if(this.range != o.range)
 			return false;
-		if (this.armor != o.armor)
+		if(this.armor != o.armor)
 			return false;
-		if (this.sightRange != o.sightRange)
+		if(this.sightRange != o.sightRange)
 			return false;
-		if (this.canGather != o.canGather)
+		if(this.canGather != o.canGather)
 			return false;
-		if (this.canBuild != o.canBuild)
+		if(this.canBuild != o.canBuild)
 			return false;
-		if (this.canMove != o.canMove)
+		if(this.canMove != o.canMove)
 			return false;
-		if (this.canAcceptGold != o.canAcceptGold)
+		if(!Objects.equals(this.accepts, o.accepts))
 			return false;
-		if (this.canAcceptWood != o.canAcceptWood)
+		if(this.foodProvided != o.foodProvided)
 			return false;
-		if (this.foodProvided != o.foodProvided)
+		if(this.character != o.character)
 			return false;
-		if (this.character != o.character)
+		if(!Objects.equals(this.capacity, o.capacity))
 			return false;
-		if (this.goldCapacity != o.goldCapacity)
+		if(!Objects.equals(this.gatherRate, o.gatherRate))
 			return false;
-		if (this.woodCapacity != o.woodCapacity)
+		if(!Objects.equals(this.gatherDuration, o.gatherDuration))
 			return false;
-		if (this.goldGatherRate != o.goldGatherRate)
+		if(this.durationMove != o.durationMove)
 			return false;
-		if (this.woodGatherRate != o.woodGatherRate)
+		if(this.durationAttack != o.durationAttack)
 			return false;
-		if (this.durationGoldGather != o.durationGoldGather)
+		if(this.durationDeposit != o.durationDeposit)
 			return false;
-		if (this.durationWoodGather != o.durationWoodGather)
-			return false;
-		if (this.durationMove != o.durationMove)
-			return false;
-		if (this.durationAttack != o.durationAttack)
-			return false;
-		if (this.durationDeposit != o.durationDeposit)
-			return false;
-		
-		
+
 		{
-			boolean thisnull = this.producesID == null;
-			boolean othernull = o.producesID == null;
-			if ((thisnull == othernull)==false)
-			{
+			boolean thisnull = this.producesNames == null;
+			boolean othernull = o.producesNames == null;
+			if((thisnull == othernull) == false) {
 				return false;
 			}
-			//if both aren't null, need to check deeper
-			if (!thisnull && !othernull)
-			{
-				if (this.producesID.size() != o.producesID.size())
+			// if both aren't null, need to check deeper
+			if(!thisnull && !othernull) {
+				if(this.producesNames.size() != o.producesNames.size())
 					return false;
-				for (Integer i : this.producesID)
-				{
-					if (!o.producesID.contains(i))
+				for(String s : this.producesNames) {
+					if(!o.producesNames.contains(s))
 						return false;
 				}
 			}
@@ -642,3 +773,4 @@ public class UnitTemplate extends Template<Unit> implements Serializable
 		return true;
 	}
 }
+

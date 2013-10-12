@@ -24,10 +24,16 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.cwru.sepia.model.state.UnitTemplate.UnitTemplateView;
+
 public abstract class DrawingStrategy {
+	
+	public static final int TILE_WIDTH = 32;
+	public static final int TILE_HEIGHT = 32;
 
 	protected Rectangle bounds;
 	
@@ -37,6 +43,7 @@ public abstract class DrawingStrategy {
 	private static DrawingStrategy revealedmine;
 	private static DrawingStrategy fog;
 	private static Map<Character,DrawingStrategy> letters;
+	private static Map<UnitTemplateView,DrawingStrategy> units;
 	private static DrawingStrategy selected;
 	private static DrawingStrategy infoBox; 
 	
@@ -160,6 +167,7 @@ public abstract class DrawingStrategy {
 		}
 		return fog;
 	}
+	
 	public static DrawingStrategy charGraphic(char c) {
 		if(letters == null)
 			letters = new HashMap<Character,DrawingStrategy>();
@@ -181,6 +189,37 @@ public abstract class DrawingStrategy {
 				}				
 			}.setChar(c);
 			letters.put(c, strategy);
+		}
+		return strategy;
+	}
+	
+	public static DrawingStrategy unitGraphic(UnitTemplateView t) {
+		if(units == null)
+			units = new HashMap<UnitTemplateView,DrawingStrategy>();
+		DrawingStrategy strategy = units.get(t);
+		if(strategy == null)
+		{
+			strategy = new DrawingStrategy() {
+				private UnitTemplateView t;
+				public DrawingStrategy setTemplate(UnitTemplateView t) {
+					this.t = t;
+					return this;
+				}
+				@Override
+				public void draw(Graphics g, int tlx, int tly) {
+					Font old = g.getFont();
+					int fontSize = (TILE_HEIGHT * 3 / 4) * t.getHeight();
+					g.setFont(new Font(old.getFamily(),old.getStyle(),fontSize));
+					Rectangle2D bounds = g.getFontMetrics().getStringBounds(String.valueOf(t.getCharacter()), g);
+					int width = (int)bounds.getWidth();
+					int middleX = tlx + (t.getWidth() * TILE_HEIGHT)/2;
+					int height = (int)bounds.getHeight();
+					int middleY = tly + (t.getHeight() + TILE_HEIGHT)/2;
+					g.drawChars(new char[]{t.getCharacter()}, 0, 1, middleX - (width / 2), middleY + (height / 2));
+					g.setFont(old);
+				}				
+			}.setTemplate(t);
+			units.put(t, strategy);
 		}
 		return strategy;
 	}

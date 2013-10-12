@@ -33,4 +33,28 @@ public final class DistanceMetrics {
 		return Math.max(Math.abs(x1-x2), Math.abs(y1-y2));
 	}
 	
+	/**
+	 * Calculates distance from a rectangle (defined by the top left point and dimensions) to a point.
+	 * Assumes that dimensions include top left and go to top left + dimension - 1.
+	 * @param tlx
+	 * @param tly
+	 * @param width
+	 * @param height
+	 * @param x2
+	 * @param y2
+	 * @return
+	 */
+	public static int chebyshevDistance(int tlx, int tly, int width, int height, int x2, int y2) {
+		int x1 = closest(tlx, tlx + width - 1, x2);
+		int y1 = closest(tly, tly + height - 1, y2);
+		return chebyshevDistance(x1, y1, x2, y2);
+	}
+	
+	private static int closest(int left, int right, int target) {
+		if(target < left)
+			return left;
+		if(target > right)
+			return right;
+		return target;
+	}
 }

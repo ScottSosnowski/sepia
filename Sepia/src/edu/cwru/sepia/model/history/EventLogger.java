@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.util.DeepEquatable;
 import edu.cwru.sepia.util.DeepEquatableUtil;
@@ -132,14 +132,14 @@ public class EventLogger implements Serializable, DeepEquatable {
 		}
 		upgradelog.get(turnnumber).add(new UpgradeLog(upgradetemplateid,producingunitid, controller));
 	}
-	public void recordResourceNodeExhaustion(int turnnumber, int exhaustednodeid, ResourceNode.Type type) {
+	public void recordResourceNodeExhaustion(int turnnumber, int exhaustednodeid, ResourceNodeType type) {
 		while (turnnumber+1>exhaustlog.size())
 		{
 			exhaustlog.add(new ArrayList<ResourceNodeExhaustionLog>());
 		}
 		exhaustlog.get(turnnumber).add(new ResourceNodeExhaustionLog(exhaustednodeid,type));
 	}
-	public void recordResourcePickup(int turnnumber, int gathererid, int controller, ResourceType type, int amount, int nodeid, ResourceNode.Type nodetype) {
+	public void recordResourcePickup(int turnnumber, int gathererid, int controller, ResourceType type, int amount, int nodeid, ResourceNodeType nodetype) {
 		while (turnnumber+1>gatherlog.size())
 		{
 			gatherlog.add(new ArrayList<ResourcePickupLog>());
@@ -153,7 +153,7 @@ public class EventLogger implements Serializable, DeepEquatable {
 		}
 		depositlog.get(turnnumber).add(new ResourceDropoffLog(depositerid, controller, amount, type, depositplaceid));
 	}
-	public void recordRevealedResourceNode(int resourcenodex, int resourcenodey, ResourceNode.Type resourcenodetype) {
+	public void recordRevealedResourceNode(int resourcenodex, int resourcenodey, ResourceNodeType resourcenodetype) {
 		reveallog.add(new RevealedResourceNodeLog(resourcenodex, resourcenodey, resourcenodetype));
 	}
 	public void eraseResourceNodeReveals() {

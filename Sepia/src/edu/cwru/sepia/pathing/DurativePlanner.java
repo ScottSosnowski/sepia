@@ -258,7 +258,7 @@ public class DurativePlanner implements Serializable {
 			return planPermanentFail(actor.id);
 		}
 		//plan a route to onto the resource
-		MovePlan plan = getDirections(actor, actor.getxPosition(), actor.getyPosition(), x, y, 0,true);
+		MovePlan plan = getDirections(actor, actor.getXPosition(), actor.getYPosition(), x, y, 0,true);
 		if (!plan.succeeded)
 		{//No path to the unit
 			return planFail(actor.id);
@@ -292,7 +292,7 @@ public class DurativePlanner implements Serializable {
 			return planPermanentFail(actor.id);
 		}
 		//plan a route to onto the resource
-		MovePlan plan = getDirections(actor, actor.getxPosition(), actor.getyPosition(), target.getxPosition(), target.getyPosition(), actor.getTemplate().getRange(),true);
+		MovePlan plan = getDirections(actor, actor.getXPosition(), actor.getYPosition(), target.getXPosition(), target.getYPosition(), actor.getTemplate().getRange(),true);
 		if (!plan.succeeded)
 		{//No path to the unit
 			return planFail(actor.id);
@@ -324,13 +324,13 @@ public class DurativePlanner implements Serializable {
 			return planPermanentFail(actor.id);
 		}
 		//plan a route to onto the resource
-		MovePlan plan = getDirections(actor, actor.getxPosition(), actor.getyPosition(), target.getxPosition(), target.getyPosition(), 1,true);
+		MovePlan plan = getDirections(actor, actor.getXPosition(), actor.getYPosition(), target.getXPosition(), target.getYPosition(), 1,true);
 		if (!plan.succeeded)
 		{//No path to the unit
 			return planFail(actor.id);
 		}
 		boolean noPreviousProgress = plan.actions.isEmpty();
-		Action primitivetorepeat = Action.createPrimitiveDeposit(actor.id, Direction.getDirection(target.getxPosition() - plan.finalx, target.getyPosition() - plan.finaly));
+		Action primitivetorepeat = Action.createPrimitiveDeposit(actor.id, Direction.getDirection(target.getXPosition() - plan.finalx, target.getYPosition() - plan.finaly));
 		int nrepeats = calculateDepositDuration(actor,target);
 		doDuratives(plan.actions,actor,primitivetorepeat, nrepeats, noPreviousProgress, false);
 		return plan.actions;
@@ -354,7 +354,7 @@ public class DurativePlanner implements Serializable {
 			return planPermanentFail(actor.id);
 		}
 		//plan a route to onto the resource
-		MovePlan plan = getDirections(actor, actor.getxPosition(), actor.getyPosition(), target.getxPosition(), target.getyPosition(), 1,true);
+		MovePlan plan = getDirections(actor, actor.getXPosition(), actor.getYPosition(), target.getxPosition(), target.getyPosition(), 1,true);
 		if (!plan.succeeded)
 		{//No path to the unit
 			return planFail(actor.id);
@@ -379,7 +379,7 @@ public class DurativePlanner implements Serializable {
 	 * @return
 	 */
 	public LinkedList<Action> planBuild(Unit actor, int targetX, int targetY, UnitTemplate template) {
-		MovePlan plan = getDirections(actor, actor.getxPosition(), actor.getyPosition(), targetX, targetY, 0, true);
+		MovePlan plan = getDirections(actor, actor.getXPosition(), actor.getYPosition(), targetX, targetY, 0, true);
 		if (!plan.succeeded)
 		{//No path to the unit
 			return planFail(actor.id);
@@ -480,15 +480,7 @@ public class DurativePlanner implements Serializable {
 	 * @return
 	 */
 	public static int calculateGatherDuration(Unit u, ResourceNode target) {
-		switch (target.getType())
-		{
-		case GOLD_MINE:
-			return u.getTemplate().getDurationGatherGold();
-		case TREE:
-			return u.getTemplate().getDurationGatherWood();
-		default:
-			throw new IllegalArgumentException(target.getType() + " is not a type supported by calculateGatherDuration()");
-		}
+		return u.getTemplate().getGatherDuration(target.getType().getResource());
 	}
 	/**
 	 * This is a temporary debug method, remove it when you are done

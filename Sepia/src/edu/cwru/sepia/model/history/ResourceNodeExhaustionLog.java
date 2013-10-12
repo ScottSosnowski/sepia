@@ -21,47 +21,65 @@ package edu.cwru.sepia.model.history;
 
 import java.io.Serializable;
 
-import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.util.DeepEquatable;
 
 /**
  * A read only class that represents the exhaustion of a resource node
+ * 
  * @author The Condor
- *
+ * 
  */
 public class ResourceNodeExhaustionLog implements Serializable, DeepEquatable {
-	private static final long	serialVersionUID	= 1L;
-	private int nodeid;
-	private ResourceNode.Type nodetype;
-	public ResourceNodeExhaustionLog(int exhaustednodeid, ResourceNode.Type resoucenodetype) {
-		nodeid=exhaustednodeid;
-		this.nodetype = resoucenodetype;
+	private static final long serialVersionUID = 1L;
+	private int nodeId;
+	private ResourceNodeType nodeType;
+
+	public ResourceNodeExhaustionLog(int exhaustedNodeId,
+			ResourceNodeType resouceNodeType) {
+		nodeId = exhaustedNodeId;
+		this.nodeType = resouceNodeType;
 	}
+
 	public int getExhaustedNodeID() {
-		return nodeid;
+		return nodeId;
 	}
-	public ResourceNode.Type getResourceNodeType() {
-		return nodetype;
+
+	public ResourceNodeType getResourceNodeType() {
+		return nodeType;
 	}
-	@Override public boolean equals(Object other) {
-		if (other == null || !this.getClass().equals(other.getClass()))
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + nodeId;
+		result = prime * result
+				+ ((nodeType == null) ? 0 : nodeType.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		ResourceNodeExhaustionLog o = (ResourceNodeExhaustionLog)other;
-		if (nodeid != o.nodeid)
+		if (getClass() != obj.getClass())
 			return false;
-		if (nodetype != o.nodetype)
+		ResourceNodeExhaustionLog other = (ResourceNodeExhaustionLog) obj;
+		if (nodeId != other.nodeId)
+			return false;
+		if (nodeType == null) {
+			if (other.nodeType != null)
+				return false;
+		} else if (!nodeType.equals(other.nodeType))
 			return false;
 		return true;
 	}
-	@Override public int hashCode() {
-		int product = 1;
-		int sum = 0;
-		int prime = 31;
-		sum += (product = product*prime)*nodeid;
-		sum += (product = product*prime)*nodetype.ordinal();
-		return sum;
-	}
-	@Override public boolean deepEquals(Object other) {
+
+	@Override
+	public boolean deepEquals(Object other) {
 		return equals(other);
 	}
 }

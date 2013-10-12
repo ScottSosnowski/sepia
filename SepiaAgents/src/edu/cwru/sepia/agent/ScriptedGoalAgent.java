@@ -365,7 +365,11 @@ public class ScriptedGoalAgent extends Agent implements Serializable {
 
 				if (id==null)
 					break;
-					ResourceNode.Type nodetype = endtype == GathererTask.Gold?ResourceNode.Type.GOLD_MINE:ResourceNode.Type.TREE;
+					String nodetype = null;
+					if(endtype == GathererTask.Gold)
+						nodetype = "GOLD_MINE";
+					else
+						nodetype = "TREE";
 					for (int i = 0; i<numgatherers;i++) {
 						
 						

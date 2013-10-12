@@ -20,7 +20,6 @@
 package edu.cwru.sepia.model.state;
 
 import java.io.Serializable;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,8 +34,7 @@ public class PlayerState implements Serializable, DeepEquatable {
 
 	public final int playerNum;
 	private HashMap<Integer,Unit> units;
-	@SuppressWarnings("rawtypes")
-	private Map<Integer,Template> templates;
+	private Map<Integer,Template<?>> templates;
 	private Set<Integer> upgrades;
 	private Map<ResourceType,Integer> currentResources;
 	private int currentSupply;
@@ -44,13 +42,12 @@ public class PlayerState implements Serializable, DeepEquatable {
 	private StateView view;
 	private int[][] canSee;
 	
-	@SuppressWarnings("rawtypes")
 	public PlayerState(int id) {
 		this.playerNum = id;
 		units = new HashMap<Integer,Unit>();
-		templates = new HashMap<Integer,Template>();
+		templates = new HashMap<Integer,Template<?>>();
 		upgrades = new HashSet<Integer>();
-		currentResources = new EnumMap<ResourceType,Integer>(ResourceType.class);	
+		currentResources = new HashMap<ResourceType,Integer>();	
 	}
 	
 	public Unit getUnit(int id) {
@@ -82,17 +79,22 @@ public class PlayerState implements Serializable, DeepEquatable {
 		return null;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public Map<Integer,Template> getTemplates() {
+	public Map<Integer,Template<?>> getTemplates() {
 		return templates;
 	}
 	
-	public void addTemplate(@SuppressWarnings("rawtypes") Template template) {
+	public void addTemplate(Template<?> template) {
 		templates.put(template.getID(), template);
 	}
 	
 	public Set<Integer> getUpgrades() {
 		return upgrades;
+	}
+	
+	public Map<ResourceType, Integer> getCurrentResources() {
+		Map<ResourceType, Integer> toReturn = new HashMap<ResourceType, Integer>();
+		toReturn.putAll(currentResources);
+		return toReturn;
 	}
 	
 	public int getCurrentResourceAmount(ResourceType type) {
@@ -193,12 +195,14 @@ public class PlayerState implements Serializable, DeepEquatable {
 				}
 			}
 		}
-		{
-			for (ResourceType rt : ResourceType.values())
-			{
-				if (this.getCurrentResourceAmount(rt) != o.getCurrentResourceAmount(rt))
-					return false;
-			}
+		if(!this.currentResources.keySet().equals(o.currentResources.keySet()))
+			return false;
+		for(Map.Entry<ResourceType, Integer> entry : this.currentResources.entrySet()) {
+			Integer otherResource = o.currentResources.get(entry.getKey());
+			if(entry.getValue() == null && otherResource != null)
+				return false;
+			if(entry.getValue() != null && !entry.getValue().equals(otherResource))
+				return false;
 		}
 		if (this.currentSupply != o.currentSupply)
 			return false;

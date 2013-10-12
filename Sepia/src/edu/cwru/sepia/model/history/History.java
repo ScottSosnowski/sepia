@@ -115,8 +115,8 @@ public class History implements DeepEquatable {
 		observerHistory.getCommandFeedback().addActionResult(stepnumber, commandFeedback);
 	}
 	public void recordBirth(Unit newunit, Unit builder, State state) {
-		int x = newunit.getxPosition();
-		int y = newunit.getyPosition();
+		int x = newunit.getXPosition();
+		int y = newunit.getYPosition();
 		//Don't change the iterating thing to "player" because it won't do the observer properly
 		/*for (Integer player : eventlogs.keySet())
 		{
@@ -136,8 +136,8 @@ public class History implements DeepEquatable {
 	}
 	public void recordUpgrade(UpgradeTemplate upgradetemplate, Unit creator, State state) {
 		
-		int x = creator.getxPosition();
-		int y = creator.getyPosition();
+		int x = creator.getXPosition();
+		int y = creator.getYPosition();
 		//Don't change the iterating thing to "player" because it won't do the observer properly
 		/*for (Integer player : eventlogs.keySet())
 		{
@@ -157,10 +157,10 @@ public class History implements DeepEquatable {
 	}
 	public void recordDamage(Unit u, Unit target, int damage, State state) {
 		
-		int x = target.getxPosition();
-		int y = target.getyPosition();
-		int x2 = u.getxPosition();
-		int y2 = u.getyPosition();
+		int x = target.getXPosition();
+		int y = target.getYPosition();
+		int x2 = u.getXPosition();
+		int y2 = u.getYPosition();
 		//Don't change the iterating thing to "player" because it won't do the observer properly
 		/*for (Integer player : eventlogs.keySet())
 		{
@@ -182,8 +182,8 @@ public class History implements DeepEquatable {
 	public void recordResourcePickup(Unit u, ResourceNode resource, int amountPickedUp, State state) {
 		int x = resource.getxPosition();
 		int y = resource.getyPosition();
-		int x2 = u.getxPosition();
-		int y2 = u.getyPosition();
+		int x2 = u.getXPosition();
+		int y2 = u.getYPosition();
 		//Don't change the iterating thing to "player" because it won't do the observer properly
 		/*for (Integer player : eventlogs.keySet())
 		{
@@ -214,8 +214,8 @@ public class History implements DeepEquatable {
 		
 	}
 	public void recordDeath(Unit u, State state) {
-		int x = u.getxPosition();
-		int y = u.getyPosition();
+		int x = u.getXPosition();
+		int y = u.getYPosition();
 		//Don't change the iterating thing to "player" because it won't do the observer properly
 		/*for (Integer player : eventlogs.keySet())
 		{
@@ -256,10 +256,10 @@ public class History implements DeepEquatable {
 		observerHistory.getEventLogger().recordResourceNodeExhaustion(state.getTurnNumber(), r.id, r.getType());
 	}
 	public void recordResourceDropoff(Unit u, Unit townHall, State state) {
-		int x = townHall.getxPosition();
-		int y = townHall.getyPosition();
-		int x2 = u.getxPosition();
-		int y2 = u.getyPosition();
+		int x = townHall.getXPosition();
+		int y = townHall.getYPosition();
+		int x2 = u.getXPosition();
+		int y2 = u.getYPosition();
 		//Don't change the iterating thing to "player" because it won't do the observer properly
 		/*for (Integer player : eventlogs.keySet())
 		{

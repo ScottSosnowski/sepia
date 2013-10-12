@@ -187,10 +187,10 @@ public class SimpleModel extends AbstractModel {
 			if (u == null)
 				continue;
 			//Set the tasks and grab the common features
-			int x = u.getxPosition();
-			int y = u.getyPosition();
+			int x = u.getXPosition();
+			int y = u.getYPosition();
 			
-			Pair<Integer,Integer> destination = getDestination(a, x, y);
+			Pair<Integer,Integer> destination = getDestination(a, u);
 			int xPrime = destination.a;
 			int yPrime = destination.b;
 
@@ -207,7 +207,7 @@ public class SimpleModel extends AbstractModel {
 			do {
 				timesTried++;
 				
-				result = doAction(a, u, x, y, xPrime, yPrime);
+				result = doAction(a, u);
 				
 				if (result == FailureMode.SUCCESS) {
 					if (!queuedAct.hasNext()) {

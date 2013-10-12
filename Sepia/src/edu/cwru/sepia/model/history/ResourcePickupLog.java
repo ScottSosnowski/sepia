@@ -21,80 +21,108 @@ package edu.cwru.sepia.model.history;
 
 import java.io.Serializable;
 
-import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.util.DeepEquatable;
 
 /**
- * A read only class documenting an event 
+ * A read only class documenting an event
+ * 
  * @author The Condor
- *
+ * 
  */
 public class ResourcePickupLog implements Serializable, DeepEquatable {
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 	private int pickuper;
 	private ResourceType resource;
 	private int amount;
-	private ResourceNode.Type nodetype;
-	private int nodeid;
+	private ResourceNodeType nodeType;
+	private int nodeId;
 	private int controller;
-	public ResourcePickupLog(int gathererid, int controller, ResourceType resource, int amountpickedup, int nodeid, ResourceNode.Type nodetype) {
-		pickuper = gathererid;
+
+	public ResourcePickupLog(int gathererId, int controller,
+			ResourceType resource, int amountPickedUp, int nodeid,
+			ResourceNodeType nodeType) {
+		pickuper = gathererId;
 		this.resource = resource;
-		amount = amountpickedup;
-		this.nodetype = nodetype;
-		this.nodeid = nodeid;
+		amount = amountPickedUp;
+		this.nodeType = nodeType;
+		this.nodeId = nodeid;
 		this.controller = controller;
 	}
+
 	public ResourceType getResourceType() {
 		return resource;
 	}
+
 	public int getGathererID() {
 		return pickuper;
 	}
+
 	public int getAmountPickedUp() {
 		return amount;
 	}
-	public ResourceNode.Type getNodeType() {
-		return nodetype;
+
+	public ResourceNodeType getNodeType() {
+		return nodeType;
 	}
+
 	public int getNodeID() {
-		return nodeid;
+		return nodeId;
 	}
+
 	public int getController() {
 		return controller;
 	}
-	@Override public boolean equals(Object other) {
-		if (other == null || !this.getClass().equals(other.getClass()))
+
+	@Override
+	public boolean deepEquals(Object other) {
+		return equals(other);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + amount;
+		result = prime * result + controller;
+		result = prime * result + nodeId;
+		result = prime * result
+				+ ((nodeType == null) ? 0 : nodeType.hashCode());
+		result = prime * result + pickuper;
+		result = prime * result
+				+ ((resource == null) ? 0 : resource.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		ResourcePickupLog o = (ResourcePickupLog)other;
-		if (resource != o.resource)
+		if (getClass() != obj.getClass())
 			return false;
-		if (pickuper != o.pickuper)
+		ResourcePickupLog other = (ResourcePickupLog) obj;
+		if (amount != other.amount)
 			return false;
-		if (amount != o.amount)
+		if (controller != other.controller)
 			return false;
-		if (nodetype != o.nodetype)
+		if (nodeId != other.nodeId)
 			return false;
-		if (nodeid != o.nodeid)
+		if (nodeType == null) {
+			if (other.nodeType != null)
+				return false;
+		} else if (!nodeType.equals(other.nodeType))
 			return false;
-		if (controller != o.controller)
+		if (pickuper != other.pickuper)
+			return false;
+		if (resource == null) {
+			if (other.resource != null)
+				return false;
+		} else if (!resource.equals(other.resource))
 			return false;
 		return true;
 	}
-	@Override public int hashCode() {
-		int product = 1;
-		int sum = 0;
-		int prime = 31;
-		sum += (product = product*prime)*resource.ordinal();
-		sum += (product = product*prime)*pickuper;
-		sum += (product = product*prime)*amount;
-		sum += (product = product*prime)*nodetype.ordinal();
-		sum += (product = product*prime)*nodeid;
-		sum += (product = product*prime)*controller;
-		return sum;
-	}
-	@Override public boolean deepEquals(Object other) {
-		return equals(other);
-	}
+
 }
