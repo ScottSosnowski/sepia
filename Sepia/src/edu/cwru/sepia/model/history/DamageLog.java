@@ -21,14 +21,12 @@ package edu.cwru.sepia.model.history;
 
 import java.io.Serializable;
 
-import edu.cwru.sepia.util.DeepEquatable;
-
 /**
  * A read only class logging damage.
  * @author The Condor
  *
  */
-public class DamageLog implements Serializable, DeepEquatable {
+public class DamageLog implements Serializable {
 	private static final long	serialVersionUID	= 1L;
 	private int damager;
 	private int damagercontroller;
@@ -83,9 +81,6 @@ public class DamageLog implements Serializable, DeepEquatable {
 		sum += (product = product*prime)*damagee;
 		sum += (product = product*prime)*damageecontroller;
 		return sum;
-	}
-	@Override public boolean deepEquals(Object other) {
-		return equals(other);
 	}
 }
 

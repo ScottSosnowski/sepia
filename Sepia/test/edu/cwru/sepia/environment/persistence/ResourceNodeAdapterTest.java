@@ -39,8 +39,8 @@ public class ResourceNodeAdapterTest {
 		XmlResourceNode xml = ResourceAdapter.toXml(node);
 		
 		assertEquals("resource type did not match!", node.getType(), xml.getType());
-		assertEquals("x position did not match!", node.getxPosition(), xml.getXPosition());
-		assertEquals("y position did not match!", node.getyPosition(), xml.getYPosition());
+		assertEquals("x position did not match!", node.getXPosition(), xml.getXPosition());
+		assertEquals("y position did not match!", node.getYPosition(), xml.getYPosition());
 		assertEquals("amount remaining did not match!", node.getAmountRemaining(), xml.getAmountRemaining());
 	}
 	
@@ -55,8 +55,8 @@ public class ResourceNodeAdapterTest {
 		ResourceNode node = ResourceAdapter.fromXml(xml);
 
 		assertEquals("resource type did not match!", xml.getType(), node.getType());
-		assertEquals("x position did not match!", xml.getXPosition(), node.getxPosition());
-		assertEquals("y position did not match!", xml.getYPosition(), node.getyPosition());
+		assertEquals("x position did not match!", xml.getXPosition(), node.getXPosition());
+		assertEquals("y position did not match!", xml.getYPosition(), node.getYPosition());
 		assertEquals("amount remaining did not match!", xml.getAmountRemaining(), node.getAmountRemaining());
 		assertEquals("ID did not match!", xml.getID(), node.id);
 		

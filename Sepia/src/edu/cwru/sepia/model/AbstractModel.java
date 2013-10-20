@@ -27,7 +27,6 @@ import edu.cwru.sepia.model.state.Unit;
 import edu.cwru.sepia.model.state.UnitTemplate;
 import edu.cwru.sepia.model.state.UpgradeTemplate;
 import edu.cwru.sepia.util.ConfigurationAccessors;
-import edu.cwru.sepia.util.DistanceMetrics;
 import edu.cwru.sepia.util.Pair;
 
 public abstract class AbstractModel implements Model {
@@ -323,8 +322,7 @@ public abstract class AbstractModel implements Model {
 			return FailureMode.INVALID_TARGET;
 
 		}
-		int distance = DistanceMetrics.chebyshevDistance(u.getXPosition(), u.getYPosition(),
-				u.getTemplate().getWidth(), u.getTemplate().getHeight(), target.getXPosition(), target.getYPosition());
+		int distance = u.getBounds().distanceTo(target.getBounds());
 		if (u.getTemplate().getRange() < distance) {
 			if (logger.isLoggable(Level.FINE))
 				logger.fine(u.id + " failed to attack out-of-range unit " + target.id);

@@ -21,14 +21,12 @@ package edu.cwru.sepia.model.history;
 
 import java.io.Serializable;
 
-import edu.cwru.sepia.util.DeepEquatable;
-
 /**
  * A read only class that represents the death of something
  * @author The Condor
  *
  */
-public class DeathLog implements Serializable, DeepEquatable {
+public class DeathLog implements Serializable {
 	private static final long	serialVersionUID	= 1L;
 	private int unitid;
 	private int player;
@@ -62,8 +60,5 @@ public class DeathLog implements Serializable, DeepEquatable {
 		sum += (product = product*prime)*unitid;
 		sum += (product = product*prime)*player;
 		return sum;
-	}
-	@Override public boolean deepEquals(Object other) {
-		return equals(other);
 	}
 }

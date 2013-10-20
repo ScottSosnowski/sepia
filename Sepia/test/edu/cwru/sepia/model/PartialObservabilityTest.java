@@ -46,7 +46,7 @@ import edu.cwru.sepia.model.state.Template;
 import edu.cwru.sepia.model.state.Unit;
 import edu.cwru.sepia.model.state.Unit.UnitView;
 import edu.cwru.sepia.model.state.UnitTemplate;
-import edu.cwru.sepia.util.DistanceMetrics;
+import edu.cwru.sepia.util.Rectangle;
 import edu.cwru.sepia.util.TypeLoader;
 
 public class PartialObservabilityTest {
@@ -199,8 +199,8 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 		for (int i = 0; i < nodegrid.length; i++)
 			for (int j = 0; j < nodegrid[i].length; j++)
 			{
-				int x = nodegrid[i][j].getxPosition();
-				int y = nodegrid[i][j].getyPosition();
+				int x = nodegrid[i][j].getXPosition();
+				int y = nodegrid[i][j].getYPosition();
 				//x and y should just be i and j
 				boolean cansee = view.canSee(x, y);
 				assertTrue(cansee == allresources.contains(nodegrid[i][j].id) );
@@ -241,7 +241,7 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 				boolean inrange = false;
 				for (Unit u : myunits)
 				{
-					if( DistanceMetrics.chebyshevDistance(i, j, u.getXPosition(), u.getYPosition())<=u.getTemplate().getSightRange())
+					if( new Rectangle(i, j).distanceTo(u.getBounds()) <= u.getTemplate().getSightRange())
 					{
 						inrange = true;
 						break;
@@ -263,7 +263,7 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 		for (int i = 0; i<nodegrid.length;i++)
 			for (int j = 0; j<nodegrid[i].length;j++)
 			{
-				boolean cansee = view.canSee(nodegrid[i][j].getxPosition(),nodegrid[i][j].getyPosition());
+				boolean cansee = view.canSee(nodegrid[i][j].getXPosition(),nodegrid[i][j].getYPosition());
 				ResourceView nodeseen = view.getResourceNode(nodegrid[i][j].id);
 				Integer idseen = nodeseen==null?null:nodeseen.getID();
 				assertTrue(idseen == null && !cansee || idseen == nodegrid[i][j].id && cansee);
@@ -293,8 +293,8 @@ public void sightTest() throws FileNotFoundException, JAXBException {
 		for (int i = 0; i < nodegrid.length; i++)
 			for (int j = 0; j < nodegrid[i].length; j++)
 			{
-				int x = nodegrid[i][j].getxPosition();
-				int y = nodegrid[i][j].getyPosition();
+				int x = nodegrid[i][j].getXPosition();
+				int y = nodegrid[i][j].getYPosition();
 				//x and y should just be i and j
 				boolean cansee = view.canSee(x, y);
 				assertTrue(cansee == allresources.contains(nodegrid[i][j].id) );

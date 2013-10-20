@@ -21,7 +21,6 @@ package edu.cwru.sepia.model.state;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 public class UpgradeTemplate extends Template<Upgrade>
 {
 	
@@ -190,68 +189,4 @@ public class UpgradeTemplate extends Template<Upgrade>
 			return affectedUnitTypes;
 		}
 	}
-	@Override
-	public boolean deepEquals(Object other) {
-		//note, this method ignores the view.  Hopefully that is not an issue
-		
-				if (other == null || !this.getClass().equals(other.getClass()))
-					return false;
-				UpgradeTemplate o = (UpgradeTemplate)other;
-				
-				
-				//Stuff common to all templates
-				if (this.getID() != o.getID())
-					return false;
-				
-				if (this.timeCost != o.timeCost)
-					return false;
-				if (this.goldCost != o.goldCost)
-					return false;
-				if (this.woodCost != o.woodCost)
-					return false;
-				if (this.foodCost != o.foodCost)
-					return false;
-				if (this.player != o.player)
-					return false;
-				if (!Objects.equals(this.buildPrerequisites, o.buildPrerequisites))
-					return false;
-				if (!Objects.equals(this.upgradePrerequisites, o.upgradePrerequisites))
-					return false;
-				{
-					boolean thisnull = this.name== null;
-					boolean othernull = o.name == null;
-					if ((thisnull == othernull)==false)
-					{
-						return false;
-					}
-					//if both aren't null, need to check deeper
-					if (!thisnull && !othernull)
-					{
-						if (!this.name.equals(o.name))
-							return false;
-					}
-				}
-				
-				
-				//UpgradeTemplate specific methods
-				if (this.piercingAttackChange != o.piercingAttackChange)
-					return false;
-				if (this.basicAttackChange != o.basicAttackChange)
-					return false;
-				if (this.armorChange != o.armorChange)
-					return false;
-				if (this.healthChange != o.healthChange)
-					return false;
-				if (this.rangeChange != o.rangeChange)
-					return false;
-				if (this.sightRangeChange != o.sightRangeChange)
-					return false;
-				if (!Objects.equals(unitTemplatesAffected, o.unitTemplatesAffected))
-					return false;
-				return true;
-	}
-	
-	
-	
-	
 }

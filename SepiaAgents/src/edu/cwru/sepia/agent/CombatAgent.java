@@ -41,7 +41,7 @@ import edu.cwru.sepia.model.history.History;
 import edu.cwru.sepia.model.state.Direction;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Unit.UnitView;
-import edu.cwru.sepia.util.DistanceMetrics;
+import edu.cwru.sepia.util.Rectangle;
 
 public class CombatAgent extends Agent{
 	private static final long serialVersionUID = 1L;
@@ -260,7 +260,7 @@ public class CombatAgent extends Agent{
 					for (Integer enemyUnitID : state.getUnitIds(enemy)) {
 						UnitView enemyUnit = state.getUnit(enemyUnitID);
 						//get the chebyshev distance (which is the base distance for warcraft 2)
-						if (sightradius > DistanceMetrics.chebyshevDistance(ux, uy, enemyUnit.getXPosition(), enemyUnit.getYPosition()) ) {
+						if (sightradius > new Rectangle(ux, uy).distanceTo(enemyUnit.getBounds())) {
 							//(if you can see it)
 							foundsomething=true;
 							unitOrders.put(order.getKey(), Action.createCompoundAttack(order.getKey(), enemyUnitID));

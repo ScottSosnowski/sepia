@@ -22,7 +22,6 @@ package edu.cwru.sepia.model.history;
 import java.io.Serializable;
 
 import edu.cwru.sepia.model.state.ResourceNodeType;
-import edu.cwru.sepia.util.DeepEquatable;
 
 /**
  * A read only class that represents the revealing of units at the start of the
@@ -31,14 +30,13 @@ import edu.cwru.sepia.util.DeepEquatable;
  * @author The Condor
  * 
  */
-public class RevealedResourceNodeLog implements Serializable, DeepEquatable {
+public class RevealedResourceNodeLog implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int nodex;
 	private int nodey;
 	private ResourceNodeType nodetype;
 
-	public RevealedResourceNodeLog(int resourcenodex, int resourcenodey,
-			ResourceNodeType resoucenodetype) {
+	public RevealedResourceNodeLog(int resourcenodex, int resourcenodey, ResourceNodeType resoucenodetype) {
 		this.nodex = resourcenodex;
 		this.nodey = resourcenodey;
 		this.nodetype = resoucenodetype;
@@ -57,16 +55,10 @@ public class RevealedResourceNodeLog implements Serializable, DeepEquatable {
 	}
 
 	@Override
-	public boolean deepEquals(Object other) {
-		return equals(other);
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((nodetype == null) ? 0 : nodetype.hashCode());
+		result = prime * result + ((nodetype == null) ? 0 : nodetype.hashCode());
 		result = prime * result + nodex;
 		result = prime * result + nodey;
 		return result;
@@ -74,21 +66,21 @@ public class RevealedResourceNodeLog implements Serializable, DeepEquatable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if(this == obj)
 			return true;
-		if (obj == null)
+		if(obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if(getClass() != obj.getClass())
 			return false;
-		RevealedResourceNodeLog other = (RevealedResourceNodeLog) obj;
-		if (nodetype == null) {
-			if (other.nodetype != null)
+		RevealedResourceNodeLog other = (RevealedResourceNodeLog)obj;
+		if(nodetype == null) {
+			if(other.nodetype != null)
 				return false;
-		} else if (!nodetype.equals(other.nodetype))
+		} else if(!nodetype.equals(other.nodetype))
 			return false;
-		if (nodex != other.nodex)
+		if(nodex != other.nodex)
 			return false;
-		if (nodey != other.nodey)
+		if(nodey != other.nodey)
 			return false;
 		return true;
 	}

@@ -47,17 +47,17 @@ public class ModelSerializationTest {
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		ObjectInputStream ois = new ObjectInputStream(bais);
 		State state2 = (State) ois.readObject();
-		assertTrue("State did not come out the same in direct serialization!",state.deepEquals(state2));
+		assertTrue("State did not come out the same in direct serialization!",state.equals(state2));
 		
 		StateCreator sc = new RawStateCreator(baos.toByteArray());
 		State newstate = sc.createState();
 		State newstate2 = sc.createState();
 		State newstate3 = sc.createState();
 		State newstate4 = sc.createState();
-		assertTrue("State did not come out the same in serialization with rawstatecreator!",state.deepEquals(newstate));
-		assertTrue("State did not come out the same in serialization with rawstatecreator!",state.deepEquals(newstate2));
-		assertTrue("State did not come out the same in serialization with rawstatecreator!",state.deepEquals(newstate3));
-		assertTrue("State did not come out the same in serialization with rawstatecreator!",state.deepEquals(newstate4));
+		assertTrue("State did not come out the same in serialization with rawstatecreator!",state.equals(newstate));
+		assertTrue("State did not come out the same in serialization with rawstatecreator!",state.equals(newstate2));
+		assertTrue("State did not come out the same in serialization with rawstatecreator!",state.equals(newstate3));
+		assertTrue("State did not come out the same in serialization with rawstatecreator!",state.equals(newstate4));
 		
 	}
 }

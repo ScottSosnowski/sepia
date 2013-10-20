@@ -28,14 +28,14 @@ import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.action.ActionType;
 import edu.cwru.sepia.action.TargetedAction;
 import edu.cwru.sepia.agent.Agent;
+import edu.cwru.sepia.model.state.Direction;
 import edu.cwru.sepia.model.state.ResourceNode;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.State.StateView;
-import edu.cwru.sepia.model.state.Direction;
 import edu.cwru.sepia.model.state.Template;
 import edu.cwru.sepia.model.state.Unit;
 import edu.cwru.sepia.model.state.UnitTemplate;
-import edu.cwru.sepia.util.DistanceMetrics;
+import edu.cwru.sepia.util.Rectangle;
 
 /**
  * An implementation of basic planning methods
@@ -89,30 +89,28 @@ public class SimplePlanner implements Serializable {
 		// lines
 		// if(distance == 0)
 		// distance = state.getXExtent()*state.getYExtent();
-		while (queue.size() > 0 && bestnode == null) {
+		while(queue.size() > 0 && bestnode == null) {
 			// Grab a node
 			AStarNode currentnode = queue.poll();
-			int currentdistancetogoal = DistanceMetrics.chebyshevDistance(currentnode.x, currentnode.y, endingx,
-					endingy);
+			int currentdistancetogoal = currentnode.asRectangle().distanceTo(new Rectangle(endingx, endingy));
 			// Check if you are done
-			if (tolerancedistance >= currentdistancetogoal
+			if(tolerancedistance >= currentdistancetogoal
 					|| (!cancollideonfinal && currentdistancetogoal == 1 && collidesatend)) {
 				bestnode = currentnode;
 				break;
 			}
-			for (Direction d : Direction.values()) {
-				int newx = currentnode.x + d.xComponent();
-				int newy = currentnode.y + d.yComponent();
+			for(Direction d : Direction.values()) {
+				int newx = currentnode.getX() + d.xComponent();
+				int newy = currentnode.getY() + d.yComponent();
 
 				int newdisttogoal = Math.max(Math.abs(newx - endingx), Math.abs(newy - endingy));
 				// valid if the new state is within max distance and is in
 				// bounds and either there is no collision or it is at the
 				// target
-				if (state.inBounds(newx, newy)
+				if(state.inBounds(newx, newy)
 						&& ((!state.isUnitAt(newx, newy) && !state.isResourceAt(newx, newy)) || (cancollideonfinal && newdisttogoal == 0))) {
-					AStarNode newnode = new AStarNode(newx, newy, currentnode.g + 1, currentnode.g + 1 + newdisttogoal,
-							currentnode, d);
-					if (!checked.contains(newnode)) {
+					AStarNode newnode = new AStarNode(newx, newy, newdisttogoal, currentnode, d);
+					if(!checked.contains(newnode)) {
 						queue.offer(newnode);
 						checked.add(newnode);
 					}
@@ -120,15 +118,15 @@ public class SimplePlanner implements Serializable {
 
 			}
 		}
-		if (bestnode == null)
+		if(bestnode == null)
 			return new LinkedList<Direction>();
 		else {
 			// System.out.println("Found best at:" + bestnode.x + "," +
 			// bestnode.y);
 			LinkedList<Direction> toreturn = new LinkedList<Direction>();
-			while (bestnode.previous != null) {
-				toreturn.addFirst(bestnode.directionfromprevious);
-				bestnode = bestnode.previous;
+			while(bestnode.getPrevious() != null) {
+				toreturn.addFirst(bestnode.getDirectionFromPrevious());
+				bestnode = bestnode.getPrevious();
 			}
 			return toreturn;
 		}
@@ -145,12 +143,12 @@ public class SimplePlanner implements Serializable {
 	 * @return
 	 */
 	public LinkedList<Action> planMove(Unit actor, int x, int y) {
-		if (!state.inBounds(x, y)) {
+		if(!state.inBounds(x, y)) {
 			return planPermanentFail(actor.id);
 		}
 		LinkedList<Direction> directions = getDirections(state.getView(Agent.OBSERVER_ID), actor.getXPosition(),
 				actor.getYPosition(), x, y, 0, false);
-		if (directions == null) {
+		if(directions == null) {
 			return planFail(actor.id);
 		} else
 			return planMove(actor, directions);
@@ -177,7 +175,7 @@ public class SimplePlanner implements Serializable {
 	 */
 	private LinkedList<Action> planMove(Unit actor, LinkedList<Direction> path) {
 		LinkedList<Action> moves = new LinkedList<Action>();
-		while (!path.isEmpty()) {
+		while(!path.isEmpty()) {
 			moves.addLast(Action.createPrimitiveMove(actor.id, path.removeFirst()));
 		}
 		return moves;
@@ -198,11 +196,7 @@ public class SimplePlanner implements Serializable {
 	 *         the target
 	 */
 	public LinkedList<Action> planAttack(Unit actor, Unit target) {
-		/* TODO - this method current just assumes it has the actor's and target's sizes as
-		 * slack. This is sort of okay since you can always re-plan if the actor needs to close
-		 * in further, but a better solution would be to plan movement until the target is in range. 
-		 */
-		if (target == null) {
+		if(target == null) {
 			return planPermanentFail(actor.id);
 		}
 		LinkedList<Direction> directions = getDirections(
@@ -214,7 +208,7 @@ public class SimplePlanner implements Serializable {
 				actor.getTemplate().getRange()
 						+ Math.max(actor.getTemplate().getWidth(), actor.getTemplate().getHeight()) - 1
 						+ Math.max(target.getTemplate().getWidth(), target.getTemplate().getHeight()) - 1, false);
-		if (directions == null)
+		if(directions == null)
 			return planFail(actor.id);
 		LinkedList<Action> plan = planMove(actor, directions);
 		plan.addLast(new TargetedAction(actor.id, ActionType.PRIMITIVEATTACK, target.id));
@@ -243,12 +237,12 @@ public class SimplePlanner implements Serializable {
 		// This requires that planmove handle a 0 distance move as having the
 		// final primative move not be affected by collisions
 		// if the above requirement is violated, this will not work
-		if (target == null) {
+		if(target == null) {
 			return planPermanentFail(actor.id);
 		}
 		LinkedList<Direction> directions = getDirections(state.getView(Agent.OBSERVER_ID), actor.getXPosition(),
 				actor.getYPosition(), target.getXPosition(), target.getYPosition(), 0, true);
-		if (directions == null || directions.size() < 1) {
+		if(directions == null || directions.size() < 1) {
 			return planFail(actor.id);
 		}
 		Direction finaldirection = directions.pollLast();
@@ -278,12 +272,12 @@ public class SimplePlanner implements Serializable {
 		// This requires that planmove handle a 0 distance move as having the
 		// final primative move not be affected by collisions
 		// if the above requirement is violated, this will not work
-		if (target == null) {
+		if(target == null) {
 			return planPermanentFail(actor.id);
 		}
 		LinkedList<Direction> directions = getDirections(state.getView(Agent.OBSERVER_ID), actor.getXPosition(),
-				actor.getYPosition(), target.getxPosition(), target.getyPosition(), 0, true);
-		if (directions == null || directions.size() < 1) {
+				actor.getYPosition(), target.getXPosition(), target.getYPosition(), 0, true);
+		if(directions == null || directions.size() < 1) {
 			return planFail(actor.id);
 		}
 		Direction finaldirection = directions.pollLast();
@@ -299,18 +293,18 @@ public class SimplePlanner implements Serializable {
 	public LinkedList<Action> planBuild(Unit actor, int targetX, int targetY, UnitTemplate template) {
 		LinkedList<Action> plan = new LinkedList<Action>();
 		// it must go to the right place
-		if (actor.getXPosition() != targetX || actor.getYPosition() != targetY) {// if
-																					// it
-																					// is
-																					// not
-																					// in
-																					// the
-																					// same
-																					// place
-																					// Then
-																					// bring
-																					// it
-																					// there
+		if(actor.getXPosition() != targetX || actor.getYPosition() != targetY) {// if
+																				// it
+																				// is
+																				// not
+																				// in
+																				// the
+																				// same
+																				// place
+																				// Then
+																				// bring
+																				// it
+																				// there
 			plan = planMove(
 					actor,
 					getDirections(state.getView(Agent.OBSERVER_ID), actor.getXPosition(), actor.getYPosition(),

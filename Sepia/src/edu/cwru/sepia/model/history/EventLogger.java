@@ -25,14 +25,12 @@ import java.util.List;
 
 import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.model.state.ResourceType;
-import edu.cwru.sepia.util.DeepEquatable;
-import edu.cwru.sepia.util.DeepEquatableUtil;
 
 /**
  * Logs all the primitive logs including damage, death, birth, upgrade, etc. 
  *
  */
-public class EventLogger implements Serializable, DeepEquatable { 
+public class EventLogger implements Serializable { 
 	/**
 	 * 
 	 */
@@ -276,33 +274,6 @@ public class EventLogger implements Serializable, DeepEquatable {
 			if (other.reveallog != null)
 				return false;
 		} else if (!reveallog.equals(other.reveallog))
-			return false;
-		return true;
-	}
-	
-	@Override
-	public boolean deepEquals(Object other) {
-		if (this == other)
-			return true;
-		if (other == null || !this.getClass().equals(other.getClass()))
-			return false;
-		EventLogger o = (EventLogger)other;
-		
-		if (!DeepEquatableUtil.deepEqualsListList(damagelog, o.damagelog))
-			return false;
-		if (!DeepEquatableUtil.deepEqualsListList(deathlog, o.deathlog))
-			return false;
-		if (!DeepEquatableUtil.deepEqualsListList(birthlog, o.birthlog))
-			return false;
-		if (!DeepEquatableUtil.deepEqualsListList(upgradelog, o.upgradelog))
-			return false;
-		if (!DeepEquatableUtil.deepEqualsListList(exhaustlog, o.exhaustlog))
-			return false;
-		if (!DeepEquatableUtil.deepEqualsListList(gatherlog, o.gatherlog))
-			return false;
-		if (!DeepEquatableUtil.deepEqualsListList(depositlog, o.depositlog))
-			return false;
-		if (!DeepEquatableUtil.deepEqualsList(reveallog, o.reveallog))
 			return false;
 		return true;
 	}

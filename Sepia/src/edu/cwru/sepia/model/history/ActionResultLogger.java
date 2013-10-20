@@ -27,14 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 import edu.cwru.sepia.action.ActionResult;
-import edu.cwru.sepia.util.DeepEquatable;
-import edu.cwru.sepia.util.DeepEquatableUtil;
 /**
  * Logs the results for a single player.
  * @author The Condor
  *
  */
-public class ActionResultLogger implements Serializable, DeepEquatable {
+public class ActionResultLogger implements Serializable {
 	private static final long	serialVersionUID	= 1L;
 	List<Map<Integer, ActionResult>> actionresults;
 	public ActionResultLogger () {
@@ -105,17 +103,4 @@ public class ActionResultLogger implements Serializable, DeepEquatable {
 			return false;
 		return true;
 	}
-	public boolean deepEquals(Object other) {
-		if (this == other)
-			return true;
-		if (other == null || !this.getClass().equals(other.getClass()))
-			return true;
-		
-		ActionResultLogger o = (ActionResultLogger) other;
-		if (!DeepEquatableUtil.deepEqualsListMap(actionresults, o.actionresults))
-			return false;
-		
-		return true;
-	}
-	
 }

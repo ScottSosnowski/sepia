@@ -22,7 +22,6 @@ package edu.cwru.sepia.model.history;
 import java.io.Serializable;
 
 import edu.cwru.sepia.model.state.ResourceType;
-import edu.cwru.sepia.util.DeepEquatable;
 
 /**
  * A read only class documenting an historic event wherein resources are dropped
@@ -31,7 +30,7 @@ import edu.cwru.sepia.util.DeepEquatable;
  * @author The Condor
  * 
  */
-public class ResourceDropoffLog implements Serializable, DeepEquatable {
+public class ResourceDropoffLog implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int pickuperid;
 	private ResourceType resource;
@@ -39,8 +38,7 @@ public class ResourceDropoffLog implements Serializable, DeepEquatable {
 	private int depotid;
 	private int controller;
 
-	public ResourceDropoffLog(int gathererid, int controller,
-			int amountpickedup, ResourceType resource, int depotid) {
+	public ResourceDropoffLog(int gathererid, int controller, int amountpickedup, ResourceType resource, int depotid) {
 		pickuperid = gathererid;
 		this.resource = resource;
 		amount = amountpickedup;
@@ -76,38 +74,32 @@ public class ResourceDropoffLog implements Serializable, DeepEquatable {
 		result = prime * result + controller;
 		result = prime * result + depotid;
 		result = prime * result + pickuperid;
-		result = prime * result
-				+ ((resource == null) ? 0 : resource.hashCode());
+		result = prime * result + ((resource == null) ? 0 : resource.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if(this == obj)
 			return true;
-		if (obj == null)
+		if(obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if(getClass() != obj.getClass())
 			return false;
-		ResourceDropoffLog other = (ResourceDropoffLog) obj;
-		if (amount != other.amount)
+		ResourceDropoffLog other = (ResourceDropoffLog)obj;
+		if(amount != other.amount)
 			return false;
-		if (controller != other.controller)
+		if(controller != other.controller)
 			return false;
-		if (depotid != other.depotid)
+		if(depotid != other.depotid)
 			return false;
-		if (pickuperid != other.pickuperid)
+		if(pickuperid != other.pickuperid)
 			return false;
-		if (resource == null) {
-			if (other.resource != null)
+		if(resource == null) {
+			if(other.resource != null)
 				return false;
-		} else if (!resource.equals(other.resource))
+		} else if(!resource.equals(other.resource))
 			return false;
 		return true;
-	}
-
-	@Override
-	public boolean deepEquals(Object other) {
-		return equals(other);
 	}
 }

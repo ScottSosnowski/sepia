@@ -48,8 +48,8 @@ public class ResourceAdapter {
 		xml.setType(toXml(node.getType()));
 		xml.setInitialAmount(node.getInitialAmount());
 		xml.setAmountRemaining(node.getAmountRemaining());
-		xml.setXPosition(node.getxPosition());
-		xml.setYPosition(node.getyPosition());
+		xml.setXPosition(node.getXPosition());
+		xml.setYPosition(node.getYPosition());
 		xml.setID(node.id);
 		return xml;
 	}

@@ -13,7 +13,6 @@ import edu.cwru.sepia.action.ActionResult;
 import edu.cwru.sepia.action.ActionResultType;
 import edu.cwru.sepia.action.LocatedAction;
 import edu.cwru.sepia.action.LocatedProductionAction;
-import edu.cwru.sepia.action.ProductionAction;
 import edu.cwru.sepia.action.TargetedAction;
 import edu.cwru.sepia.environment.TurnTracker;
 import edu.cwru.sepia.model.history.History;
@@ -110,11 +109,6 @@ public abstract class AbstractDurativeModel extends AbstractModel {
 				TargetedAction aAttack = (TargetedAction)action;
 				int targetId = aAttack.getTargetId();
 				primitives = planner.planAttack(actor, state.getUnit(targetId));
-				break;
-			case COMPOUNDPRODUCE:
-				ProductionAction aProduce = (ProductionAction)action;
-				int unitTemplateId = aProduce.getTemplateId();
-				primitives = planner.planProduce(actor, (UnitTemplate)state.getTemplate(unitTemplateId));
 				break;
 			case COMPOUNDBUILD:
 				LocatedProductionAction aBuild = (LocatedProductionAction)action;

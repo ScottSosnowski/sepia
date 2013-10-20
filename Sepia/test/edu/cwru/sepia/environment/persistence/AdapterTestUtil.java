@@ -146,13 +146,6 @@ public class AdapterTestUtil {
 			a.setTargetId(r.nextInt());
 			return a;
 		}
-		case COMPOUNDPRODUCE: {
-			XmlProductionAction a = new XmlProductionAction();
-			a.setActionType(type);
-			a.setUnitId(unitId);
-			a.setTemplateId(r.nextInt());
-			return a;
-		}
 		case COMPOUNDBUILD: {
 			XmlLocatedProductionAction a = new XmlLocatedProductionAction();
 			a.setActionType(type);

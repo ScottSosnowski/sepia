@@ -22,7 +22,6 @@ package edu.cwru.sepia.model.history;
 import java.io.Serializable;
 
 import edu.cwru.sepia.model.state.ResourceNodeType;
-import edu.cwru.sepia.util.DeepEquatable;
 
 /**
  * A read only class that represents the exhaustion of a resource node
@@ -30,7 +29,7 @@ import edu.cwru.sepia.util.DeepEquatable;
  * @author The Condor
  * 
  */
-public class ResourceNodeExhaustionLog implements Serializable, DeepEquatable {
+public class ResourceNodeExhaustionLog implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private int nodeId;
 	private ResourceNodeType nodeType;
@@ -76,10 +75,5 @@ public class ResourceNodeExhaustionLog implements Serializable, DeepEquatable {
 		} else if (!nodeType.equals(other.nodeType))
 			return false;
 		return true;
-	}
-
-	@Override
-	public boolean deepEquals(Object other) {
-		return equals(other);
 	}
 }

@@ -24,8 +24,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.cwru.sepia.util.DeepEquatable;
-
 /**
  * Signifies that an implementing class provides generic details about a specific object.
  * Also provides a means for creating factory methods for specific kinds of game objects.
@@ -33,7 +31,7 @@ import edu.cwru.sepia.util.DeepEquatable;
  *
  * @param <T>
  */
-public abstract class Template<T> implements Serializable, DeepEquatable{
+public abstract class Template<T> implements Serializable {
 	/**
 	 * 
 	 */

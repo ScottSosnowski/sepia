@@ -45,7 +45,6 @@ import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Template.TemplateView;
 import edu.cwru.sepia.model.state.Unit.UnitView;
-import edu.cwru.sepia.util.DistanceMetrics;
 
 /**
  * An agent based around the concept of build orders.
@@ -324,7 +323,7 @@ public class ScriptedGoalAgent extends Agent implements Serializable {
 				//Find a unit that isn't busy and can produce it, then produce it from that one
 				for (Integer id : relstate.myUnitIDs) {
 					if (agent.busycoordinator.isIdle(id) && state.getUnit(id).getTemplateView().canProduce(template.getID())) {
-						actions.add(Action.createCompoundProduction(id, template.getID()));
+						actions.add(Action.createPrimitiveProduction(id, template.getID()));
 						agent.busycoordinator.assignBusy(id);
 						//and reduce the amount of resources you have to distribute
 						relstate.ngold-=template.getGoldCost();
@@ -375,8 +374,6 @@ public class ScriptedGoalAgent extends Agent implements Serializable {
 						
 						
 						UnitView worker = state.getUnit(id);
-						int workerx=worker.getXPosition();
-						int workery=worker.getYPosition();
 						//Find the nearest appropriate resource
 						List<Integer> resources = state.getResourceNodeIds(nodetype);
 						int closestdist=Integer.MAX_VALUE;
@@ -384,7 +381,7 @@ public class ScriptedGoalAgent extends Agent implements Serializable {
 						if (endtype == GathererTask.Gold || endtype == GathererTask.Wood) {
 							for (Integer resourceID : resources) {
 								ResourceNode.ResourceView node = state.getResourceNode(resourceID);
-								int dist = DistanceMetrics.chebyshevDistance(workerx,workery, node.getXPosition(), node.getYPosition());
+								int dist = worker.getBounds().distanceTo(node.getBounds());
 								
 								if (dist < closestdist) {
 									closest = resourceID;

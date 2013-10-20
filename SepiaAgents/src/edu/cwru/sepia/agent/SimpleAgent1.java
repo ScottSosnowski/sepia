@@ -34,7 +34,6 @@ import edu.cwru.sepia.model.history.History;
 import edu.cwru.sepia.model.state.Direction;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Unit.UnitView;
-import edu.cwru.sepia.util.DistanceMetrics;
 /**
  * A simple agent that makes all its units move in random directions if they are not attacking.
  * Will attack any enemy within sight range.
@@ -72,7 +71,7 @@ public class SimpleAgent1 extends Agent {
 				UnitView v = currentState.getUnit(enemy);
 				if (v.getTemplateView().getPlayer() == playernum)
 					continue;
-				double distance = DistanceMetrics.chebyshevDistance(u.getXPosition(), u.getYPosition(), v.getXPosition(), v.getYPosition());
+				double distance = u.getBounds().distanceTo(v.getBounds());
 				if(distance <= sightRange)
 				{
 					target = enemy;

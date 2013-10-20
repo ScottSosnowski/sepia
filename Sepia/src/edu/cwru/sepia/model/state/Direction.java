@@ -25,20 +25,21 @@ import java.util.List;
 import edu.cwru.sepia.util.Pair;
 
 /**
- * A basic enumeration of the eight directions in which a primitive action can be taken.
- * Directions are treated the same as screen coordinates: East is positive x, South is positive y.
+ * A basic enumeration of the eight directions in which a primitive action can
+ * be taken. Directions are treated the same as screen coordinates: East is
+ * positive x, South is positive y.
+ * 
  * @author Tim
- *
+ * 
  */
 public enum Direction {
 	NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST;
-	
+
 	/**
 	 * @return x component of the direction: -1, 0, 1
 	 */
 	public int xComponent() {
-		switch(this)
-		{
+		switch(this) {
 			case NORTHEAST:
 			case EAST:
 			case SOUTHEAST:
@@ -51,13 +52,12 @@ public enum Direction {
 				return 0;
 		}
 	}
-	
+
 	/**
 	 * @return y component of the direction: -1, 0, 1
 	 */
 	public int yComponent() {
-		switch(this)
-		{
+		switch(this) {
 			case NORTHWEST:
 			case NORTH:
 			case NORTHEAST:
@@ -100,65 +100,47 @@ public enum Direction {
 				break;
 			case EAST:
 				for(int j = tly; j < tly + height; j++)
-					tiles.add(new Pair<>(tlx  + width, j));
+					tiles.add(new Pair<>(tlx + width, j));
 		}
 		return tiles;
 	}
-	
+
 	/**
-	 * Get a direction for an x and y direction.
+	 * Get a direction that represents the given change in coordinates.
+	 * Secondary directions (NE, SE, NW, SW) only apply to diagonals;
+	 * any situations where the absolute values of x and y are not equal
+	 * will result in cardinal directions. 
+	 * 
+	 * Returns null for (0,0). 
 	 * @param x
 	 * @param y
 	 * @return
 	 */
-	public static Direction getDirection(int x, int y)
-	{
-		//If the design stabilizes more or this proves slow, then replace with a switch or an index of this.values[]
-		if (x > 0) //EAST
-		{
-			if (y > 0) //SOUTH
-			{
-				return SOUTHEAST;
-			}
-			else if (y<0) //NORTH
-			{
-				return NORTHEAST;
-			}
-			else //y==0
-			{
+	public static Direction getDirection(int x, int y) {
+		if(Math.abs(x) > Math.abs(y)) {//x is non-zero and > y
+			if(x > 0) {
 				return EAST;
-			}
-		}
-		else if (x<0) //WEST
-		{
-			if (y > 0) //SOUTH
-			{
-				return SOUTHWEST;
-			}
-			else if (y<0) //NORTH
-			{
-				return NORTHWEST;
-			}
-			else //y==0
-			{
+			} else {
 				return WEST;
-			}
-		}
-		else //x==0
-		{
-			if (y > 0) //SOUTH
-			{
+			} 
+		} else if(Math.abs(x) < Math.abs(y)) {//y is non-zero and > x
+			if(y > 0) {
 				return SOUTH;
-			}
-			else if (y<0) //NORTH
-			{
+			} else {
 				return NORTH;
 			}
-			else //y==0
-			{
-				throw new IllegalArgumentException("No direction for going nowhere");
+		} else {//diagonal
+			if(x < 0 && y < 0) {
+				return NORTHWEST;
+			} else if(x > 0 && y < 0) {
+				return NORTHEAST;
+			} else if(x > 0 && y > 0) {
+				return SOUTHEAST;
+			} else if(x < 0 && y > 0) {
+				return SOUTHWEST;
+			} else {
+				return null;//0,0
 			}
 		}
-			
 	}
 }

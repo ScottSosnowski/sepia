@@ -43,7 +43,6 @@ import edu.cwru.sepia.model.state.Template;
 import edu.cwru.sepia.model.state.Unit;
 import edu.cwru.sepia.model.state.UnitTemplate;
 import edu.cwru.sepia.model.state.UpgradeTemplate;
-import edu.cwru.sepia.util.DeepEquatableUtil;
 
 public class PlayerAdapterTest {
 
@@ -68,9 +67,9 @@ public class PlayerAdapterTest {
 
 		PlayerState playerFirstTry = adapter.fromXml(xml);
 		PlayerState playerSecondTry = adapter.fromXml(adapter.toXml(playerFirstTry));
-		assertTrue(
-				"The once and thrice converted don't match, therefore either toXml or fromXml is not working (or the deepEquals, but hopefully not that)",
-				DeepEquatableUtil.deepEquals(playerFirstTry, playerSecondTry));
+		assertEquals(
+				"The once and thrice converted don't match, therefore either toXml or fromXml is not working (or the equals, but hopefully not that)",
+				playerFirstTry, playerSecondTry);
 	}
 
 	public void checkEquality(XmlPlayer xml, PlayerState player) {
@@ -81,17 +80,14 @@ public class PlayerAdapterTest {
 		}
 		assertEquals("supply did not match!", xml.getSupply(), player.getCurrentSupply());
 		assertEquals("supply cap did not match!", xml.getSupplyCap(), player.getCurrentSupplyCap());
-		assertEquals("different number of upgrades", player.getUpgrades().size(), xml.getUpgrade()
-				.size());
+		assertEquals("different number of upgrades", player.getUpgrades().size(), xml.getUpgrade().size());
 		for(Integer i : xml.getUpgrade()) {
-			assertTrue("upgrade " + i + " from xml wasn't in player!", player.getUpgrades()
-					.contains(i));
+			assertTrue("upgrade " + i + " from xml wasn't in player!", player.getUpgrades().contains(i));
 		}
 		for(Integer i : player.getUpgrades()) {
 			assertTrue("upgrade " + i + " in player wasn't in xml!", xml.getUpgrade().contains(i));
 		}
-		assertEquals("Number of units did not match", xml.getUnit().size(), player.getUnits()
-				.values().size());
+		assertEquals("Number of units did not match", xml.getUnit().size(), player.getUnits().values().size());
 		for(XmlUnit xmlunit : xml.getUnit()) {
 			Unit u = player.getUnit(xmlunit.getID());
 			assertNotNull("Player did not contain unit with the right id", u);
@@ -105,9 +101,8 @@ public class PlayerAdapterTest {
 	public static void checkEquality(XmlTemplate xt, int playernum, Template<?> t) {
 		assertNotNull("xml one was null ", xt);
 		assertNotNull("real one was null ", t);
-		assertTrue("Weren't same type of template", xt instanceof XmlUnitTemplate
-				&& t instanceof UnitTemplate || xt instanceof XmlUpgradeTemplate
-				&& t instanceof UpgradeTemplate);
+		assertTrue("Weren't same type of template", xt instanceof XmlUnitTemplate && t instanceof UnitTemplate
+				|| xt instanceof XmlUpgradeTemplate && t instanceof UpgradeTemplate);
 		assertEquals(t.getID(), xt.getID());
 		assertEquals(t.getFoodCost(), xt.getFoodCost());
 		assertEquals(t.getGoldCost(), xt.getGoldCost());
@@ -124,8 +119,8 @@ public class PlayerAdapterTest {
 		}
 		assertEquals(t.getWoodCost(), xt.getWoodCost());
 		if(t instanceof UpgradeTemplate) {
-			UpgradeTemplate ut = (UpgradeTemplate) t;
-			XmlUpgradeTemplate uxt = (XmlUpgradeTemplate) xt;
+			UpgradeTemplate ut = (UpgradeTemplate)t;
+			XmlUpgradeTemplate uxt = (XmlUpgradeTemplate)xt;
 			assertEquals(ut.getPiercingAttackChange(), uxt.getPiercingAttackChange());
 			assertEquals(ut.getBasicAttackChange(), uxt.getBasicAttackChange());
 			assertEquals(ut.getArmorChange(), uxt.getArmorChange());
@@ -135,14 +130,13 @@ public class PlayerAdapterTest {
 
 			assertEquals(ut.getAffectedUnits().size(), uxt.getAffectedUnitTypes().size());
 			for(String affected : ut.getAffectedUnits()) {
-				assertTrue(
-						"xml:" + uxt.getAffectedUnitTypes() + " normal:" + ut.getAffectedUnits(),
-						uxt.getAffectedUnitTypes().contains(affected));
+				assertTrue("xml:" + uxt.getAffectedUnitTypes() + " normal:" + ut.getAffectedUnits(), uxt
+						.getAffectedUnitTypes().contains(affected));
 			}
 		}
 		if(t instanceof UnitTemplate) {
-			UnitTemplate ut = (UnitTemplate) t;
-			XmlUnitTemplate uxt = (XmlUnitTemplate) xt;
+			UnitTemplate ut = (UnitTemplate)t;
+			XmlUnitTemplate uxt = (XmlUnitTemplate)xt;
 			assertEquals(ut.canBuild(), uxt.isCanBuild());
 			assertEquals(ut.canGather(), uxt.isCanGather());
 			assertEquals(ut.canMove(), uxt.isCanMove());

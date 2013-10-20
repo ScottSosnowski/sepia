@@ -21,18 +21,59 @@ package edu.cwru.sepia.model.state;
 
 import java.io.Serializable;
 
-import edu.cwru.sepia.util.DeepEquatable;
+import edu.cwru.sepia.util.Rectangle;
 
 /**
- * The base class for anything that can be the target of an {@code edu.cwru.sepia.action.Action}.
+ * The base class for anything that can be the target of an
+ * {@code edu.cwru.sepia.action.Action}.
+ * 
  * @author Tim
- *
+ * 
  */
-public abstract class Target implements Serializable, DeepEquatable {
+public abstract class Target implements Serializable {
 	public static final long serialVersionUID = 310562678386330058l;
 	public final int id;
-	public Target(int id)
-	{
+	protected int xPosition, yPosition;
+
+	public Target(int id) {
 		this.id = id;
 	}
+
+	public int getXPosition() {
+		return xPosition;
+	}
+
+	public int getYPosition() {
+		return yPosition;
+	}
+
+	//abstract to allow subclasses to include width and height as appropriate
+	public abstract Rectangle getBounds();
+
+	public int distanceTo(Target other) {
+		return getBounds().distanceTo(other.getBounds());
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj)
+			return true;
+		if(obj == null)
+			return false;
+		if(getClass() != obj.getClass())
+			return false;
+		Target other = (Target)obj;
+		if(id != other.id)
+			return false;
+		return true;
+	}
+
 }

@@ -142,7 +142,7 @@ public class ResourceCollectionAgent extends Agent {
 					logger.fine(String.valueOf(peasanttemplate.getID()));
 				}
 				int townhallID = townhallIds.get(0);
-				builder.add(Action.createCompoundProduction(townhallID, peasanttemplateID));
+				builder.add(Action.createPrimitiveProduction(townhallID, peasanttemplateID));
 			} else {
 				int peasantId = peasantIds.get(0);
 				int townhallId = townhallIds.get(0);

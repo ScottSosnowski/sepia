@@ -78,9 +78,9 @@ public class SimpleDurativeModel extends AbstractDurativeModel {
 		if(progress + 1 < timeCost) {
 			unit.setDurativeStatus(currentAction, progress + 1);
 			return true;
+		} else {
+			completeAction(unit, queue);
 		}
-		
-		completeAction(unit, queue);
 		return cueUpNextAction(unit, queue);
 	}
 	

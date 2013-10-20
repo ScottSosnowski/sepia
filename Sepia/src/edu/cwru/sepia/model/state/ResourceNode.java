@@ -21,6 +21,8 @@ package edu.cwru.sepia.model.state;
 
 import java.io.Serializable;
 
+import edu.cwru.sepia.util.Rectangle;
+
 /**
  * A subtype of Target that contains all information of a resource.
  * 
@@ -29,14 +31,11 @@ public class ResourceNode extends Target implements Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	private ResourceNodeType type;
-	private int xPosition;
-	private int yPosition;
 	private int initialAmount;
 	private int amountRemaining;
 	private ResourceView view;
 
-	public ResourceNode(ResourceNodeType type, int xPosition, int yPosition,
-			int initialAmount, int ID) {
+	public ResourceNode(ResourceNodeType type, int xPosition, int yPosition, int initialAmount, int ID) {
 		super(ID);
 		this.type = type;
 		this.xPosition = xPosition;
@@ -48,14 +47,13 @@ public class ResourceNode extends Target implements Cloneable {
 
 	@Override
 	protected Object clone() {
-		ResourceNode copy = new ResourceNode(type, xPosition, yPosition,
-				initialAmount, id);
+		ResourceNode copy = new ResourceNode(type, xPosition, yPosition, initialAmount, id);
 		copy.amountRemaining = amountRemaining;
 		return copy;
 	}
 
 	public ResourceNode copyOf() {
-		return (ResourceNode) clone();
+		return (ResourceNode)clone();
 	}
 
 	public ResourceNodeType getType() {
@@ -63,7 +61,7 @@ public class ResourceNode extends Target implements Cloneable {
 	}
 
 	public ResourceView getView() {
-		if (view == null)
+		if(view == null)
 			view = new ResourceView(this);
 		return view;
 	}
@@ -72,18 +70,14 @@ public class ResourceNode extends Target implements Cloneable {
 		return type.getResource();
 	}
 
-	public int getxPosition() {
-		return xPosition;
-	}
-
-	public int getyPosition() {
-		return yPosition;
+	public Rectangle getBounds() {
+		return new Rectangle(xPosition, yPosition, 1, 1);
 	}
 
 	public int getID() {
 		return id;
 	}
-	
+
 	public int getInitialAmount() {
 		return initialAmount;
 	}
@@ -111,67 +105,47 @@ public class ResourceNode extends Target implements Cloneable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof ResourceNode))
+		if(!(o instanceof ResourceNode))
 			return false;
-		return ((ResourceNode) o).id == id;
+		return ((ResourceNode)o).id == id;
 	}
 
-	public static class ResourceView implements Serializable {
-		/**
-		 * 
-		 */
+	public static class ResourceView extends Target implements Serializable {
 		private static final long serialVersionUID = 1L;
-		ResourceNode node;
+		
+		private ResourceNodeType type;
+		private int amountRemaining;
+		private Rectangle bounds;
 
 		public ResourceView(ResourceNode node) {
-			this.node = node;
+			super(node.id);
+			this.xPosition = node.getXPosition();
+			this.yPosition = node.getYPosition();
+			this.type = node.getType();
+			this.amountRemaining = node.getAmountRemaining();
+			this.bounds = node.getBounds();
 		}
 
 		public int getID() {
-			return node.id;
+			return id;
 		}
 
 		public int getAmountRemaining() {
-			return node.amountRemaining;
+			return amountRemaining;
 		}
 
 		public ResourceNodeType getType() {
-			return node.type;
+			return type;
 		}
 
-		public int getXPosition() {
-			return node.xPosition;
+		public Rectangle getBounds() {
+			return bounds;
 		}
-
-		public int getYPosition() {
-			return node.yPosition;
-		}
-	}
-
-	@Override
-	public boolean deepEquals(Object other) {
-		if (this == other)
-			return true;
-		if (other == null || !this.getClass().equals(other.getClass()))
-			return false;
-		ResourceNode o = (ResourceNode) other;
-		if (this.type != o.type)
-			return false;
-		if (this.xPosition != o.xPosition)
-			return false;
-		if (this.yPosition != o.yPosition)
-			return false;
-		if (this.initialAmount != o.initialAmount)
-			return false;
-		if (this.amountRemaining != o.amountRemaining)
-			return false;
-		return true;
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "[Type: " + type + " xPosition: "
-				+ xPosition + " yPosition:" + yPosition + " amount: "
-				+ amountRemaining + "/" + initialAmount + "]";
+		return getClass().getName() + "[Type: " + type + " xPosition: " + xPosition + " yPosition:" + yPosition
+				+ " amount: " + amountRemaining + "/" + initialAmount + "]";
 	}
 }

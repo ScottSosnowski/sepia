@@ -117,7 +117,7 @@ public class SampleGatheringAgent extends Agent {
 				&& state.getResourceAmount(playernum, ResourceType.WOOD) >= template.getWoodCost()
 				&& state.getSupplyCap(playernum) - state.getSupplyAmount(playernum) >= template
 						.getFoodCost()) {
-			return Action.createCompoundProduction(townHall.getID(), template.getID());
+			return Action.createPrimitiveProduction(townHall.getID(), template.getID());
 		} else {
 			return null;
 		}

@@ -19,14 +19,13 @@
  */
 package edu.cwru.sepia.model.history;
 
-import edu.cwru.sepia.util.DeepEquatable;
 /**
  * The history specific to a player.
  * Contains the events seen by the player, as well as loggers related to the actions of the corresponding player.
  * @author The Condor
  *
  */
-public class PlayerHistory implements DeepEquatable
+public class PlayerHistory
 {
 	final int playerNumber;
 	private EventLogger eventsSeen;
@@ -97,7 +96,9 @@ public class PlayerHistory implements DeepEquatable
 	{
 		return playerNumber;
 	}
-	public boolean deepEquals(Object other) {
+	
+	@Override
+	public boolean equals(Object other) {
 		if (this == other)
 			return true;
 		if (other == null || !this.getClass().equals(other.getClass()))
@@ -115,7 +116,7 @@ public class PlayerHistory implements DeepEquatable
 			//if both aren't null, need to check deeper
 			if (!thisnull && !othernull)
 			{
-				if (!eventsSeen.deepEquals(o.eventsSeen))
+				if (!eventsSeen.equals(o.eventsSeen))
 					return false;
 			}
 		}
@@ -129,7 +130,7 @@ public class PlayerHistory implements DeepEquatable
 			//if both aren't null, need to check deeper
 			if (!thisnull && !othernull)
 			{
-				if (!commandsIssued.deepEquals(o.commandsIssued))
+				if (!commandsIssued.equals(o.commandsIssued))
 					return false;
 			}
 		}
@@ -143,7 +144,7 @@ public class PlayerHistory implements DeepEquatable
 			//if both aren't null, need to check deeper
 			if (!thisnull && !othernull)
 			{
-				if (!primitiveFeedback.deepEquals(o.primitiveFeedback))
+				if (!primitiveFeedback.equals(o.primitiveFeedback))
 					return false;
 			}
 		}
@@ -157,7 +158,7 @@ public class PlayerHistory implements DeepEquatable
 			//if both aren't null, need to check deeper
 			if (!thisnull && !othernull)
 			{
-				if (!commandFeedback.deepEquals(o.commandFeedback))
+				if (!commandFeedback.equals(o.commandFeedback))
 					return false;
 			}
 		}

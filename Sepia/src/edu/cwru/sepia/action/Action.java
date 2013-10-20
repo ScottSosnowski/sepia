@@ -22,7 +22,6 @@ package edu.cwru.sepia.action;
 import java.io.Serializable;
 
 import edu.cwru.sepia.model.state.Direction;
-import edu.cwru.sepia.util.DeepEquatable;
 /**
  * The primary class of issued commands.
  * Action is immutable and it's subtypes should be as well.
@@ -30,7 +29,7 @@ import edu.cwru.sepia.util.DeepEquatable;
  * @author The Condor
  *
  */
-public class Action implements Serializable, DeepEquatable{
+public class Action implements Serializable {
 
 	private static final long serialVersionUID = -7097546794691647171L;
 	
@@ -40,12 +39,6 @@ public class Action implements Serializable, DeepEquatable{
 	{
 		this.type = type;
 		this.unitId = unitId;
-	}
-	
-	@Override 
-	public boolean deepEquals(Object other)	{
-		//Since equals is already implemented as an equivalent, just return that
-		return this.equals(other);
 	}
 	/**
 	 * Get the id of the unit doing the action.
@@ -93,13 +86,14 @@ public class Action implements Serializable, DeepEquatable{
 		int prime = 61;
 		return prime * type.hashCode() + unitId;
 	}
+	
 	/**
 	 * This is a DirectedAction, taking as parameters the acting unit's ID and a direction to attempt to move.  When executed, it attempts to move in that direction, failing if another unit is already there.
 	 * @param unitid Acting unit's ID
 	 * @param d
 	 * @return
 	 */
-	public static Action createPrimitiveMove(int unitid, Direction d) {
+	public static DirectedAction createPrimitiveMove(int unitid, Direction d) {
 		return new DirectedAction(unitid, ActionType.PRIMITIVEMOVE, d);
 	}
 	/**
@@ -108,7 +102,7 @@ public class Action implements Serializable, DeepEquatable{
 	 * @param d
 	 * @return
 	 */
-	public static Action createPrimitiveGather(int unitid, Direction d) {
+	public static DirectedAction createPrimitiveGather(int unitid, Direction d) {
 		return new DirectedAction(unitid, ActionType.PRIMITIVEGATHER, d);
 	}
 	/**
@@ -118,25 +112,17 @@ public class Action implements Serializable, DeepEquatable{
 	 * @param y
 	 * @return
 	 */
-	public static Action createCompoundMove(int unitid, int x, int y) {
+	public static LocatedAction createCompoundMove(int unitid, int x, int y) {
 		return new LocatedAction(unitid, ActionType.COMPOUNDMOVE, x, y);
 	}
-	/**
-	 * This is a ProductionAction, taking as parameters the acting unit's ID and the ID of the template of the unit or upgrade that you are trying to build.  When executed, it does PRIMITIVEPRODUCE until the unit or upgrade is completed.
-	 * @param unitid Acting unit's ID
-	 * @param templateID
-	 * @return
-	 */
-	public static Action createCompoundProduction(int unitid, int templateID) {
-		return new ProductionAction(unitid, ActionType.COMPOUNDPRODUCE, templateID);
-	}
+	
 	/**
 	 * This is a ProductionAction, taking as parameters the acting unit's ID and the ID of the template of the unit or upgrade that you are trying to build.  When executed, it does one turn's work toward the creation of the unit or upgrade specified.  As all units and upgrades take one turn to make, this is enough to complete it.  If it is a unit being made, the new unit is put to one side after being made.
 	 * @param unitid Acting unit's ID
 	 * @param templateID
 	 * @return
 	 */
-	public static Action createPrimitiveProduction(int unitid, int templateID) {
+	public static ProductionAction createPrimitiveProduction(int unitid, int templateID) {
 		return new ProductionAction(unitid, ActionType.PRIMITIVEPRODUCE, templateID);
 	}
 	/**
@@ -147,7 +133,7 @@ public class Action implements Serializable, DeepEquatable{
 	 * @param y
 	 * @return
 	 */
-	public static Action createCompoundBuild(int unitid, int templateID, int x, int y) {
+	public static LocatedProductionAction createCompoundBuild(int unitid, int templateID, int x, int y) {
 		return new LocatedProductionAction(unitid, ActionType.COMPOUNDBUILD, templateID,x,y);
 	}
 	/**
@@ -156,7 +142,7 @@ public class Action implements Serializable, DeepEquatable{
 	 * @param templateID Template ID of the building type to build
 	 * @return
 	 */
-	public static Action createPrimitiveBuild(int unitid, int templateID) {
+	public static ProductionAction createPrimitiveBuild(int unitid, int templateID) {
 		return new ProductionAction(unitid, ActionType.PRIMITIVEBUILD, templateID);
 	}
 	/**
@@ -165,7 +151,7 @@ public class Action implements Serializable, DeepEquatable{
 	 * @param targetid
 	 * @return
 	 */
-	public static Action createCompoundAttack(int unitid, int targetid) {
+	public static TargetedAction createCompoundAttack(int unitid, int targetid) {
 		return new TargetedAction(unitid, ActionType.COMPOUNDATTACK, targetid);
 	}
 	/**
@@ -174,7 +160,7 @@ public class Action implements Serializable, DeepEquatable{
 	 * @param targetid
 	 * @return
 	 */
-	public static Action createPrimitiveAttack(int unitid, int targetid) {
+	public static TargetedAction createPrimitiveAttack(int unitid, int targetid) {
 		return new TargetedAction(unitid, ActionType.PRIMITIVEATTACK, targetid);
 	}
 	/**
@@ -183,7 +169,7 @@ public class Action implements Serializable, DeepEquatable{
 	 * @param targetid
 	 * @return
 	 */
-	public static Action createCompoundGather(int unitid, int targetid) {
+	public static TargetedAction createCompoundGather(int unitid, int targetid) {
 		return new TargetedAction(unitid, ActionType.COMPOUNDGATHER, targetid);
 	}
 	/**
@@ -192,7 +178,7 @@ public class Action implements Serializable, DeepEquatable{
 	 * @param targetid
 	 * @return
 	 */
-	public static Action createCompoundDeposit(int unitid, int targetid) {
+	public static TargetedAction createCompoundDeposit(int unitid, int targetid) {
 		return new TargetedAction(unitid, ActionType.COMPOUNDDEPOSIT, targetid);
 	}
 	/**
@@ -201,7 +187,7 @@ public class Action implements Serializable, DeepEquatable{
 	 * @param d
 	 * @return
 	 */
-	public static Action createPrimitiveDeposit(int unitid, Direction d) {
+	public static DirectedAction createPrimitiveDeposit(int unitid, Direction d) {
 		return new DirectedAction(unitid, ActionType.PRIMITIVEDEPOSIT, d);
 	}
 	/**

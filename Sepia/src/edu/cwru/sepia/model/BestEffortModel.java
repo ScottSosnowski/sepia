@@ -48,7 +48,6 @@ import edu.cwru.sepia.model.state.Unit;
 import edu.cwru.sepia.model.state.UnitTemplate;
 import edu.cwru.sepia.model.state.UpgradeTemplate;
 import edu.cwru.sepia.pathing.DurativePlanner;
-import edu.cwru.sepia.util.DistanceMetrics;
 import edu.cwru.sepia.util.SerializerUtil;
 
 /**
@@ -261,9 +260,7 @@ public class BestEffortModel extends AbstractDurativeModel {
 							}
 							Unit target = state.getUnit(((TargetedAction) a).getTargetId());
 							if(target != null) {
-								if(u.getTemplate().getRange() >= DistanceMetrics.chebyshevDistance(
-										u.getXPosition(), u.getYPosition(), target.getXPosition(),
-										target.getYPosition())) {
+								if(u.getTemplate().getRange() >= u.getBounds().distanceTo(target.getBounds())) {
 									int newdurativeamount;
 									if(a.equals(u.getActionProgressPrimitive())) {
 										newdurativeamount = u.getActionProgressAmount() + 1;

@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Contains information shared between units of the same type.
@@ -676,101 +675,5 @@ public class UnitTemplate extends Template<Unit> implements Serializable {
 			return height;
 		};
     }
-
-	@Override
-	public boolean deepEquals(Object other) {
-		// note, this method ignores the view. Hopefully that is not an issue
-
-		if(other == null || !this.getClass().equals(other.getClass()))
-			return false;
-		UnitTemplate o = (UnitTemplate) other;
-
-		// Stuff common to all templates
-		if(this.getID() != o.getID())
-			return false;
-
-		if(this.timeCost != o.timeCost)
-			return false;
-		if(this.goldCost != o.goldCost)
-			return false;
-		if(this.woodCost != o.woodCost)
-			return false;
-		if(this.foodCost != o.foodCost)
-			return false;
-		if(this.player != o.player)
-			return false;
-		if(!Objects.equals(this.buildPrerequisites, o.buildPrerequisites))
-			return false;
-		if(!Objects.equals(this.upgradePrerequisites, o.upgradePrerequisites))
-			return false;
-		{
-			boolean thisnull = this.name == null;
-			boolean othernull = o.name == null;
-			if((thisnull == othernull) == false) {
-				return false;
-			}
-			// if both aren't null, need to check deeper
-			if(!thisnull && !othernull) {
-				if(!this.name.equals(o.name))
-					return false;
-			}
-		}
-
-		// UnitTemplate specific stuff
-		if(this.baseHealth != o.baseHealth)
-			return false;
-		if(this.basicAttack != o.basicAttack)
-			return false;
-		if(this.piercingAttack != o.piercingAttack)
-			return false;
-		if(this.range != o.range)
-			return false;
-		if(this.armor != o.armor)
-			return false;
-		if(this.sightRange != o.sightRange)
-			return false;
-		if(this.canGather != o.canGather)
-			return false;
-		if(this.canBuild != o.canBuild)
-			return false;
-		if(this.canMove != o.canMove)
-			return false;
-		if(!Objects.equals(this.accepts, o.accepts))
-			return false;
-		if(this.foodProvided != o.foodProvided)
-			return false;
-		if(this.character != o.character)
-			return false;
-		if(!Objects.equals(this.capacity, o.capacity))
-			return false;
-		if(!Objects.equals(this.gatherRate, o.gatherRate))
-			return false;
-		if(!Objects.equals(this.gatherDuration, o.gatherDuration))
-			return false;
-		if(this.durationMove != o.durationMove)
-			return false;
-		if(this.durationAttack != o.durationAttack)
-			return false;
-		if(this.durationDeposit != o.durationDeposit)
-			return false;
-
-		{
-			boolean thisnull = this.producesNames == null;
-			boolean othernull = o.producesNames == null;
-			if((thisnull == othernull) == false) {
-				return false;
-			}
-			// if both aren't null, need to check deeper
-			if(!thisnull && !othernull) {
-				if(this.producesNames.size() != o.producesNames.size())
-					return false;
-				for(String s : this.producesNames) {
-					if(!o.producesNames.contains(s))
-						return false;
-				}
-			}
-		}
-		return true;
-	}
 }
 
