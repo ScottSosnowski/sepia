@@ -30,6 +30,8 @@ import org.junit.Test;
 
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.model.LessSimpleModel;
+import edu.cwru.sepia.model.Model;
+import edu.cwru.sepia.model.SimpleModel;
 import edu.cwru.sepia.model.state.ResourceNode;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
@@ -41,7 +43,7 @@ import edu.cwru.sepia.util.TypeLoader;
 
 
 public class ScriptedGoalAgentTest {
-	static LessSimpleModel model;
+	static Model model;
 	static SimplePlanner planner;
 	static List<Template<?>> templates;
 	static State state;
@@ -81,7 +83,7 @@ public class ScriptedGoalAgentTest {
 		}
 		
 		planner = new SimplePlanner(state);
-		model=new LessSimpleModel(state, null, new BaseConfiguration());
+		model=new SimpleModel(state, null, new BaseConfiguration());
 	}
 	
 	public void setUp() throws Exception {

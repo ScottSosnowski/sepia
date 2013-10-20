@@ -25,6 +25,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -107,7 +109,7 @@ public class VisualAgentTest {
 		model = new SimpleModel(state, null, new BaseConfiguration());
 		visualAgent = new VisualAgent(player1);
 		//simpleAgent = new SimpleAgent1(player2);
-		env = new Environment(new Agent[]{visualAgent,/*simpleAgent*/}, model, 123456);
+		env = new Environment(new Agent[]{visualAgent,/*simpleAgent*/}, model, 123456, new HierarchicalConfiguration());
 	}
 	@Test
 	public void display() {

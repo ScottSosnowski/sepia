@@ -35,7 +35,7 @@ public class DurativeModelEpisodicRunner extends Runner {
 		Model model = new LessSimpleModel(stateCreator.createState(), stateCreator, configuration);
 		File baseDirectory = new File("saves");
 		baseDirectory.mkdirs();
-		env = new Environment(agents ,model, seed);
+		env = new Environment(agents ,model, seed, configuration);
 		if(configuration.getBoolean("LoadAgents", false)) {
 			for(Agent agent : agents) {
 				try {
