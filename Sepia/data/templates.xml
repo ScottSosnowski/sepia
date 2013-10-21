@@ -58,7 +58,22 @@
             <woodGatherRate>0</woodGatherRate>
             <durationWoodGather>1</durationWoodGather>
             <durationGoldGather>1</durationGoldGather>
-            <durationMove>1</durationMove>
+            <durationMove>
+            		<terrain>LAND</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>WATER</terrain>
+            		<duration>0</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>SHALLOWS</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>CLIFF</terrain>
+            		<duration>0</duration>
+            </durationMove>
             <durationAttack>1</durationAttack>
             <durationDeposit>1</durationDeposit>
             <produces>Peasant</produces>
@@ -87,7 +102,22 @@
             <woodGatherRate>0</woodGatherRate>
             <durationWoodGather>1</durationWoodGather>
             <durationGoldGather>1</durationGoldGather>
-            <durationMove>1</durationMove>
+                        <durationMove>
+            		<terrain>LAND</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>WATER</terrain>
+            		<duration>0</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>SHALLOWS</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>CLIFF</terrain>
+            		<duration>0</duration>
+            </durationMove>
             <durationAttack>1</durationAttack>
             <durationDeposit>1</durationDeposit>
         </template>
@@ -115,7 +145,22 @@
             <woodGatherRate>20</woodGatherRate>
             <durationWoodGather>1</durationWoodGather>
             <durationGoldGather>1</durationGoldGather>
-            <durationMove>1</durationMove>
+                        <durationMove>
+            		<terrain>LAND</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>WATER</terrain>
+            		<duration>0</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>SHALLOWS</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>CLIFF</terrain>
+            		<duration>0</duration>
+            </durationMove>
             <durationAttack>1</durationAttack>
             <durationDeposit>1</durationDeposit>
             <produces>TownHall</produces>
@@ -147,7 +192,22 @@
             <woodGatherRate>0</woodGatherRate>
             <durationWoodGather>1</durationWoodGather>
             <durationGoldGather>1</durationGoldGather>
-            <durationMove>1</durationMove>
+                        <durationMove>
+            		<terrain>LAND</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>WATER</terrain>
+            		<duration>0</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>SHALLOWS</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>CLIFF</terrain>
+            		<duration>0</duration>
+            </durationMove>
             <durationAttack>1</durationAttack>
             <durationDeposit>1</durationDeposit>
         </template>
@@ -175,7 +235,22 @@
             <woodGatherRate>0</woodGatherRate>
             <durationWoodGather>1</durationWoodGather>
             <durationGoldGather>1</durationGoldGather>
-            <durationMove>1</durationMove>
+                        <durationMove>
+            		<terrain>LAND</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>WATER</terrain>
+            		<duration>0</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>SHALLOWS</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>CLIFF</terrain>
+            		<duration>0</duration>
+            </durationMove>
             <durationAttack>1</durationAttack>
             <durationDeposit>1</durationDeposit>
         </template>
@@ -203,7 +278,22 @@
             <woodGatherRate>0</woodGatherRate>
             <durationWoodGather>1</durationWoodGather>
             <durationGoldGather>1</durationGoldGather>
-            <durationMove>1</durationMove>
+                        <durationMove>
+            		<terrain>LAND</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>WATER</terrain>
+            		<duration>0</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>SHALLOWS</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>CLIFF</terrain>
+            		<duration>0</duration>
+            </durationMove>
             <durationAttack>1</durationAttack>
             <durationDeposit>1</durationDeposit>
             <produces>Footman</produces>
@@ -233,7 +323,22 @@
             <woodGatherRate>0</woodGatherRate>
             <durationWoodGather>1</durationWoodGather>
             <durationGoldGather>1</durationGoldGather>
-            <durationMove>1</durationMove>
+                        <durationMove>
+            		<terrain>LAND</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>WATER</terrain>
+            		<duration>0</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>SHALLOWS</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>CLIFF</terrain>
+            		<duration>0</duration>
+            </durationMove>
             <durationAttack>1</durationAttack>
             <durationDeposit>1</durationDeposit>
             <produces>WeaponOne</produces>
@@ -264,7 +369,22 @@
             <woodGatherRate>0</woodGatherRate>
             <durationWoodGather>1</durationWoodGather>
             <durationGoldGather>1</durationGoldGather>
-            <durationMove>1</durationMove>
+                        <durationMove>
+            		<terrain>LAND</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>WATER</terrain>
+            		<duration>0</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>SHALLOWS</terrain>
+            		<duration>1</duration>
+            </durationMove>
+            <durationMove>
+            		<terrain>CLIFF</terrain>
+            		<duration>0</duration>
+            </durationMove>
             <durationAttack>1</durationAttack>
             <durationDeposit>1</durationDeposit>
         </template>

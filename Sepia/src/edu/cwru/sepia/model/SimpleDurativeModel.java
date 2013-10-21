@@ -167,7 +167,8 @@ public class SimpleDurativeModel extends AbstractDurativeModel {
 		switch(action.getType()) 
 		{
 			case PRIMITIVEMOVE:
-				return template.getDurationMove();
+				Pair<Integer, Integer> destination = getDestination(action, unit.getxPosition(), unit.getyPosition());
+				return template.getDurationMove(state.terrainAt(destination.a, destination.b));
 			case PRIMITIVEGATHER:
 				ResourceType type = getTargetResourceType(unit, action);
 				if(type == null)

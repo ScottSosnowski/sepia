@@ -93,6 +93,7 @@ public abstract class AbstractDurativeModel extends AbstractModel {
 			case PRIMITIVEBUILD:
 			case PRIMITIVEPRODUCE:
 			case FAILED:
+			case FAILEDPERMANENTLY:
 				//The only primitive action needed to execute a primitive action is itself
 				primitives = new LinkedList<Action>();
 				primitives.add(action);

@@ -15,9 +15,12 @@ import edu.cwru.sepia.model.AbstractModel.FailureMode;
 import edu.cwru.sepia.model.state.PlayerState;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.StateCreator;
+import edu.cwru.sepia.model.state.Tile.TerrainType;
 import edu.cwru.sepia.model.state.Unit;
 import edu.cwru.sepia.model.state.UnitTemplate;
 import edu.cwru.sepia.model.state.State.StateBuilder;
+import edu.cwru.sepia.model.state.WorldBuilder;
+import edu.cwru.sepia.model.state.WorldImpl;
 
 public abstract class AbstractModelTestBase {
 
@@ -38,16 +41,19 @@ public abstract class AbstractModelTestBase {
 	
 	protected StateBuilder singleUnitSetup() {
 		StateBuilder builder = new StateBuilder();
-		builder.setSize(64, 64);
+		WorldBuilder worldBuilder = new WorldImpl();
+		builder.setWorldBuilder(worldBuilder);
+		
 		PlayerState ps0 = new PlayerState(0);
-		ps0.setVisibilityMatrix(new int[64][64]);
 		builder.addPlayer(ps0);
+		builder.setSize(64, 64);
 		UnitTemplate template = new UnitTemplate(0);
 		template.setBaseHealth(10);
 		template.setName("t0");
 		template.setCanBuild(true);
 		template.setCanGather(true);
 		template.setCanMove(true);
+		template.setDurationMove(1, TerrainType.LAND);
 		Unit u0 = new Unit(template, 0);
 		u0.setxPosition(8);
 		u0.setyPosition(8);

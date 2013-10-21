@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.configuration.Configuration;
@@ -188,6 +189,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 							//if it can't move, that is a problem
 							if (!u.canMove())
 							{
+								logger.log(Level.FINER, "Unit " + u + " unable to move, action "+a +" failed");
 								failed.add(aq);
 								//recalcAndStuff();//This marks a place where recalculation would be called for
 							}
@@ -201,7 +203,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 								int ydest = u.getyPosition() + d.yComponent();
 								
 								//if it is not empty there is a problem
-								if (!empty(xdest, ydest))
+								if (!accessible(u.getTemplate(), xdest, ydest))
 								{ 
 									failed.add(aq);
 									//recalcAndStuff();//This marks a place where recalculation would be called for
@@ -217,7 +219,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 									{
 										newdurativeamount = 1;
 									}
-									boolean willcompletethisturn = newdurativeamount== DurativePlanner.calculateMoveDuration(u,u.getxPosition(),u.getyPosition(), d);
+									boolean willcompletethisturn = newdurativeamount== DurativePlanner.calculateMoveDuration(u,u.getxPosition(),u.getyPosition(), d, state);
 									//if it will finish, then verify claim stuff
 									if (willcompletethisturn)
 									{
@@ -636,8 +638,9 @@ public class LessSimpleModel extends AbstractDurativeModel {
 				//only production actions that will complete should be in productionsuccessfulsofar
 				ProductionAction a = (ProductionAction)aq.peekPrimitive(); 
 				Unit u = state.getUnit(a.getUnitId());
+				Template<?> producedTemplate = state.getTemplate(a.getTemplateId());
 				//check if it is an upgrade and thus doesn't risk failure and can just succeed
-				if (state.getTemplate(a.getTemplateId()) instanceof UpgradeTemplate)
+				if (producedTemplate instanceof UpgradeTemplate)
 				{
 					successfulsofar.add(aq);
 				}
@@ -650,7 +653,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 					else
 					{
 						//find the nearest open position, which will be null if there is none
-						int[] newposition = getClosestEmptyUnclaimedPosition(u.getxPosition(), u.getyPosition(), moveclaimedspaces, productionclaimedspaces);
+						int[] newposition = getClosestEmptyUnclaimedPosition((UnitTemplate)producedTemplate, u.getxPosition(), u.getyPosition(), moveclaimedspaces, productionclaimedspaces);
 						if (newposition == null)
 						{//if no place for new unit
 							//then this fails
@@ -701,7 +704,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 						{
 							newdurativeamount = 1;
 						}
-						willcompletethisturn = newdurativeamount== DurativePlanner.calculateMoveDuration(u,u.getxPosition(),u.getyPosition(),d);
+						willcompletethisturn = newdurativeamount== DurativePlanner.calculateMoveDuration(u,u.getxPosition(),u.getyPosition(),d, state);
 						//if it will finish, then execute the atomic action
 						if (willcompletethisturn)
 						{
@@ -990,20 +993,21 @@ public class LessSimpleModel extends AbstractDurativeModel {
 	/**
 	 * More or less duplicates the functionality of getClosestPosition in state, with claims.
 	 * Also returns null instead of -1,-1 if nothing is available.
+	 * @param producedTemplate 
 	 * @param x
 	 * @param y
 	 * @param claims
 	 * @param otherclaims
 	 * @return The closest in bounds position, null if there is none.
 	 */
-	private int[] getClosestEmptyUnclaimedPosition(int x,
+	private int[] getClosestEmptyUnclaimedPosition(UnitTemplate producedTemplate, int x,
 			int y, Set<Integer> claims, Set<Integer> otherclaims) {
 		//This is fairly inefficient so that getCoordInt can be altered without fear
 		//It could be somewhat more efficient if it didn't check as many out-of-bounds positions
 		
 		//if the space in question is already open
 		Integer xy = getCoordInt(x, y);
-		if (empty(x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
+		if (accessible(producedTemplate, x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
 			return new int[]{x,y};
 		int xextent = state.getXExtent();
 		int yextent = state.getYExtent();
@@ -1018,28 +1022,28 @@ public class LessSimpleModel extends AbstractDurativeModel {
 			for (int i = 0; i<2*r;i++) {
 				y = y + 1;
 				xy = getCoordInt(x, y);
-				if (empty(x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
+				if (accessible(producedTemplate, x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
 					return new int[]{x,y};
 			}
 			//go right
 			for (int i = 0; i<2*r;i++) {
 				x = x + 1;
 				xy = getCoordInt(x, y);
-				if (empty(x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
+				if (accessible(producedTemplate, x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
 					return new int[]{x,y};
 			}
 			//go up
 			for (int i = 0; i<2*r;i++) {
 				y = y - 1;
 				xy = getCoordInt(x, y);
-				if (empty(x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
+				if (accessible(producedTemplate, x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
 					return new int[]{x,y};
 			}
 			//go left
 			for (int i = 0; i<2*r;i++) {
 				x = x - 1;
 				xy = getCoordInt(x, y);
-				if (empty(x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
+				if (accessible(producedTemplate, x,y)&&!claims.contains(xy) && !otherclaims.contains(xy))
 					return new int[]{x,y};
 			}
 		}

@@ -1,10 +1,12 @@
 package edu.cwru.sepia.model.persistence;
 
 import edu.cwru.sepia.model.persistence.generated.XmlTemplate;
+import edu.cwru.sepia.model.persistence.generated.XmlTerrainDuration;
 import edu.cwru.sepia.model.persistence.generated.XmlUnitTemplate;
 import edu.cwru.sepia.model.persistence.generated.XmlUpgradeTemplate;
 import edu.cwru.sepia.model.state.ResourceNode.Type;
 import edu.cwru.sepia.model.state.Template;
+import edu.cwru.sepia.model.state.Tile.TerrainType;
 import edu.cwru.sepia.model.state.UnitTemplate;
 import edu.cwru.sepia.model.state.UpgradeTemplate;
 
@@ -45,7 +47,15 @@ public class TemplateAdapter {
 		ut.setCanMove(xml.isCanMove());
 		ut.setDurationAttack(xml.getDurationAttack());
 		ut.setDurationDeposit(xml.getDurationDeposit());
-		ut.setDurationMove(xml.getDurationMove());
+		for (TerrainType terrainType : TerrainType.values()) {
+			ut.setDurationMove(UnitTemplate.NO_DURATION, terrainType);
+		}
+		for (XmlTerrainDuration durationMoveXml : xml.getDurationMove()) {
+			for (String terrainString : durationMoveXml.getTerrain()) {
+				TerrainType terrainType = TerrainType.valueOf(terrainString);
+				ut.setDurationMove(durationMoveXml.getDuration(), terrainType);
+			}
+		}
 		ut.setDurationGatherGold(xml.getDurationGatherGold());
 		ut.setDurationGatherWood(xml.getDurationGatherWood());
 		ut.setPlayer(player);
@@ -125,7 +135,12 @@ public class TemplateAdapter {
 		xml.setWoodGatherRate(ut.getGatherRate(Type.TREE));
 		xml.setDurationAttack(ut.getDurationAttack());
 		xml.setDurationDeposit(ut.getDurationDeposit());
-		xml.setDurationMove(ut.getDurationMove());
+		for (TerrainType terrainType : TerrainType.values()) {
+			XmlTerrainDuration xmlTerrainDuration = new XmlTerrainDuration();
+			xmlTerrainDuration.getTerrain().add(terrainType.toString());
+			xmlTerrainDuration.setDuration(ut.getDurationMove(terrainType));
+			xml.getDurationMove().add(xmlTerrainDuration);
+		}
 		xml.setDurationGatherGold(ut.getDurationGatherGold());
 		xml.setDurationGatherWood(ut.getDurationGatherWood());
 		for (Integer i : ut.getProduces())

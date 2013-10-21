@@ -217,7 +217,7 @@ public abstract class AbstractModel implements Model {
 	protected FailureMode doPrimitiveMove(Action a, Unit u, int xPrime, int yPrime) {
 		if (!(a instanceof DirectedAction))
 			return FailureMode.WRONG_ACTION_TYPE;
-		if(state.inBounds(xPrime, yPrime) && u.canMove() && empty(xPrime,yPrime)) {
+		if(accessible(u.getTemplate(), xPrime, yPrime)) {
 			if (logger.isLoggable(Level.FINE))
 				logger.fine("Moving unit " + u.id);
 			state.moveUnit(u, ((DirectedAction)a).getDirection());
@@ -439,8 +439,8 @@ public abstract class AbstractModel implements Model {
 		return damage;
 	}
 
-	protected boolean empty(int x, int y) {
-		return state.unitAt(x, y) == null && state.resourceAt(x, y) == null;
+	protected boolean accessible(UnitTemplate unitTemplate, int x, int y) {
+		return state.inBounds(x, y) && unitTemplate.canMove() && unitTemplate.getDurationMove(state.terrainAt(x, y)) > 0 && state.unitAt(x, y) == null && state.resourceAt(x, y) == null;
 	}
 
 	protected static enum FailureMode {

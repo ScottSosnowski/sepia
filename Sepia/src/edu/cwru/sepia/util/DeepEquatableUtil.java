@@ -144,6 +144,37 @@ public class DeepEquatableUtil {
 	 * @param obj2
 	 * @return True if both arguments are null or if both are non-null, of the same size, and objects with the same indices are deepEquals to eachother.  False otherwise.
 	 */
+	public static <T> boolean deepEqualsIntMap(Map<T,Integer> obj1, Map<T,Integer> obj2)
+	{
+		boolean obj1null = obj1 == null;
+		boolean obj2null = obj2 == null;
+		if ((obj1null == obj2null)==false)
+		{
+			return false;
+		}
+		//if both aren't null, need to check deeper
+		if (!obj1null && !obj2null)
+		{
+			if (obj1.size() != obj2.size())
+				return false;
+			for (T index : obj1.keySet())
+			{
+				Integer obj1inner = obj1.get(index);
+				Integer obj2inner = obj2.get(index);
+				if (((obj1inner == null) != (obj2inner == null)) || (obj1inner != null && obj1inner.equals(obj2inner)))
+					return false;
+			}
+		}
+		
+		return true;
+	}
+	/**
+	 * A method to compare the deep equality of two Maps. <BR>
+	 * Suffixed by Map for consistancy with others and extensibility.
+	 * @param obj1
+	 * @param obj2
+	 * @return True if both arguments are null or if both are non-null, of the same size, and objects with the same indices are deepEquals to eachother.  False otherwise.
+	 */
 	public static <T> boolean deepEqualsMap(Map<T,? extends DeepEquatable> obj1, Map<T,? extends DeepEquatable> obj2)
 	{
 		boolean obj1null = obj1 == null;
@@ -229,6 +260,61 @@ public class DeepEquatableUtil {
 			for (Integer i : obj1)
 			{
 				if (!obj2.contains(i))
+					return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * @param deepEquatable1
+	 * @param deepEquatable2
+	 */
+	public static boolean deepEquals(DeepEquatable[][] deepEquatable1, DeepEquatable[][] deepEquatable2) {
+		boolean thisnull = deepEquatable1 == null;
+		boolean othernull = deepEquatable2 == null;
+		if ((thisnull == othernull)==false)
+		{
+			return false;
+		}
+		//if both aren't null, need to check deeper
+		if (!thisnull && !othernull)
+		{
+			if (deepEquatable1.length != deepEquatable2.length)
+				return false;
+			for (int i = 0; i<deepEquatable1.length;i++)
+			{
+				DeepEquatable[] thisinner=deepEquatable1[i];
+				DeepEquatable[] otherinner=deepEquatable2[i];
+				if (!deepEquals(thisinner,otherinner))
+					return false;
+			}
+		}
+		return true;
+	}
+	/**
+	 * @param deepEquatable1
+	 * @param deepEquatable2
+	 * @return
+	 */
+	public static boolean deepEquals(DeepEquatable[] deepEquatable1,
+			DeepEquatable[] deepEquatable2) {
+		boolean thisnull = deepEquatable1 == null;
+		boolean othernull = deepEquatable2 == null;
+		if ((thisnull == othernull)==false)
+		{
+			return false;
+		}
+		//if both aren't null, need to check deeper
+		if (!thisnull && !othernull)
+		{
+			if (deepEquatable1.length != deepEquatable2.length)
+				return false;
+			for (int i = 0; i<deepEquatable1.length;i++)
+			{
+				DeepEquatable thisinner=deepEquatable1[i];
+				DeepEquatable otherinner=deepEquatable2[i];
+				if (!deepEquals(thisinner,otherinner))
 					return false;
 			}
 		}

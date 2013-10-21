@@ -165,24 +165,18 @@ public class BasicGatheringCoordinator implements Serializable {
 			if (worker.getCargoAmount()>0)
 			{
 				//if it is carrying a resource (even the wrong one) return it
-				Action returnAction = assignWorkerToReturn(state, worker);
-				if (returnAction != null) {
-					actions.add(returnAction);
-				}
+				actions.add(assignWorkerToReturn(state, worker));
 			}
 			else
 			{
 				//if it is not carrying a resource, gather
-				Action gatherAction = assignWorkerToGather(state, worker, assignedResourceNodeType);
-				if (gatherAction != null) {
-					actions.add(gatherAction);
-				}
+				actions.add(assignWorkerToGather(state, worker, assignedResourceNodeType));
 			}
 		}
 	}
 	
 	private Action assignWorkerToGather(StateView state, UnitView worker, ResourceNode.Type resourceNodeType) {
-		Action gatherAction = null;
+		Action gatherAction = Action.createPermanentFail(worker.getID());
 		//find the nearest appropriate resource and tell it to gather from that node
 		int closestDist = Integer.MAX_VALUE;
 		int closestID = Integer.MIN_VALUE;
@@ -207,7 +201,7 @@ public class BasicGatheringCoordinator implements Serializable {
 	 * @return
 	 */
 	private Action assignWorkerToReturn(StateView state, UnitView worker) {
-		Action returnAction = null;
+		Action returnAction = Action.createPermanentFail(worker.getID());
 		if (worker.getCargoAmount() > 0) {
 			//find the nearest base and tell it to go there
 			int closestID = Integer.MIN_VALUE;

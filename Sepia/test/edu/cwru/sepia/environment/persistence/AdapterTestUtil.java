@@ -49,6 +49,7 @@ import edu.cwru.sepia.model.persistence.generated.XmlProductionAction;
 import edu.cwru.sepia.model.persistence.generated.XmlResourceQuantity;
 import edu.cwru.sepia.model.persistence.generated.XmlTargetedAction;
 import edu.cwru.sepia.model.persistence.generated.XmlTemplate;
+import edu.cwru.sepia.model.persistence.generated.XmlTerrainDuration;
 import edu.cwru.sepia.model.persistence.generated.XmlUnit;
 import edu.cwru.sepia.model.persistence.generated.XmlUnitTemplate;
 import edu.cwru.sepia.model.persistence.generated.XmlUpgradeTemplate;
@@ -57,6 +58,7 @@ import edu.cwru.sepia.model.state.ResourceNode;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.Template;
+import edu.cwru.sepia.model.state.Tile.TerrainType;
 import edu.cwru.sepia.util.TypeLoader;
 
 public class AdapterTestUtil {
@@ -285,7 +287,12 @@ public class AdapterTestUtil {
 		xml.setSightRange(r.nextInt());
 		xml.setWoodGatherRate(r.nextInt());
 		xml.setDurationAttack(r.nextInt());
-		xml.setDurationMove(r.nextInt());
+		for (TerrainType terrainType : TerrainType.values()) {
+			XmlTerrainDuration terrainDuration = new XmlTerrainDuration();
+			terrainDuration.setDuration(r.nextInt());
+			terrainDuration.getTerrain().add(terrainType.toString());
+			xml.getDurationMove().add(terrainDuration);
+		}
 		xml.setDurationDeposit(r.nextInt());
 		xml.setDurationGatherGold(r.nextInt());
 		xml.setDurationGatherWood(r.nextInt());

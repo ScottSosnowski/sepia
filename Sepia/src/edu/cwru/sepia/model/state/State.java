@@ -35,6 +35,7 @@ import java.util.Set;
 import edu.cwru.sepia.agent.Agent;
 import edu.cwru.sepia.model.state.ResourceNode.ResourceView;
 import edu.cwru.sepia.model.state.Template.TemplateView;
+import edu.cwru.sepia.model.state.Tile.TerrainType;
 import edu.cwru.sepia.model.state.Unit.UnitView;
 import edu.cwru.sepia.model.state.UnitTemplate.UnitTemplateView;
 import edu.cwru.sepia.model.state.UpgradeTemplate.UpgradeTemplateView;
@@ -95,8 +96,9 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 	private boolean hasFogOfWar;
 	private List<ResourceNode> resourceNodes;
 	private int turnNumber;
-	private int xextent;
-	private int yextent;
+	//The builder for the world, which mutates it
+	private WorldBuilder worldBuilder;
+	private World world;
 	@SuppressWarnings("rawtypes")
 	private Map<Integer,Template> allTemplates;
 	private Map<Integer,PlayerState> playerStates;
@@ -106,6 +108,10 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 	
 	@SuppressWarnings("rawtypes")
 	public State() {
+		//TODO: constructor injection of world?
+		WorldImpl worldAndBuilder = new WorldImpl();
+		world = worldAndBuilder;
+		worldBuilder = worldAndBuilder;
 		nextIDTarget=0;
 		nextIDTemplate=0;
 		allUnits = new HashMap<Integer,Unit>();
@@ -157,7 +163,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			return false;
 		if (this.nextIDTemplate != o.nextIDTemplate)
 			return false;
-		if (this.xextent != o.xextent || this.yextent != o.yextent)
+		if (!DeepEquatableUtil.deepEquals(this.world, o.world))
 			return false;
 		if (this.turnNumber != o.turnNumber)
 			return false;
@@ -374,7 +380,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 	
 	/**
 	 * Move a unit in a direction.
-	 * Does not perform collision checks of any kind
+	 * Does not perform collision checks of any kind, including impassible terrain
 	 * @param u
 	 * @param direction
 	 */
@@ -821,10 +827,10 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 	 */
 	public String getTextString() {
 		StringBuilder str = new StringBuilder();
-		for (int i = 0; i<xextent;i++)
+		for (int i = 0; i<world.getXExtent(); i++)
 		{
 			str.append('|');
-			for (int j = 0; j < yextent; j++)
+			for (int j = 0; j < world.getYExtent(); j++)
 			{
 				Unit u = unitAt(i,j);
 				if (u!=null)
@@ -862,7 +868,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		//if the space in question is already open
 		if (positionAvailable(x,y))
 			return new int[]{x,y};
-		int maxradius = Math.max(Math.max(x, xextent-x), Math.max(y,yextent-y));
+		int maxradius = Math.max(Math.max(x, world.getXExtent()-x), Math.max(y,world.getYExtent()-y));
 		for (int r = 1; r<=maxradius;r++)
 		{
 			//go up/left diagonal
@@ -902,25 +908,50 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		return inBounds(x,y) && unitAt(x,y)==null && resourceAt(x,y)==null;
 		
 	}
-		
+	public boolean positionPassible(Unit u, int x, int y) {
+		return u.getTemplate().getDurationMove(terrainAt(x,y)) > 0;
+	}	
 	public boolean inBounds(int x, int y)
 	{
-		return x>=0 && y>=0 && x<xextent && y<yextent; 
+		return world.inBounds(x,y); 
 	}
 
 	public int getXExtent() {
-		return xextent;
+		return world.getXExtent();
 	}
 	public int getYExtent() {
-		return yextent;
+		return world.getYExtent();
 	}
 	
 	public void setSize(int x, int y) {
-		xextent = x;
-		yextent = y;
-		recalculateVision();
+		int oldX = world.getXExtent();
+		int oldY = world.getYExtent();
+		if (x != oldX || y != oldY) {
+			worldBuilder.setXExtent(x);
+			worldBuilder.setYExtent(y);
+			recalculateVision();
+		}
+	}
+
+	public TerrainType terrainAt(int x, int y) {
+		return world.getTerrainType(x, y);
 	}
 	
+	/**
+	 * Get the object containing all of the physical attributes of the world
+	 * @return the {@link World} for this state
+	 */
+	public World getWorld() {
+		return world;
+	}
+	
+	/**
+	 * Get the object that allows editing of the physical attributes of the world
+	 * @return the {@link WorldBuilder} for this state
+	 */
+	public WorldBuilder getWorldBuilder() {
+		return worldBuilder;
+	}
 	
 	@SuppressWarnings("rawtypes")
 	/**
@@ -1008,6 +1039,11 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		public boolean closed() {
 			return built;
 		}
+		
+		public void setWorldBuilder(WorldBuilder worldBuilder) {
+			state.worldBuilder = worldBuilder;
+			state.world = worldBuilder.getWorld();
+		}
 	}
 	public StateView getView(int player) {
 		//StateView toreturn = views.get(player);
@@ -1067,7 +1103,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			{
 				//State is partially hidden, build as much as possible
 				StateBuilder stateBuilder = new StateBuilder();
-				stateBuilder.setSize(state.xextent, state.yextent);
+				stateBuilder.setWorldBuilder(state.worldBuilder.clone());
 				for (ResourceView rv : getAllResourceNodes()) {
 					stateBuilder.addResource(new ResourceNode(rv.getType(), rv.getYPosition(), rv.getYPosition(), rv.getAmountRemaining(), rv.getID()));
 				}
@@ -1523,13 +1559,14 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			return resource==null?null:resource.id;
 		}
 		
+		/**
+		 * Get the terrain at a position
+		 * @param x
+		 * @param y
+		 * @return
+		 */
+		public TerrainType terrainAt(int x, int y) {
+			return state.terrainAt(x, y);
+		}
 	}
-	
-	
-	
-	
-
-
-	
-	
 }

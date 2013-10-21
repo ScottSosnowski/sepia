@@ -30,7 +30,7 @@ import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.util.DeepEquatable;
 import edu.cwru.sepia.util.DeepEquatableUtil;
 /**
- * Logs the s for a single player.
+ * Logs the actions for a single player.
  * @author The Condor
  *
  */
@@ -43,7 +43,7 @@ public class ActionLogger implements Serializable, DeepEquatable {
 		actions = new ArrayList<Map<Integer, Action>>();
 	}
 	/**
-	 * Insert an action , overwriting any Action for the same unit in the same round.
+	 * Insert an action, overwriting any Action for the same unit in the same round.
 	 * <br>
 	 * @param stepNumber
 	 * @param action
@@ -52,7 +52,7 @@ public class ActionLogger implements Serializable, DeepEquatable {
 		addAction(stepNumber,action.getUnitId(),action);
 	}
 	/**
-	 * Insert an action , overwriting any Action for the same unit id in the same round.
+	 * Insert an action, overwriting any Action for the same unit id in the same round.
 	 * @param stepNumber
 	 * @param unitID
 	 * @param action
