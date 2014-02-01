@@ -1,7 +1,7 @@
 <Configuration>
 	<Map>data/8pffa.xml</Map>
 	<agents>
-		<ParticipatingAgents>agent0, agent1, agent2, agent3, agent4, agent5, agent6, agent7, observer</ParticipatingAgents>
+		<ParticipatingAgents>agent0, agent1,observer</ParticipatingAgents>
 		<agent0>
 			<ClassName>edu.cwru.sepia.agent.CombatAgent</ClassName>
 			<PlayerId>0</PlayerId>
