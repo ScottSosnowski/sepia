@@ -39,6 +39,7 @@ import edu.cwru.sepia.model.persistence.StateAdapter;
 import edu.cwru.sepia.model.persistence.generated.XmlHistory;
 import edu.cwru.sepia.model.persistence.generated.XmlState;
 import edu.cwru.sepia.model.state.State;
+import edu.cwru.sepia.model.state.XmlStateCreator;
 
 
 /**
@@ -78,14 +79,25 @@ public final class SerializerUtil {
 	
 	public static State loadState(String filename) {
 		State state = null;
-		try {
-			ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename));
-			state = (State) inputStream.readObject();
-			inputStream.close();
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Unable to read state from " + filename + ".", e);
-		} catch (ClassNotFoundException e) {
-			logger.log(Level.SEVERE, "Unable to locate class definition.", e);
+		if (filename.contains(".map")) {
+			try {
+				ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename));
+				state = (State) inputStream.readObject();
+				inputStream.close();
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, "Unable to read state from " + filename + ".", e);
+			} catch (ClassNotFoundException e) {
+				logger.log(Level.SEVERE, "Unable to locate class definition.", e);
+			}
+		} else {
+			try {
+				
+				JAXBContext context = JAXBContext.newInstance(XmlState.class);
+				XmlState xmlState = (XmlState)context.createUnmarshaller().unmarshal(new File(filename));
+				state = new XmlStateCreator(xmlState).createState();
+			} catch (JAXBException e) {
+				logger.log(Level.SEVERE, "Unable to convert state in "+new File(filename).getAbsolutePath()+" into XML format.", e);
+			}
 		}
 		return state;
 	}
