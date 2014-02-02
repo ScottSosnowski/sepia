@@ -21,8 +21,10 @@ package edu.cwru.sepia.model;
 
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +39,7 @@ import edu.cwru.sepia.agent.Agent;
 import edu.cwru.sepia.pathing.DurativePlanner;
 import edu.cwru.sepia.model.history.History;
 import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.State.StateBuilder;
@@ -47,13 +50,13 @@ import edu.cwru.sepia.model.state.Direction;
 import edu.cwru.sepia.util.DistanceMetrics;
 
 /**
- * A test of the planner
- * @author The Condor
+ * A test of the planner.
  *
  */
 public class PlannerTest {
 	private final static int TEST_PLAYER = 0;
 	private final static int TEST_UNIT_ID = 1;
+	private final static String TEST_TEMPLATE_NAME = "UnitName";
 	private final static int TEST_TEMPLATE_ID = 1;
 	//Give everything a sizeable duration so that the planner understands durations
 	private final static int DURATION = 7;
@@ -81,16 +84,19 @@ public class PlannerTest {
 		stateBuilder.setSize(size, size);
 		
 		UnitTemplate unitTemplate = new UnitTemplate(TEST_TEMPLATE_ID);
+		unitTemplate.setName(TEST_TEMPLATE_NAME);
 		unitTemplate.setDurationAttack(DURATION);
 		for (TerrainType terrainType : TerrainType.values()) {
 			unitTemplate.setDurationMove(DURATION, terrainType);
 		}
-		unitTemplate.setDurationGatherWood(DURATION);
-		unitTemplate.setDurationGatherGold(DURATION);
+		Map<ResourceType, Integer> gatherDurations= new HashMap<ResourceType, Integer>();
+		gatherDurations.put(new ResourceType("GOLD"), DURATION);
+		
+		unitTemplate.setGatherDuration(gatherDurations);
 		unitTemplate.setDurationDeposit(DURATION);
 		unitTemplate.setCharacter('*');
 		unitTemplate.setTimeCost(DURATION);
-		unitTemplate.addProductionItem(TEST_TEMPLATE_ID);//It can make more of itself
+		unitTemplate.addProductionItem(TEST_TEMPLATE_NAME);//It can make more of itself
 		stateBuilder.addTemplate(unitTemplate);
 		Unit unit = new Unit(unitTemplate, TEST_UNIT_ID);
 		stateBuilder.addUnit(unit, unitX, unitY);
@@ -132,8 +138,8 @@ public class PlannerTest {
 			case PRIMITIVEMOVE:
 			{	
 				Direction moveDirection = ((DirectedAction)action).getDirection();
-				assertTrue("Tried to move into an occupied area (moving "+moveDirection+" from " + testUnit.getxPosition()+","+testUnit.getyPosition(), state.positionAvailable(testUnit.getxPosition()+moveDirection.xComponent(), testUnit.getyPosition()+moveDirection.yComponent()));
-				if (ongoingActionSteps >= calculateActionDuration(testUnit, testUnit.getxPosition(), testUnit.getyPosition(), moveDirection, state)) {
+				assertTrue("Tried to move into an occupied area (moving "+moveDirection+" from " + testUnit.getXPosition()+","+testUnit.getYPosition(), state.positionAvailable(testUnit.getXPosition()+moveDirection.xComponent(), testUnit.getYPosition()+moveDirection.yComponent()));
+				if (ongoingActionSteps >= calculateActionDuration(testUnit, testUnit.getXPosition(), testUnit.getYPosition(), moveDirection, state)) {
 					ongoingActionSteps = 0;
 					state.moveUnit(testUnit, moveDirection);
 					lastAction = null;
@@ -144,21 +150,12 @@ public class PlannerTest {
 			case PRIMITIVEGATHER:
 			{
 				Direction gatherDirection = ((DirectedAction)action).getDirection();
-				assertTrue("Tried to gather from nothing", state.resourceAt(testUnit.getxPosition()+gatherDirection.xComponent(), testUnit.getyPosition()+gatherDirection.yComponent()) != null);
-				assertEquals("Tried to gather not from target X", testUnit.getxPosition()+gatherDirection.xComponent());
-				assertEquals("Tried to gather not from target Y", testUnit.getyPosition()+gatherDirection.yComponent());
-				ResourceType targetedType = ResourceNode.Type.getResourceType(state.resourceAt(testUnit.getxPosition()+gatherDirection.xComponent(), testUnit.getyPosition()+gatherDirection.yComponent()).getType());
+				assertTrue("Tried to gather from nothing", state.resourceAt(testUnit.getXPosition()+gatherDirection.xComponent(), testUnit.getYPosition()+gatherDirection.yComponent()) != null);
+				assertEquals("Tried to gather not from target X", testUnit.getXPosition()+gatherDirection.xComponent());
+				assertEquals("Tried to gather not from target Y", testUnit.getYPosition()+gatherDirection.yComponent());
+				ResourceType targetedType = state.resourceAt(testUnit.getXPosition()+gatherDirection.xComponent(), testUnit.getYPosition()+gatherDirection.yComponent()).getType().getResource();
 				int duration;
-				switch (targetedType) {
-				case GOLD:
-					duration = testUnit.getTemplate().getDurationGatherGold();
-					break;
-				case WOOD:
-					duration = testUnit.getTemplate().getDurationGatherWood();
-					break;
-				default:
-					throw new RuntimeException("Need to add new type to enum: "+targetedType);
-				}
+				duration = testUnit.getTemplate().getGatherDuration(targetedType);
 				if (ongoingActionSteps >= duration) {
 					ongoingActionSteps = 0;
 					finishedNonMove = true;
@@ -168,11 +165,11 @@ public class PlannerTest {
 			case PRIMITIVEDEPOSIT:
 			{
 				Direction depositDirection = ((DirectedAction)action).getDirection();
-				assertTrue("Tried to deposit at nothing", state.unitAt(testUnit.getxPosition()+depositDirection.xComponent(), testUnit.getyPosition()+depositDirection.yComponent()) != null);
-				assertEquals("Tried to gather not from target X", testUnit.getxPosition()+depositDirection.xComponent());
-				assertEquals("Tried to gather not from target Y", testUnit.getyPosition()+depositDirection.yComponent());
-				UnitTemplate depositeeTemplate = state.unitAt(testUnit.getxPosition()+depositDirection.xComponent(), testUnit.getyPosition()+depositDirection.yComponent()).getTemplate();
-				assertTrue("Tried to deposit in non-depot", depositeeTemplate.canAcceptGold() || depositeeTemplate.canAcceptWood());
+				assertTrue("Tried to deposit at nothing", state.unitAt(testUnit.getXPosition()+depositDirection.xComponent(), testUnit.getYPosition()+depositDirection.yComponent()) != null);
+				assertEquals("Tried to gather not from target X", testUnit.getXPosition()+depositDirection.xComponent());
+				assertEquals("Tried to gather not from target Y", testUnit.getYPosition()+depositDirection.yComponent());
+				UnitTemplate depositeeTemplate = state.unitAt(testUnit.getXPosition()+depositDirection.xComponent(), testUnit.getYPosition()+depositDirection.yComponent()).getTemplate();
+				assertTrue("Tried to deposit in non-depot", depositeeTemplate.canAccept(testUnit.getCurrentCargoType()));
 				int duration = testUnit.getTemplate().getDurationDeposit();
 				if (ongoingActionSteps >= duration) {
 					ongoingActionSteps = 0;
@@ -216,7 +213,7 @@ public class PlannerTest {
 		}
 		showVisualization(state);
 		assertTrue("Ended with ongoing actions", ongoingActionSteps == 0);
-		assertTrue("Ended in the wrong place. Expected "+goalX + "," + goalY +" but unit ended at "+testUnit.getxPosition()+","+testUnit.getyPosition(), goalX == testUnit.getxPosition() && goalY == testUnit.getyPosition());
+		assertTrue("Ended in the wrong place. Expected "+goalX + "," + goalY +" but unit ended at "+testUnit.getXPosition()+","+testUnit.getYPosition(), goalX == testUnit.getXPosition() && goalY == testUnit.getYPosition());
 		
 	}
 	/**

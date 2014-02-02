@@ -34,7 +34,6 @@ import edu.cwru.sepia.action.ActionResultType;
 import edu.cwru.sepia.action.ActionType;
 import edu.cwru.sepia.action.LocatedAction;
 import edu.cwru.sepia.action.LocatedProductionAction;
-import edu.cwru.sepia.action.ProductionAction;
 import edu.cwru.sepia.action.TargetedAction;
 import edu.cwru.sepia.environment.TurnTracker;
 import edu.cwru.sepia.model.history.History;
@@ -134,11 +133,6 @@ public class SimpleModel extends AbstractModel {
 				int targetId = aAttack.getTargetId();
 				primitives = planner.planAttack(actor, state.getUnit(targetId));
 				break;
-			case COMPOUNDPRODUCE:
-				ProductionAction aProduce = (ProductionAction)action;
-				int unitTemplateId = aProduce.getTemplateId();
-				primitives = planner.planProduce(actor, (UnitTemplate)state.getTemplate(unitTemplateId));
-				break;
 			case COMPOUNDBUILD:
 				LocatedProductionAction aBuild = (LocatedProductionAction)action;
 				int buildTemplateId = aBuild.getTemplateId();
@@ -187,10 +181,10 @@ public class SimpleModel extends AbstractModel {
 			if (u == null)
 				continue;
 			//Set the tasks and grab the common features
-			int x = u.getxPosition();
-			int y = u.getyPosition();
+			int x = u.getXPosition();
+			int y = u.getYPosition();
 			
-			Pair<Integer,Integer> destination = getDestination(a, x, y);
+			Pair<Integer,Integer> destination = getDestination(a, u);
 			int xPrime = destination.a;
 			int yPrime = destination.b;
 
@@ -207,7 +201,7 @@ public class SimpleModel extends AbstractModel {
 			do {
 				timesTried++;
 				
-				result = doAction(a, u, x, y, xPrime, yPrime);
+				result = doAction(a, u);
 				
 				if (result == FailureMode.SUCCESS) {
 					if (!queuedAct.hasNext()) {

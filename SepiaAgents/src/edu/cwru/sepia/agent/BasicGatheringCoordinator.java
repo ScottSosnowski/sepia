@@ -26,15 +26,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Random;
 
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.agent.ScriptedGoalAgent.RelevantStateView;
-import edu.cwru.sepia.model.state.ResourceNode;
-import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.ResourceNode.ResourceView;
+import edu.cwru.sepia.model.state.ResourceNodeType;
+import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Unit.UnitView;
 import edu.cwru.sepia.util.DistanceMetrics;
@@ -150,13 +150,13 @@ public class BasicGatheringCoordinator implements Serializable {
 			actions.add(indact.getValue());
 		}
 		//for each miner/lumberjack
-		continueWork(state, actions, miners, ResourceNode.Type.GOLD_MINE);
-		continueWork(state, actions, lumberjacks, ResourceNode.Type.TREE);
+		continueWork(state, actions, miners, new ResourceNodeType("GOLD_MINE", new ResourceType("GOLD")));
+		continueWork(state, actions, lumberjacks, new ResourceNodeType("TREE", new ResourceType("WOOD")));
 	}
 	/**
 	 * Ensures that resource-gathering workers continue doing so for both gather and deposit phases
 	 */
-	private void continueWork(StateView state, Collection<Action> actions, List<Integer> workerIds, ResourceNode.Type assignedResourceNodeType) {
+	private void continueWork(StateView state, Collection<Action> actions, List<Integer> workerIds, ResourceNodeType assignedResourceNodeType) {
 		for (Integer workerID : workerIds)
 		{
 			UnitView worker = state.getUnit(workerID);
@@ -175,12 +175,12 @@ public class BasicGatheringCoordinator implements Serializable {
 		}
 	}
 	
-	private Action assignWorkerToGather(StateView state, UnitView worker, ResourceNode.Type resourceNodeType) {
+	private Action assignWorkerToGather(StateView state, UnitView worker, ResourceNodeType resourceNodeType) {
 		Action gatherAction = Action.createPermanentFail(worker.getID());
 		//find the nearest appropriate resource and tell it to gather from that node
 		int closestDist = Integer.MAX_VALUE;
 		int closestID = Integer.MIN_VALUE;
-		for (Integer resourceNodeID :state.getResourceNodeIds(resourceNodeType)) {
+		for (Integer resourceNodeID :state.getResourceNodeIds(resourceNodeType.getName())) {
 			ResourceView resourceNode = state.getResourceNode(resourceNodeID);
 			int dist = DistanceMetrics.chebyshevDistance(worker.getXPosition(),worker.getYPosition(), resourceNode.getXPosition(), resourceNode.getYPosition());
 			if (dist < closestDist) {
@@ -210,7 +210,7 @@ public class BasicGatheringCoordinator implements Serializable {
 			{
 				logger.fine("Evaluating Unit with id "+potentialStoragePitID);
 				UnitView potentialStoragePit = state.getUnit(potentialStoragePitID);
-				if (worker.getCargoType() == ResourceType.GOLD && potentialStoragePit.getTemplateView().canAcceptGold() || worker.getCargoType() == ResourceType.WOOD && potentialStoragePit.getTemplateView().canAcceptWood())
+				if (potentialStoragePit.getTemplateView().canAccept(worker.getCargoType().getName()))
 				{
 					int dist = DistanceMetrics.chebyshevDistance(worker.getXPosition(),worker.getYPosition(), potentialStoragePit.getXPosition(), potentialStoragePit.getYPosition());
 					if (dist < closestDist)
@@ -226,5 +226,4 @@ public class BasicGatheringCoordinator implements Serializable {
 		}
 		return returnAction;
 	}
-	
 }

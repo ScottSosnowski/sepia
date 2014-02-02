@@ -21,13 +21,11 @@ package edu.cwru.sepia.model.history;
 
 import java.io.Serializable;
 
-import edu.cwru.sepia.util.DeepEquatable;
-
 /**
  * A read only class that represents the birth of something
  * 
  */
-public class BirthLog implements Serializable, DeepEquatable {
+public class BirthLog implements Serializable {
 	private static final long	serialVersionUID	= 1L;
 	private int unitid;
 	private int player;
@@ -66,8 +64,5 @@ public class BirthLog implements Serializable, DeepEquatable {
 		sum += (product = product*prime)*player;
 		sum += (product = product*prime)*parent;
 		return sum;
-	}
-	@Override public boolean deepEquals(Object other) {
-		return equals(other);
 	}
 }

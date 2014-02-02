@@ -78,9 +78,9 @@ public class SimpleDurativeModel extends AbstractDurativeModel {
 		if(progress + 1 < timeCost) {
 			unit.setDurativeStatus(currentAction, progress + 1);
 			return true;
+		} else {
+			completeAction(unit, queue);
 		}
-		
-		completeAction(unit, queue);
 		return cueUpNextAction(unit, queue);
 	}
 	
@@ -90,15 +90,8 @@ public class SimpleDurativeModel extends AbstractDurativeModel {
 		Unit u = state.getUnit(a.getUnitId());			
 		if (u == null)
 			return;
-
-		int x = u.getxPosition();
-		int y = u.getyPosition();
 		
-		Pair<Integer,Integer> destination = getDestination(a, x, y);
-		int xPrime = destination.a;
-		int yPrime = destination.b;
-		
-		FailureMode result = doAction(a, u, x, y, xPrime, yPrime);
+		FailureMode result = doAction(a, u);
 
 		if (result == FailureMode.SUCCESS) {
 			if (!queue.hasNext()) {
@@ -145,7 +138,7 @@ public class SimpleDurativeModel extends AbstractDurativeModel {
 			return false;
 
 		for(int tries = 0; tries < 2; tries++) {
-			Pair<Integer,Integer> destination = this.getDestination(nextAction, unit.getxPosition(), unit.getyPosition());
+			Pair<Integer,Integer> destination = getDestination(nextAction, unit);
 			int x = destination.a;
 			int y = destination.b;
 			if(!state.inBounds(x, y) || state.unitAt(x, y) != null || state.resourceAt(x, y) != null || 
@@ -167,16 +160,13 @@ public class SimpleDurativeModel extends AbstractDurativeModel {
 		switch(action.getType()) 
 		{
 			case PRIMITIVEMOVE:
-				Pair<Integer, Integer> destination = getDestination(action, unit.getxPosition(), unit.getyPosition());
+				Pair<Integer, Integer> destination = getDestination(action, unit);
 				return template.getDurationMove(state.terrainAt(destination.a, destination.b));
 			case PRIMITIVEGATHER:
 				ResourceType type = getTargetResourceType(unit, action);
 				if(type == null)
 					return -1;
-				else if(type == ResourceType.GOLD)
-					return template.getDurationGatherGold();
-				else
-					return template.getDurationGatherWood();
+				return template.getGatherDuration(type);
 			case PRIMITIVEDEPOSIT:
 				return template.getDurationDeposit();
 			case PRIMITIVEATTACK:
@@ -190,7 +180,7 @@ public class SimpleDurativeModel extends AbstractDurativeModel {
 	}
 	
 	private ResourceType getTargetResourceType(Unit unit, Action action) {
-		Pair<Integer, Integer> destination = getDestination(action, unit.getxPosition(), unit.getyPosition());
+		Pair<Integer, Integer> destination = getDestination(action, unit);
 		ResourceNode resource = state.resourceAt(destination.a, destination.b);
 		if(resource == null)
 			return null;

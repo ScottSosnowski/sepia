@@ -34,6 +34,8 @@ import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.action.DirectedAction;
 import edu.cwru.sepia.model.state.Direction;
 import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
+import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.Template;
 import edu.cwru.sepia.model.state.Unit;
@@ -83,22 +85,23 @@ public class SimplePlannerTest {
 			builder.addUnit(u,0,2);
 		}
 		
+		ResourceNodeType tree = new ResourceNodeType("TREE", new ResourceType("WOOD"));
 		for(int i = 0; i <= 12; i++)
 		{
-			ResourceNode t = new ResourceNode(ResourceNode.Type.TREE, i, 8, 100, state.nextTargetId());
+			ResourceNode t = new ResourceNode(tree, i, 8, 100, state.nextTargetId());
 			builder.addResource(t);
 		}
-		ResourceNode t = new ResourceNode(ResourceNode.Type.TREE, 7, 2, 100, state.nextTargetId());
+		ResourceNode t = new ResourceNode(tree, 7, 2, 100, state.nextTargetId());
 		builder.addResource(t);
-		t = new ResourceNode(ResourceNode.Type.TREE, 7, 3, 100, state.nextTargetId());
+		t = new ResourceNode(tree, 7, 3, 100, state.nextTargetId());
 		builder.addResource(t);
-		t = new ResourceNode(ResourceNode.Type.TREE, 8, 3, 100, state.nextTargetId());
+		t = new ResourceNode(tree, 8, 3, 100, state.nextTargetId());
 		builder.addResource(t);
-		t = new ResourceNode(ResourceNode.Type.TREE, 8, 4, 100, state.nextTargetId());
+		t = new ResourceNode(tree, 8, 4, 100, state.nextTargetId());
 		builder.addResource(t);
-		t = new ResourceNode(ResourceNode.Type.TREE, 9, 4, 100, state.nextTargetId());
+		t = new ResourceNode(tree, 9, 4, 100, state.nextTargetId());
 		builder.addResource(t);
-		t = new ResourceNode(ResourceNode.Type.TREE, 10, 4, 100, state.nextTargetId());
+		t = new ResourceNode(tree, 10, 4, 100, state.nextTargetId());
 		builder.addResource(t);
 		model = new SimpleDurativeModel(state, null, new BaseConfiguration());
 	}
@@ -129,8 +132,8 @@ public class SimplePlannerTest {
 			model.executeStep();
 		}
 		Unit u = state.getUnit(0);
-		assertEquals("Unit's x position did not match the expected value!",1,u.getxPosition());
-		assertEquals("Unit's y position did not match the expected value!",10,u.getyPosition());
+		assertEquals("Unit's x position did not match the expected value!",1,u.getXPosition());
+		assertEquals("Unit's y position did not match the expected value!",10,u.getYPosition());
 	}
 	@Test
 	public void testPlanMoveObstructed() {
@@ -156,9 +159,9 @@ public class SimplePlannerTest {
 		}
 		System.out.println(state.getTextString());
 		Unit u = state.getUnit(0);
-		System.out.println("Unit position is now: " + u.getxPosition() + "," + u.getyPosition());
-		assertEquals("Unit's y position did not match the expected value!",1,u.getyPosition());
-		assertEquals("Unit's x position did not match the expected value!",10,u.getxPosition());
+		System.out.println("Unit position is now: " + u.getXPosition() + "," + u.getYPosition());
+		assertEquals("Unit's y position did not match the expected value!",1,u.getYPosition());
+		assertEquals("Unit's x position did not match the expected value!",10,u.getXPosition());
 		
 	}
 	@Test

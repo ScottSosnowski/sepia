@@ -39,15 +39,15 @@ import edu.cwru.sepia.model.state.Tile.TerrainType;
 import edu.cwru.sepia.model.state.Unit.UnitView;
 import edu.cwru.sepia.model.state.UnitTemplate.UnitTemplateView;
 import edu.cwru.sepia.model.state.UpgradeTemplate.UpgradeTemplateView;
-import edu.cwru.sepia.util.DeepEquatable;
 import edu.cwru.sepia.util.DeepEquatableUtil;
 import edu.cwru.sepia.util.Pair;
+import edu.cwru.sepia.util.Rectangle;
 
 /**
  * Represents the state
  *
  */
-public class State implements Serializable, Cloneable, IdDistributor, DeepEquatable {
+public class State implements Serializable, Cloneable, IdDistributor {
 	
 	private static final long serialVersionUID = 1L;
 	 
@@ -124,6 +124,89 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		setFogOfWar(false);
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((allTemplates == null) ? 0 : allTemplates.hashCode());
+		result = prime * result + ((allUnits == null) ? 0 : allUnits.hashCode());
+		result = prime * result + (hasFogOfWar ? 1231 : 1237);
+		result = prime * result + nextIDTarget;
+		result = prime * result + nextIDTemplate;
+		result = prime * result + ((observerState == null) ? 0 : observerState.hashCode());
+		result = prime * result + ((playerStates == null) ? 0 : playerStates.hashCode());
+		result = prime * result + ((reservedSpaces == null) ? 0 : reservedSpaces.hashCode());
+		result = prime * result + ((reservedSpacesReverse == null) ? 0 : reservedSpacesReverse.hashCode());
+		result = prime * result + ((resourceNodes == null) ? 0 : resourceNodes.hashCode());
+		result = prime * result + turnNumber;
+		result = prime * result + world.hashCode();
+		result = prime * result + worldBuilder.hashCode();
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		State other = (State)obj;
+		if (allTemplates == null) {
+			if (other.allTemplates != null)
+				return false;
+		} else if (!allTemplates.equals(other.allTemplates))
+			return false;
+		if (allUnits == null) {
+			if (other.allUnits != null)
+				return false;
+		} else if (!allUnits.equals(other.allUnits))
+			return false;
+		if (hasFogOfWar != other.hasFogOfWar)
+			return false;
+		if (nextIDTarget != other.nextIDTarget)
+			return false;
+		if (nextIDTemplate != other.nextIDTemplate)
+			return false;
+		if (observerState == null) {
+			if (other.observerState != null)
+				return false;
+		} else if (!observerState.equals(other.observerState))
+			return false;
+		if (playerStates == null) {
+			if (other.playerStates != null)
+				return false;
+		} else if (!playerStates.equals(other.playerStates))
+			return false;
+		if (reservedSpaces == null) {
+			if (other.reservedSpaces != null)
+				return false;
+		} else if (!reservedSpaces.equals(other.reservedSpaces))
+			return false;
+		if (reservedSpacesReverse == null) {
+			if (other.reservedSpacesReverse != null)
+				return false;
+		} else if (!reservedSpacesReverse.equals(other.reservedSpacesReverse))
+			return false;
+		if (resourceNodes == null) {
+			if (other.resourceNodes != null)
+				return false;
+		} else if (!resourceNodes.equals(other.resourceNodes))
+			return false;
+		if (turnNumber != other.turnNumber)
+			return false;
+		if (world == null) {
+			if (other.world != null)
+				return false;
+		} else if (!world.equals(other.world))
+			return false;
+		if (worldBuilder == null) {
+			if (other.worldBuilder != null)
+				return false;
+		} else if (!worldBuilder.equals(other.worldBuilder))
+			return false;
+		return true;
+	}
 	/**
 	 * Used as a necessary part of loading from xml.
 	 * Harmless but pointless to use otherwise.
@@ -142,48 +225,47 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		}
 	}
 	
-	/**
-	 * A deep equals method, because the equals methods of many classes have been hijacked into ID comparison for performance reasons
-	 * @param other
-	 * @return
-	 */
-	public boolean deepEquals(Object other)
-	{
-		if (this == other)
-			return true;
-		if (other==null || !this.getClass().equals(other.getClass()))
-			return false;
-		
-		State o = (State)other;
-		if (this.MAXSUPPLY != o.MAXSUPPLY)
-			return false;
-		if (this.hasFogOfWar != o.hasFogOfWar)
-			return false;
-		if (this.nextIDTarget != o.nextIDTarget)
-			return false;
-		if (this.nextIDTemplate != o.nextIDTemplate)
-			return false;
-		if (!DeepEquatableUtil.deepEquals(this.world, o.world))
-			return false;
-		if (this.turnNumber != o.turnNumber)
-			return false;
-		
-		if (!DeepEquatableUtil.deepEqualsList(this.resourceNodes, o.resourceNodes))
-			return false;
-		if (!DeepEquatableUtil.deepEqualsMap(this.allTemplates, o.allTemplates))
-			return false;
-		
-		if (!DeepEquatableUtil.deepEqualsMap(this.allUnits, o.allUnits))
-			return false;
-		if (!DeepEquatableUtil.deepEqualsMap(this.playerStates, o.playerStates))
-			return false;
-		if (!DeepEquatableUtil.deepEquals(this.observerState, o.observerState))
-			return false;
-		
-		
-		return true;
-	}
-
+//	/**
+//	 * A deep equals method, because the equals methods of many classes have been hijacked into ID comparison for performance reasons
+//	 * @param other
+//	 * @return
+//	 */
+//	public boolean deepEquals(Object other)
+//	{
+//		if (this == other)
+//			return true;
+//		if (other==null || !this.getClass().equals(other.getClass()))
+//			return false;
+//		
+//		State o = (State)other;
+//		if (this.MAXSUPPLY != o.MAXSUPPLY)
+//			return false;
+//		if (this.hasFogOfWar != o.hasFogOfWar)
+//			return false;
+//		if (this.nextIDTarget != o.nextIDTarget)
+//			return false;
+//		if (this.nextIDTemplate != o.nextIDTemplate)
+//			return false;
+//		if (!DeepEquatableUtil.deepEquals(this.world, o.world))
+//			return false;
+//		if (this.turnNumber != o.turnNumber)
+//			return false;
+//		
+//		if (!DeepEquatableUtil.deepEqualsList(this.resourceNodes, o.resourceNodes))
+//			return false;
+//		if (!DeepEquatableUtil.deepEqualsMap(this.allTemplates, o.allTemplates))
+//			return false;
+//		
+//		if (!DeepEquatableUtil.deepEqualsMap(this.allUnits, o.allUnits))
+//			return false;
+//		if (!DeepEquatableUtil.deepEqualsMap(this.playerStates, o.playerStates))
+//			return false;
+//		if (!DeepEquatableUtil.deepEquals(this.observerState, o.observerState))
+//			return false;
+//		
+//		
+//		return true;
+//	}
 /* *************************************************
  * 				PLAYER METHODS
  * *************************************************/
@@ -226,13 +308,19 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		return playerStates.values();
 	}
 
-	public boolean hasUnit(int player, int templateid) {
-		for (Unit u : getUnits(player).values())
-			if (u.getTemplate().getID() == templateid)
-				return true;
-		return false;
-	}
-	
+    public boolean hasUnit(int player, String templateName) {
+        for(Unit u : getUnits(player).values())
+            if(u.getTemplate().getName().equals(templateName))
+                return true;
+        return false;
+    }
+
+    public boolean hasUnit(int player, int templateid) {
+        for(Unit u : getUnits(player).values())
+            if(u.getTemplate().getID() == templateid)
+                return true;
+        return false;
+    }
 	
 	public Map<Integer,Unit> getUnits(int player) {
 		if(playerStates.get(player) == null)
@@ -347,8 +435,8 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			map.put(u.id, u);
 			alterSupplyCapAmount(player,u.getTemplate().getFoodProvided());
 			alterSupplyAmount(player, u.getTemplate().getFoodCost());
-			u.setxPosition(x);
-			u.setyPosition(y);
+			u.setXPosition(x);
+			u.setYPosition(y);
 			int sightrange = u.getTemplate().getSightRange();
 			for (int i = x-sightrange; i<= x+sightrange;i++)
 				for (int j = y-sightrange; j<= y+sightrange;j++)
@@ -372,7 +460,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 	
 	public Unit unitAt(int x, int y) {
 		for(Unit u : allUnits.values()) {
-			if(u.getxPosition() == x && u.getyPosition() == y)
+			if(u.occupiesLocation(x, y))
 				return u;
 		}
 		return null;
@@ -386,8 +474,8 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 	 */
 	public void moveUnit(Unit u, Direction direction) {
 		int sightrange = u.getTemplate().getSightRange();
-		int x = u.getxPosition();
-		int y = u.getyPosition();
+		int x = u.getXPosition();
+		int y = u.getYPosition();
 		int[][] playersight = playerStates.get(u.getPlayer()).getVisibilityMatrix();
 		int[][] observersight = observerState.getVisibilityMatrix();
 		
@@ -427,9 +515,9 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 				
 			}
 			//move along x
-			u.setxPosition(x+direction.xComponent());
+			u.setXPosition(x+direction.xComponent());
 			//Get the new x
-			x = u.getxPosition();
+			x = u.getXPosition();
 		}
 		
 		if (direction.yComponent()!=0)
@@ -468,9 +556,9 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 				
 			}
 			//move along y
-			u.setyPosition(y+direction.yComponent());
+			u.setYPosition(y+direction.yComponent());
 			//Get the new y
-			y = u.getyPosition();
+			y = u.getYPosition();
 		}
 	}
 	/**
@@ -485,10 +573,10 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		int[][] playersight = playerStates.get(u.getPlayer()).getVisibilityMatrix();
 		//int[][] observersight=playerCanSee.get(Agent.OBSERVER_ID);
 		int[][] observersight = observerState.getVisibilityMatrix();
-		int oldx = u.getxPosition();
-		int oldy = u.getyPosition();
-		u.setxPosition(newx);
-		u.setyPosition(newy);
+		int oldx = u.getXPosition();
+		int oldy = u.getYPosition();
+		u.setXPosition(newx);
+		u.setYPosition(newy);
 		int sightrange = u.getTemplate().getSightRange();
 		for (int i = oldx-sightrange; i<= oldx+sightrange;i++)
 			for (int j = oldy-sightrange; j<= oldy+sightrange;j++)
@@ -517,8 +605,8 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			playerStates.get(u.getPlayer()).getUnits().remove(unitID);
 			alterSupplyCapAmount(u.getPlayer(),-u.getTemplate().getFoodProvided());
 			alterSupplyAmount(u.getPlayer(), -u.getTemplate().getFoodCost());
-			int x = u.getxPosition();
-			int y = u.getyPosition();
+			int x = u.getXPosition();
+			int y = u.getYPosition();
 			int sightrange = u.getTemplate().getSightRange();
 			for (int i = x-sightrange; i<= x+sightrange;i++)
 				for (int j = y-sightrange; j<= y+sightrange;j++)
@@ -593,8 +681,8 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			if (!list.contains(upgradetemplate.getID()))
 			{
 				//upgrade all of the affected units
-				for (Integer toupgradeid : upgradetemplate.getAffectedUnits()) {
-					Template<?> t = getTemplate(toupgradeid);
+				for (String toUpgradeName : upgradetemplate.getAffectedUnits()) {
+					Template<?> t = getTemplate(player, toUpgradeName);
 					if (t==null || !t.getClass().equals(UnitTemplate.class))
 					{
 						throw new RuntimeException("Upgrade has \"affected unit\" is not unit or isn't in the state");
@@ -624,6 +712,12 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			}
 			list.add(upgradetemplate.getID());
 	}
+	
+    public boolean hasUpgrade(int player, String templateName) {
+        Template<?> template = getTemplate(player, templateName);
+        return template != null && hasUpgrade(player, template.getID());
+    }    
+
 	public boolean hasUpgrade(int player, Integer upgradetemplateid) {
 		return playerStates.get(player).getUpgrades().contains(upgradetemplateid);
 	}
@@ -643,7 +737,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 //				TODO: see if we can do without this
 				addPlayer(player);
 			}
-			Map<Integer, Template> map = playerState.getTemplates();
+			Map<Integer, Template<?>> map = playerState.getTemplates();
 			allTemplates.put(t.getID(),t);
 			map.put(t.getID(), t);
 		}
@@ -665,8 +759,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		return playerState.getTemplate(name);
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public Map<Integer,Template> getTemplates(int player) {		
+	public Map<Integer,Template<?>> getTemplates(int player) {		
 		if(playerStates.get(player) == null)
 			return null;
 		return Collections.unmodifiableMap(playerStates.get(player).getTemplates());
@@ -696,10 +789,18 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 	public ResourceNode resourceAt(int x, int y) {
 		for(ResourceNode r : resourceNodes)
 		{
-			if(r.getxPosition() == x && r.getyPosition() == y)
+			if(r.getXPosition() == x && r.getYPosition() == y)
 				return r;
 		}
 		return null;
+	}
+	
+	public boolean isResourceIn(Rectangle r) {
+		for(ResourceNode n : resourceNodes) {
+			if(n.getBounds().distanceTo(r) == 0)
+				return true;
+		}
+		return false;
 	}
 	
 	public void removeResourceNode(int resourceID) {
@@ -772,8 +873,8 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		{
 			int player = u.getPlayer();
 			PlayerState state = playerStates.get(player);
-			int x = u.getxPosition();
-			int y = u.getyPosition();
+			int x = u.getXPosition();
+			int y = u.getYPosition();
 			int s = u.getTemplate().getSightRange();
 			for (int i = x-s; i<=x+s;i++)
 				for (int j = y-s; j<=y+s;j++)
@@ -915,6 +1016,10 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 	{
 		return world.inBounds(x,y); 
 	}
+	
+	public boolean inBounds(Rectangle rect) {
+		return world.inBounds(rect);
+	}
 
 	public int getXExtent() {
 		return world.getXExtent();
@@ -1016,10 +1121,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			{
 				return false;
 			}
-			Map<Integer,Template> templates = state.getPlayerState(player).getTemplates();
-			/*if (templates == null) {
-				return false;
-			}*/
+			Map<Integer,Template<?>> templates = state.getPlayerState(player).getTemplates();
 			return templates.size() != 0;
 		}
 		/**
@@ -1076,13 +1178,35 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			this.state = state;
 			this.player = player;
 		}
-//		commented out because it is neither used nor functional
-//		public StateView getStaticCopy() {
-//			return state.getStaticCopy(player);
-//		}
 		
-		
-		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + player;
+			result = prime * result + ((state == null) ? 0 : state.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			StateView other = (StateView)obj;
+			if (player != other.player)
+				return false;
+			if (state == null) {
+				if (other.state != null)
+					return false;
+			} else if (!state.equals(other.state))
+				return false;
+			return true;
+		}
+
 		/**
 		 * If the player can see the whole state, get a StateCreator that will rebuild the state as it is when this is called.<br/>
 		 * <br>This can be used as an immutable and repeatable deep copy of the underlying state.
@@ -1137,7 +1261,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		public List<Integer> getAllUnitIds() {
 			List<Integer> ids = new ArrayList<Integer>();
 			for(Entry<Integer, Unit> e: state.allUnits.entrySet())
-				if (canSee(e.getValue().getxPosition(), e.getValue().getyPosition()))
+				if (canSee(e.getValue().getXPosition(), e.getValue().getYPosition()))
 					ids.add(e.getKey());
 			return ids;
 		}
@@ -1148,7 +1272,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		public List<UnitView> getAllUnits() {
 			List<UnitView> views = new ArrayList<UnitView>();
 			for(Entry<Integer, Unit> e: state.allUnits.entrySet())
-				if (canSee(e.getValue().getxPosition(), e.getValue().getyPosition()))
+				if (canSee(e.getValue().getXPosition(), e.getValue().getYPosition()))
 					views.add(e.getValue().getView());
 			return views;
 		}
@@ -1196,7 +1320,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			if(units != null)
 				for(Entry<Integer, Unit> e: units.entrySet())
 				{
-					if (canSee(e.getValue().getxPosition(), e.getValue().getyPosition()))
+					if (canSee(e.getValue().getXPosition(), e.getValue().getYPosition()))
 						ids.add(e.getKey());
 				}
 			return ids;
@@ -1213,7 +1337,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			if(units != null)
 				for(Entry<Integer, Unit> e: units.entrySet())
 				{
-					if (canSee(e.getValue().getxPosition(), e.getValue().getyPosition()))
+					if (canSee(e.getValue().getXPosition(), e.getValue().getYPosition()))
 						views.add(e.getValue().getView());
 				}
 			return views;
@@ -1227,7 +1351,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			Unit u = state.getUnit(unitID);
 			if (u==null)
 				return null;
-			if (!canSee(u.getxPosition(),u.getyPosition()))
+			if (!canSee(u.getXPosition(),u.getYPosition()))
 				return null;
 			return u.getView();
 		}
@@ -1238,7 +1362,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		public List<Integer> getAllResourceIds() {
 			List<Integer> i = new ArrayList<Integer>();
 			for(ResourceNode r : state.resourceNodes)
-				if (canSee(r.getxPosition(),r.getyPosition()))
+				if (canSee(r.getXPosition(),r.getYPosition()))
 					i.add(r.getID());
 			return i;
 		}
@@ -1247,13 +1371,13 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		 * @param type Gold mine or Tree
 		 * @return
 		 */
-		public List<ResourceNode.ResourceView> getResourceNodes(ResourceNode.Type type) {
-			List<ResourceNode.ResourceView> i = new ArrayList<ResourceNode.ResourceView>();
-			for(ResourceNode r : state.resourceNodes)
-				if (r.getType() == type && canSee(r.getxPosition(), r.getyPosition()))
-					i.add(r.getView());
-			return i;
-		}
+        public List<ResourceNode.ResourceView> getResourceNodes(String typeName) {
+            List<ResourceNode.ResourceView> i = new ArrayList<ResourceNode.ResourceView>();
+            for(ResourceNode r : state.resourceNodes)
+                if(r.getType().getName().equals(typeName) && canSee(r.getXPosition(), r.getYPosition()))
+                    i.add(r.getView());
+            return i;
+        }
 		/**
 		 * Get the views of all of the resource nodes that you can see
 		 * @return
@@ -1261,7 +1385,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		public List<ResourceNode.ResourceView> getAllResourceNodes() {
 			List<ResourceNode.ResourceView> i = new ArrayList<ResourceNode.ResourceView>();
 			for(ResourceNode r : state.resourceNodes)
-				if (canSee(r.getxPosition(),r.getyPosition()))
+				if (canSee(r.getXPosition(),r.getYPosition()))
 					i.add(r.getView());
 			return i;
 		}
@@ -1270,13 +1394,15 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 		 * @param type Gold mine or Tree
 		 * @return
 		 */
-		public List<Integer> getResourceNodeIds(ResourceNode.Type type) {
-			List<Integer> i = new ArrayList<Integer>();
-			for(ResourceNode r : state.resourceNodes)
-				if (r.getType() == type && canSee(r.getxPosition(), r.getyPosition()))
-					i.add(r.getID());
-			return i;
-		}
+        public List<Integer> getResourceNodeIds(String typeName) {
+            List<Integer> i = new ArrayList<Integer>();
+            for(ResourceNode r : state.resourceNodes)
+                if(r.getType().getName().equals(typeName)
+                        && canSee(r.getXPosition(), r.getYPosition()))
+                    i.add(r.getID());
+            return i;
+        }
+
 		/**
 		 * Get the resource node with the selected ID (if you can see it)
 		 * @param resourceID
@@ -1286,7 +1412,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			ResourceNode r =state.getResource(resourceID);
 			if (r==null)
 				return null;
-			if (!canSee(r.getxPosition(),r.getyPosition()))
+			if (!canSee(r.getXPosition(),r.getYPosition()))
 				return null;
 			return state.getResource(resourceID).getView();
 		}
@@ -1317,7 +1443,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			if (state.hasFogOfWar && playerid != player && player != Agent.OBSERVER_ID)
 				return null;
 			List<Integer> ids = new ArrayList<Integer>();
-			Map<Integer, Template> templates = state.getTemplates(playerid);
+			Map<Integer, Template<?>> templates = state.getTemplates(playerid);
 			if(templates != null)
 				for(Integer key : templates.keySet())
 				{
@@ -1352,7 +1478,7 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			if (state.hasFogOfWar && playerid != player && player != Agent.OBSERVER_ID)
 				return null;
 			List<TemplateView> views = new ArrayList<TemplateView>();
-			Map<Integer, Template> templates = state.getTemplates(playerid);
+			Map<Integer, Template<?>> templates = state.getTemplates(playerid);
 			if(templates != null)
 				for(Template templ : templates.values())
 				{
@@ -1512,6 +1638,10 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			return state.inBounds(x, y);
 		}
 		
+		public boolean inBounds(Rectangle rect) {
+			return state.inBounds(rect);
+		}
+		
 		/**
 		 * Find if there is a unit at a position
 		 * @param x
@@ -1535,6 +1665,15 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 			Unit unit = state.unitAt(x,y);
 			return unit==null?null:unit.id;
 		}
+		
+		public boolean isDifferentUnitIn(int unitId, Rectangle r) {
+			for(UnitView u : getAllUnits()) {
+				if(u.getBounds().distanceTo(r) == 0 && u.id != unitId)
+					return true;
+			}
+			return false;
+		}
+		
 		/**
 		 * Find whether there is a resource at the position
 		 * @param x
@@ -1546,6 +1685,11 @@ public class State implements Serializable, Cloneable, IdDistributor, DeepEquata
 				return false;
 			return state.resourceAt(x, y) != null;
 		}
+		
+		public boolean isResourceIn(Rectangle r) {
+			return state.isResourceIn(r);
+		}
+		
 		/**
 		 * Get the resource at a position
 		 * @param x

@@ -20,6 +20,7 @@
 package edu.cwru.sepia.model.persistence;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.cwru.sepia.model.persistence.generated.XmlPlayer;
 import edu.cwru.sepia.model.persistence.generated.XmlResourceQuantity;
@@ -58,13 +59,14 @@ public class PlayerAdapter {
 		}
 				
 		List<XmlResourceQuantity> resources = xml.getResourceAmount();
-		for(ResourceType type : ResourceType.values())
-		{
-			XmlResourceQuantity quantity = new XmlResourceQuantity();
-			quantity.setType(type);
-			quantity.setQuantity(player.getCurrentResourceAmount(type));
-			resources.add(quantity);
-		}
+        for(Map.Entry<ResourceType, Integer> entry : player.getCurrentResources().entrySet())
+        {
+            XmlResourceQuantity quantity = new XmlResourceQuantity();
+            quantity.setType(ResourceAdapter.toXml(entry.getKey()));
+            quantity.setQuantity(entry.getValue());
+            resources.add(quantity);
+        }
+
 
 		xml.setSupply(player.getCurrentSupply());
 		xml.setSupplyCap(player.getCurrentSupplyCap());
@@ -97,13 +99,13 @@ public class PlayerAdapter {
 				player.addUnit(unitAdapter.fromXml(unit));
 			}
 		}
-		if(xml.getResourceAmount() != null)
-		{
-			for(XmlResourceQuantity resource : xml.getResourceAmount())
-			{
-				player.setCurrentResourceAmount(resource.getType(), resource.getQuantity());
-			}
-		}
+        if(xml.getResourceAmount() != null)
+        {
+            for(XmlResourceQuantity resource : xml.getResourceAmount())
+            {
+                player.setCurrentResourceAmount(ResourceAdapter.fromXml(resource.getType()), resource.getQuantity());
+            }
+        }
 		
 		player.setCurrentSupply(xml.getSupply());
 		player.setCurrentSupplyCap(xml.getSupplyCap());

@@ -1,0 +1,31 @@
+<Configuration>
+	<Map>C:\cygwin\home\The Condor\masters\mainproject\mainproject\trunk\config\0f16a0k0bv0f16a0k0btworanks.xml</Map>
+	<agents>
+		<ParticipatingAgents>agent0, agent1</ParticipatingAgents>
+		<agent0>
+			<ClassName>edu.cwru.sepia.agent.visual.VisualAgent</ClassName>
+			<PlayerId>0</PlayerId>
+			<ConstructorArguments>true, true</ConstructorArguments>
+		</agent0>
+		<agent1>
+			<ClassName>edu.cwru.sepia.agent.CombatAgent</ClassName>
+			<PlayerId>1</PlayerId>
+		</agent1>
+		
+	</agents>
+	<model>
+		<Conquest>true</Conquest>
+		<Midas>false</Midas>
+		<ManifestDestiny>false</ManifestDestiny>
+		<TimeLimit>1000</TimeLimit>
+	</model>
+	<runner>
+		<ClassName>edu.cwru.sepia.runner.SimpleModelEpisodicRunner</ClassName>
+		<properties>
+			<RandomSeed>6</RandomSeed>
+			<NumEpisodes>1</NumEpisodes>
+			<EpisodesPerSave>1000000</EpisodesPerSave>
+			<SaveAgents>false</SaveAgents>
+		</properties>
+	</runner>
+</Configuration>

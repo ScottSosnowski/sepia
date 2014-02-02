@@ -27,87 +27,90 @@ import java.util.List;
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Unit.UnitView;
-import edu.cwru.sepia.util.DistanceMetrics;
 
 /**
- * A class that offers primitive micromanagement of soldiers
- * Just sends them to the nearest building, shooting anything in range
+ * A class that offers primitive micromanagement of soldiers Just sends them to
+ * the nearest building, shooting anything in range
+ * 
  * @author The Condor
- *
+ * 
  */
 public class PrimitiveAttackCoordinator implements Serializable {
-	
+
 	private static final long serialVersionUID = -8583438202310015079L;
-	
+
 	int playernum;
 	List<Integer> attackers;
 	private final static int NOTARGET = Integer.MIN_VALUE;
 	Integer primarytargetID;
+
 	public PrimitiveAttackCoordinator(int playernum) {
-		this.playernum=playernum;
+		this.playernum = playernum;
 		attackers = new LinkedList<Integer>();
 		primarytargetID = NOTARGET;
 	}
+
 	public void addAttacker(Integer attacker) {
 		attackers.add(attacker);
 	}
+
 	/**
-	 * Append the relevant actions to the action set.
-	 * This will replace previous ones, as Builder does not have any means to check.
+	 * Append the relevant actions to the action set. This will replace previous
+	 * ones, as Builder does not have any means to check.
+	 * 
 	 * @param state
 	 * @param actions
 	 */
 	public void coordinate(StateView state, Collection<Action> actions) {
-		//DON'T DO ANYTHING IF NO ATTACKERS
-		if (attackers.size()==0)
+		// DON'T DO ANYTHING IF NO ATTACKERS
+		if(attackers.size() == 0)
 			return;
-		if (primarytargetID == NOTARGET || state.getUnit(primarytargetID) == null) {
+		if(primarytargetID == NOTARGET || state.getUnit(primarytargetID) == null) {
 			getNewTarget(state);
 		}
 		List<Integer> allunitsID = state.getAllUnitIds();
 		List<UnitView> allenemies = new LinkedList<UnitView>();
-		for (Integer i : allunitsID)
-		{
+		for(Integer i : allunitsID) {
 			UnitView u = state.getUnit(i);
-			if (u.getTemplateView().getPlayer()!=playernum) {
+			if(u.getTemplateView().getPlayer() != playernum) {
 				allenemies.add(u);
 			}
 		}
-		
-		if (primarytargetID != NOTARGET) {
+
+		if(primarytargetID != NOTARGET) {
 			UnitView primarytarget = state.getUnit(primarytargetID);
-			for (Integer unitID : attackers) {
+			for(Integer unitID : attackers) {
 				UnitView unit = state.getUnit(unitID);
-				boolean foundanenemy=false;
-				for (UnitView enemy : allenemies) {
-					if (enemy.getTemplateView().getRange() <= DistanceMetrics.chebyshevDistance(unit.getXPosition(), unit.getYPosition(), enemy.getXPosition(), enemy.getYPosition()))
-					{
+				boolean foundanenemy = false;
+				for(UnitView enemy : allenemies) {
+					if(enemy.getTemplateView().getRange() <= unit.distanceTo(enemy)) {
 						actions.add(Action.createCompoundAttack(unitID, enemy.getID()));
-						foundanenemy=true;
+						foundanenemy = true;
 						break;
 					}
 				}
-				//if you didn't run across anything, keep moving to the primary target
-				if (!foundanenemy) {
-					actions.add(Action.createCompoundMove(unitID,primarytarget.getXPosition(), primarytarget.getYPosition()));
+				// if you didn't run across anything, keep moving to the primary
+				// target
+				if(!foundanenemy) {
+					actions.add(Action.createCompoundMove(unitID, primarytarget.getXPosition(),
+							primarytarget.getYPosition()));
 				}
 			}
 		}
 	}
-	
+
 	private void getNewTarget(StateView state) {
 		primarytargetID = NOTARGET;
-		boolean foundanenemy=false;
+		boolean foundanenemy = false;
 		boolean foundanenemybuilding = false;
-		for (Integer i : state.getAllUnitIds()) {
+		for(Integer i : state.getAllUnitIds()) {
 			UnitView unit = state.getUnit(i);
-			if (unit.getTemplateView().getPlayer() != playernum) {
-				if (!foundanenemy) {
+			if(unit.getTemplateView().getPlayer() != playernum) {
+				if(!foundanenemy) {
 					foundanenemy = true;
 					primarytargetID = i;
-				}
-				else if (!foundanenemybuilding && !unit.getTemplateView().canMove()) {
-					 
+				} else if(!foundanenemybuilding && !unit.getTemplateView().canMove()) {
+
 					foundanenemybuilding = true;
 					primarytargetID = i;
 					break;
@@ -115,5 +118,5 @@ public class PrimitiveAttackCoordinator implements Serializable {
 			}
 		}
 	}
-	
+
 }

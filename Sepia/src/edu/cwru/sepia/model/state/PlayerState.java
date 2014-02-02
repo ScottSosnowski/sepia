@@ -20,23 +20,20 @@
 package edu.cwru.sepia.model.state;
 
 import java.io.Serializable;
-import java.util.EnumMap;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import edu.cwru.sepia.model.state.State.StateView;
-import edu.cwru.sepia.util.DeepEquatable;
-import edu.cwru.sepia.util.DeepEquatableUtil;
 
-public class PlayerState implements Serializable, DeepEquatable {
+public class PlayerState implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public final int playerNum;
 	private HashMap<Integer,Unit> units;
-	@SuppressWarnings("rawtypes")
-	private Map<Integer,Template> templates;
+	private Map<Integer,Template<?>> templates;
 	private Set<Integer> upgrades;
 	private Map<ResourceType,Integer> currentResources;
 	private int currentSupply;
@@ -44,13 +41,12 @@ public class PlayerState implements Serializable, DeepEquatable {
 	private StateView view;
 	private int[][] canSee;
 	
-	@SuppressWarnings("rawtypes")
 	public PlayerState(int id) {
 		this.playerNum = id;
 		units = new HashMap<Integer,Unit>();
-		templates = new HashMap<Integer,Template>();
+		templates = new HashMap<Integer,Template<?>>();
 		upgrades = new HashSet<Integer>();
-		currentResources = new EnumMap<ResourceType,Integer>(ResourceType.class);	
+		currentResources = new HashMap<ResourceType,Integer>();	
 	}
 	
 	public Unit getUnit(int id) {
@@ -82,17 +78,22 @@ public class PlayerState implements Serializable, DeepEquatable {
 		return null;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public Map<Integer,Template> getTemplates() {
+	public Map<Integer,Template<?>> getTemplates() {
 		return templates;
 	}
 	
-	public void addTemplate(@SuppressWarnings("rawtypes") Template template) {
+	public void addTemplate(Template<?> template) {
 		templates.put(template.getID(), template);
 	}
 	
 	public Set<Integer> getUpgrades() {
 		return upgrades;
+	}
+	
+	public Map<ResourceType, Integer> getCurrentResources() {
+		Map<ResourceType, Integer> toReturn = new HashMap<ResourceType, Integer>();
+		toReturn.putAll(currentResources);
+		return toReturn;
 	}
 	
 	public int getCurrentResourceAmount(ResourceType type) {
@@ -160,107 +161,58 @@ public class PlayerState implements Serializable, DeepEquatable {
 	}
 
 	@Override
-	public boolean deepEquals(Object other) {
-		//Doesn't check view because stateview is backed by state, so it would loop
-		
-		if (other == null || !this.getClass().equals(other.getClass()))
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(canSee);
+		result = prime * result + ((currentResources == null) ? 0 : currentResources.hashCode());
+		result = prime * result + currentSupply;
+		result = prime * result + currentSupplyCap;
+		result = prime * result + playerNum;
+		result = prime * result + ((templates == null) ? 0 : templates.hashCode());
+		result = prime * result + ((units == null) ? 0 : units.hashCode());
+		result = prime * result + ((upgrades == null) ? 0 : upgrades.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		PlayerState o = (PlayerState)other;
-		
-		if (this.playerNum != o.playerNum)
+		if (getClass() != obj.getClass())
 			return false;
-		if (!DeepEquatableUtil.deepEqualsMap(this.units, o.units))
+		PlayerState other = (PlayerState)obj;
+		if (!Arrays.deepEquals(canSee, other.canSee))
 			return false;
-		if (!DeepEquatableUtil.deepEqualsMap(this.templates, o.templates))
-			return false;
-		
-		{
-			boolean thisnull = this.upgrades == null;
-			boolean othernull = o.upgrades == null;
-			if ((thisnull == othernull)==false)
-			{
+		if (currentResources == null) {
+			if (other.currentResources != null)
 				return false;
-			}
-			//if both aren't null, need to check deeper
-			if (!thisnull && !othernull)
-			{
-				if (this.upgrades.size() != o.upgrades.size())
-					return false;
-				for (Integer i : upgrades)
-				{
-					if (!o.upgrades.contains(i))
-						return false;
-				}
-			}
-		}
-		{
-			for (ResourceType rt : ResourceType.values())
-			{
-				if (this.getCurrentResourceAmount(rt) != o.getCurrentResourceAmount(rt))
-					return false;
-			}
-		}
-		if (this.currentSupply != o.currentSupply)
+		} else if (!currentResources.equals(other.currentResources))
 			return false;
-		if (this.currentSupplyCap != o.currentSupplyCap)
+		if (currentSupply != other.currentSupply)
 			return false;
-		
-		{
-			boolean thisnull = this.canSee == null;
-			boolean othernull = o.canSee == null;
-			if ((thisnull == othernull)==false)
-			{
+		if (currentSupplyCap != other.currentSupplyCap)
+			return false;
+		if (playerNum != other.playerNum)
+			return false;
+		if (templates == null) {
+			if (other.templates != null)
 				return false;
-			}
-			//if both aren't null, need to check deeper
-			if (!thisnull && !othernull)
-			{
-				if (this.canSee.length != o.canSee.length)
-					return false;
-				for (int i = 0; i < this.canSee.length; i++)
-				{
-					if (this.canSee[i].length != o.canSee[i].length)
-						return false;
-					for (int j = 0; j < this.canSee[i].length; j++)
-					{
-						if (this.canSee[i][j]!=o.canSee[i][j])
-							return false;
-					}
-				}
-			}
-		}
+		} else if (!templates.equals(other.templates))
+			return false;
+		if (units == null) {
+			if (other.units != null)
+				return false;
+		} else if (!units.equals(other.units))
+			return false;
+		if (upgrades == null) {
+			if (other.upgrades != null)
+				return false;
+		} else if (!upgrades.equals(other.upgrades))
+			return false;
 		return true;
 	}
-	
-	
-	
-	//Removed because it seems unused and preserves references
-//	@Override
-//	protected Object clone() {
-//		PlayerState copy = new PlayerState(playerNum);
-//		for(Unit u : units.values())
-//		{
-//			copy.addUnit(u);
-//		}
-//		for(@SuppressWarnings("rawtypes") Template t : templates.values())
-//		{
-//			copy.addTemplate(t);
-//		}
-//		for(Integer i : upgrades)
-//		{
-//			copy.getUpgrades().add(i);
-//		}
-//		for(ResourceType type : currentResources.keySet())
-//		{
-//			copy.setCurrentResourceAmount(type, currentResources.get(type));
-//		}
-//		copy.setCurrentSupply(currentSupply);
-//		copy.setCurrentSupplyCap(currentSupplyCap);
-//		return copy;
-//	}
-//	
-//	public PlayerState copyOf() {
-//		return (PlayerState)clone();
-//	}
-	
+
 }

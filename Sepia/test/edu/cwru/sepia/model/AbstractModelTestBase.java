@@ -55,11 +55,11 @@ public abstract class AbstractModelTestBase {
 		template.setCanMove(true);
 		template.setDurationMove(1, TerrainType.LAND);
 		Unit u0 = new Unit(template, 0);
-		u0.setxPosition(8);
-		u0.setyPosition(8);
+		u0.setXPosition(8);
+		u0.setYPosition(8);
 		ps0.addTemplate(template);
 		ps0.addUnit(u0);
-		builder.addUnit(u0, u0.getxPosition(), u0.getyPosition());
+		builder.addUnit(u0, u0.getXPosition(), u0.getYPosition());
 		return builder;
 	}
 	
@@ -89,7 +89,7 @@ public abstract class AbstractModelTestBase {
 		public ActionMethod getPrimitiveMove() {
 			return new ActionMethod() {
 				@Override public FailureMode execute(Action action, Unit unit, int x, int y) { 
-					return doPrimitiveMove(action, unit, x, y); 
+					return doPrimitiveMove(action, unit); 
 				}
 			};
 		}
@@ -97,7 +97,7 @@ public abstract class AbstractModelTestBase {
 		public ActionMethod getPrimitiveGather() {
 			return new ActionMethod() {
 				@Override public FailureMode execute(Action action, Unit unit, int x, int y) { 
-					return doPrimitiveGather(action, unit, x, y); 
+					return doPrimitiveGather(action, unit); 
 				}
 			};
 		}
@@ -105,7 +105,7 @@ public abstract class AbstractModelTestBase {
 		public ActionMethod getPrimitiveDeposit() {
 			return new ActionMethod() {
 				@Override public FailureMode execute(Action action, Unit unit, int x, int y) { 
-					return doPrimitiveDeposit(action, unit, x, y); 
+					return doPrimitiveDeposit(action, unit); 
 				}
 			};
 		}
@@ -113,7 +113,7 @@ public abstract class AbstractModelTestBase {
 		public ActionMethod getPrimitiveAttack() {
 			return new ActionMethod() {
 				@Override public FailureMode execute(Action action, Unit unit, int x, int y) { 
-					return doPrimitiveAttack(action, unit, x, y); 
+					return doPrimitiveAttack(action, unit); 
 				}
 			};
 		}
@@ -121,7 +121,7 @@ public abstract class AbstractModelTestBase {
 		public ActionMethod getPrimitiveProduce() {
 			return new ActionMethod() {
 				@Override public FailureMode execute(Action action, Unit unit, int x, int y) { 
-					return doPrimitiveProduce(action, unit, x, y); 
+					return doPrimitiveProduce(action, unit); 
 				}
 			};
 		}
@@ -129,7 +129,7 @@ public abstract class AbstractModelTestBase {
 		public ActionMethod getPrimitiveBuild() {
 			return new ActionMethod() {
 				@Override public FailureMode execute(Action action, Unit unit, int x, int y) { 
-					return doPrimitiveBuild(action, unit, x, y); 
+					return doPrimitiveBuild(action, unit); 
 				}
 			};
 		}

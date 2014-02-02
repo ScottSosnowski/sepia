@@ -77,11 +77,6 @@ public enum ActionType {
 	COMPOUNDBUILD,
 	/**
 	 * Please use the static factory methods in {@link edu.cwru.sepia.action.Action} to construct actions.
-	 * This is for a ProductionAction, taking as parameters the acting unit's ID and the ID of the template of the unit or upgrade that you are trying to build.  When executed, it does PRIMITIVEPRODUCE until the unit or upgrade is completed.
-	 */
-	COMPOUNDPRODUCE,
-	/**
-	 * Please use the static factory methods in {@link edu.cwru.sepia.action.Action} to construct actions.
 	 * Used internally to indicate a failure that requires recalculating a compound action
 	 */
 	FAILED,
@@ -98,7 +93,7 @@ public enum ActionType {
 	 * @return
 	 */
 	public static boolean isPrimitive(ActionType type) {
-		return type != COMPOUNDGATHER && type != COMPOUNDBUILD && type != COMPOUNDDEPOSIT && type != COMPOUNDPRODUCE && type != COMPOUNDATTACK && type != COMPOUNDMOVE;
+		return type != COMPOUNDGATHER && type != COMPOUNDBUILD && type != COMPOUNDDEPOSIT && type != COMPOUNDATTACK && type != COMPOUNDMOVE;
 	}
 	
 	public boolean isPrimitive() {

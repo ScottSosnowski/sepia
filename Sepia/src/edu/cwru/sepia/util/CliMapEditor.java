@@ -28,6 +28,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
+import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.Template;
 import edu.cwru.sepia.model.state.Unit;
@@ -77,7 +79,7 @@ public class CliMapEditor {
 				System.out.println("Help for CliMapEditor");
 				System.out.println("\tq or quit to quit");
 				System.out.println("\taddUnit unitname x y player");
-				System.out.println("\taddResource resourcetype x y amount");
+				System.out.println("\taddResource nodetype resourcetype x y amount");
 				System.out.println("\tsetSize xsize ysize");
 				System.out.println();
 			}
@@ -124,13 +126,13 @@ public class CliMapEditor {
 				else
 					System.out.println("Size already set, cannot reset it"); //Because it might otherwise strand units outside the map
 			}
-			else if (nextcommand.length == 5 && nextcommand[0].equals("addResource")) {
+			else if (nextcommand.length == 6 && nextcommand[0].equals("addResource")) {
 				try {
-					int x = Integer.parseInt(nextcommand[2]);
-					int y = Integer.parseInt(nextcommand[3]);
+					int x = Integer.parseInt(nextcommand[3]);
+					int y = Integer.parseInt(nextcommand[4]);
 					if (alreadysetsize){
 						if (s.positionAvailable(x,y)) {
-							ResourceNode r = new ResourceNode(ResourceNode.Type.valueOf(nextcommand[1].toUpperCase()),x,y,Integer.parseInt(nextcommand[4]),state.nextTargetId());
+							ResourceNode r = new ResourceNode(new ResourceNodeType(nextcommand[1].toUpperCase(), new ResourceType(nextcommand[2].toUpperCase())),x,y,Integer.parseInt(nextcommand[5]),state.nextTargetId());
 							s.addResource(r);
 						}
 						else

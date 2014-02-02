@@ -21,6 +21,7 @@ package edu.cwru.sepia.model.state;
 
 import edu.cwru.sepia.model.state.Tile.TerrainType;
 import edu.cwru.sepia.util.DeepEquatableUtil;
+import edu.cwru.sepia.util.Rectangle;
 
 /**
  * @author The Condor
@@ -107,6 +108,16 @@ public class WorldView implements World {
 	@Override
 	public boolean inBounds(int x, int y) {
 		return x >= 0 && y >= 0 && x < getXExtent() && y < getYExtent();
+	}
+
+
+
+	@Override
+	public boolean inBounds(Rectangle rect) {
+		return rect.getLeft() >= 0 &&
+				rect.getRight() <= getXExtent() &&
+				rect.getTop() >= 0 &&
+				rect.getBottom() <= getYExtent();
 	}
 
 	

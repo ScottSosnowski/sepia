@@ -25,37 +25,34 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;  
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
-import javax.swing.InputMap;
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-
 
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.action.ActionType;
 import edu.cwru.sepia.model.history.DamageLog;
-import edu.cwru.sepia.model.history.RevealedResourceNodeLog;
 import edu.cwru.sepia.model.history.History.HistoryView;
-import edu.cwru.sepia.model.state.ResourceNode;
-import edu.cwru.sepia.model.state.ResourceType;
+import edu.cwru.sepia.model.history.RevealedResourceNodeLog;
 import edu.cwru.sepia.model.state.ResourceNode.ResourceView;
-import edu.cwru.sepia.model.state.ResourceNode.Type;
 import edu.cwru.sepia.model.state.State.StateView;
+import edu.cwru.sepia.model.state.Template.TemplateView;
 import edu.cwru.sepia.model.state.Unit.UnitView;
 
 public class GamePanel extends JPanel {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public static final int WIDTH = 800, HEIGHT = 600;
+	public static final int WIDTH = 800, HEIGHT = 600;
 	public static final int SCALING_FACTOR = 32;
 
 
@@ -68,7 +65,7 @@ public class GamePanel extends JPanel {
 	private VisualAgent agent;
 	private GameDrawer gameDrawer;
 	private int playernum;
-	private int selectedID;  	// left clicked
+	private int selectedID; // left clicked
 	private int infoVisSelectedID; // double clicked
 	private Info info;
 	
@@ -173,24 +170,24 @@ public class GamePanel extends JPanel {
     public class ShiftAction extends AbstractAction {
 
 		private static final long serialVersionUID = 8622421006574238465L;
-		
+
 		ShiftDirection shiftDirection;
 
-        public ShiftAction(ShiftDirection shiftDirection) {
-            this.shiftDirection = shiftDirection;
-        }
+		public ShiftAction(ShiftDirection shiftDirection) {
+			this.shiftDirection = shiftDirection;
+		}
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-        	if(currentState==null)
-        		return;
-            switch(shiftDirection) {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentState == null)
+				return;
+			switch(shiftDirection) {
 			case UP:
 				if(gameWorldTopLeftY > 0)
 					gameWorldTopLeftY--;
 				break;
 			case DOWN:
-				if(gameWorldTopLeftY + getHeight()/SCALING_FACTOR < currentState.getYExtent())
+				if(gameWorldTopLeftY + getHeight() / SCALING_FACTOR < currentState.getYExtent())
 				gameWorldTopLeftY++;
 				break;
 			case LEFT:
@@ -198,7 +195,7 @@ public class GamePanel extends JPanel {
 					gameWorldTopLeftX--;
 				break;
 			case RIGHT:
-				if(gameWorldTopLeftX + getWidth()/SCALING_FACTOR < currentState.getXExtent())
+				if(gameWorldTopLeftX + getWidth() / SCALING_FACTOR < currentState.getXExtent())
 					gameWorldTopLeftX++;	
 				break;
             }
@@ -212,14 +209,14 @@ public class GamePanel extends JPanel {
 		this.gameDrawer.updateState(state, history);
 		this.currentState = state;
 		this.latestHistory = history;
-        this.repaint();
+		this.repaint();
 	}
-	
+
 	private class GamePanelMouseListener extends MouseAdapter {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			if(agent!=null && agent.isHumanControllable())
+			if(agent != null && agent.isHumanControllable())
 				humanControl(e);
 			if(agent == null || agent.isInfoVisible())
 				infoVisual(e);
@@ -227,7 +224,7 @@ public class GamePanel extends JPanel {
 		}
 
 	}
-	
+
 	private class PopupActionMenu extends JPopupMenu {
 		private static final long serialVersionUID = 7823418576361323507L;
 
@@ -243,85 +240,102 @@ public class GamePanel extends JPanel {
 					if(selectedUnit.getTemplateView().getProduces()!=null &&
 							selectedUnit.getTemplateView().getProduces().size()>0 &&
 							selectedUnit.getTemplateView().canBuild()) {
-						List<Integer> productions = selectedUnit.getTemplateView().getProduces();
-						for(int prodTempID : productions) {
-							JMenuItem bItem = new JMenuItem("Build " + state.getTemplate(prodTempID).getName());
-							bItem.addActionListener(new PopupActionListener(selectedID, prodTempID, ActionType.COMPOUNDBUILD, x, y));
+						List<String> productions = selectedUnit.getTemplateView().getProduces();
+						for(String prodTemp : productions) {
+							TemplateView template = state.getTemplate(selectedUnit.getTemplateView().getPlayer(), prodTemp);
+							JMenuItem bItem = new JMenuItem("Build " + prodTemp);
+							bItem.addActionListener(new PopupActionListener(selectedID, template.getID(), ActionType.COMPOUNDBUILD, x, y));
 							add(bItem);
 						}
 					}
 				}
 				
-				if(selectedUnit.getTemplateView().canAttack() && targetUnit.getTemplateView().getPlayer()!=playernum) {
+				if(selectedUnit.getTemplateView().canAttack() 
+						&& targetUnit.getTemplateView().getPlayer()!=playernum) {
 					// attack the target
-					//Action action = new TargetedAction(selectedID, ActionType.COMPOUNDATTACK, rightSelected);
-					//log("=> Action: " + action);
-					//agent.addAction(action);
+					// Action action = new TargetedAction(selectedID,
+					// ActionType.COMPOUNDATTACK, rightSelected);
+					// log("=> Action: " + action);
+					// agent.addAction(action);
 					JMenuItem attackItem = new JMenuItem("Attack");
-					attackItem.addActionListener(new PopupActionListener(selectedID, rightSelected, ActionType.COMPOUNDATTACK));
+					attackItem.addActionListener(new PopupActionListener(selectedID, rightSelected,
+							ActionType.COMPOUNDATTACK));
 					add(attackItem);
-				} else if(selectedUnit.getCargoAmount()>0 && 
-						((targetUnit.getTemplateView().canAcceptGold() && selectedUnit.getCargoType()==ResourceType.GOLD) ||
-								(targetUnit.getTemplateView().canAcceptWood() && selectedUnit.getCargoType()==ResourceType.WOOD))) {
-					// target is townhall or Barracks, and the peasant holds the gold or wood
+				} else if(selectedUnit.getCargoAmount() > 0
+						&& ((targetUnit.getTemplateView().canAccept(selectedUnit.getCargoType()
+								.getName())))) {
+					// target is townhall or Barracks, and the peasant holds the
+					// gold or wood
 					JMenuItem depositItem = new JMenuItem("Deposit " + selectedUnit.getCargoType());
-					depositItem.addActionListener(new PopupActionListener(selectedID, rightSelected, ActionType.COMPOUNDDEPOSIT));
+					depositItem.addActionListener(new PopupActionListener(selectedID,
+							rightSelected, ActionType.COMPOUNDDEPOSIT));
 					add(depositItem);
-				} 
-			} else if(state.resourceAt(x, y)!=null) { // gather resource if doable
+				}
+			} else if(state.resourceAt(x, y) != null) { // gather resource if
+														// doable
 				/** right click on a resource */
 				int rightSelected = state.resourceAt(x, y);
 				if(selectedUnit.getTemplateView().canGather()) {
-					JMenuItem gatherItem = new JMenuItem("Gather " + state.getResourceNode(rightSelected).getType());
-					gatherItem.addActionListener(new PopupActionListener(selectedID, rightSelected, ActionType.COMPOUNDGATHER));
+					JMenuItem gatherItem = new JMenuItem("Gather "
+							+ state.getResourceNode(rightSelected).getType());
+					gatherItem.addActionListener(new PopupActionListener(selectedID, rightSelected,
+							ActionType.COMPOUNDGATHER));
 					add(gatherItem);
 				}
-			} else { 
+			} else {
 				/** right click on a blank */
-				if(selectedUnit.getTemplateView().getProduces()!=null &&
-						selectedUnit.getTemplateView().getProduces().size()>0 &&
-						selectedUnit.getTemplateView().canBuild()) {
-					// build some unit 
-					List<Integer> productions = selectedUnit.getTemplateView().getProduces();
-					for(int prodTempID : productions) {
-						JMenuItem bItem = new JMenuItem("Build " + state.getTemplate(prodTempID).getName());
-						bItem.addActionListener(new PopupActionListener(selectedID, prodTempID, ActionType.COMPOUNDBUILD, x, y));
+				if(selectedUnit.getTemplateView().getProduces() != null
+						&& selectedUnit.getTemplateView().getProduces().size() > 0
+						&& selectedUnit.getTemplateView().canBuild()) {
+					// build some unit
+					List<String> productions = selectedUnit.getTemplateView().getProduces();
+					for(String prodTemp : productions) {
+						TemplateView template = state.getTemplate(selectedUnit.getTemplateView().getPlayer(), prodTemp);
+						JMenuItem bItem = new JMenuItem("Build " + prodTemp);
+						bItem.addActionListener(new PopupActionListener(selectedID, template.getID(),
+								ActionType.COMPOUNDBUILD, x, y));
 						add(bItem);
 					}
 				}
 				if(selectedUnit.getTemplateView().canMove()) {
 					// move
 					JMenuItem moveItem = new JMenuItem("Move");
-					moveItem.addActionListener(new PopupActionListener(selectedID, -1, ActionType.COMPOUNDMOVE, x, y));
+					moveItem.addActionListener(new PopupActionListener(selectedID, -1,
+							ActionType.COMPOUNDMOVE, x, y));
 					add(moveItem);
 				}
 			}
-			
+
 			// if can produce (not build)
-			if(selectedUnit.getTemplateView().getProduces()!=null &&
-					selectedUnit.getTemplateView().getProduces().size()>0 &&
-					!selectedUnit.getTemplateView().canBuild()) {
+			if(selectedUnit.getTemplateView().getProduces() != null
+					&& selectedUnit.getTemplateView().getProduces().size() > 0
+					&& !selectedUnit.getTemplateView().canBuild()) {
 				// produce some unit
-				List<Integer> productions = selectedUnit.getTemplateView().getProduces();
-				for(int prodTempID : productions) {
-					JMenuItem bItem = new JMenuItem("Produce " + state.getTemplate(prodTempID).getName());
-					bItem.addActionListener(new PopupActionListener(selectedID, prodTempID, ActionType.COMPOUNDPRODUCE));
+				List<String> productions = selectedUnit.getTemplateView().getProduces();
+				for(String prodTemp : productions) {
+					TemplateView template = state.getTemplate(selectedUnit.getTemplateView().getPlayer(), prodTemp);
+					JMenuItem bItem = new JMenuItem("Produce "
+							+ prodTemp);
+					bItem.addActionListener(new PopupActionListener(selectedID, template.getID(),
+							ActionType.COMPOUNDBUILD));//ActionType.COMPOUNDPRODUCE));
 					add(bItem);
 				}
-			} 
+			}
 		}
-		
+
 		private class PopupActionListener implements ActionListener {
 			private int source;
 			private int target;
 			private ActionType actionType;
 			private int x;
 			private int y;
+
 			public PopupActionListener(int source, int target, ActionType actionType) {
 				this.source = source;
 				this.target = target;
 				this.actionType = actionType;
 			}
+
 			public PopupActionListener(int source, int target, ActionType actionType, int x, int y) {
 				this.source = source;
 				this.target = target;
@@ -329,18 +343,19 @@ public class GamePanel extends JPanel {
 				this.x = x;
 				this.y = y;
 			}
+
 			public void actionPerformed(ActionEvent event) {
 				Action action = null;
-				switch (actionType) {
+				switch(actionType) {
 				case COMPOUNDATTACK:
 					action = Action.createCompoundAttack(source, target);
 					break;
 				case COMPOUNDDEPOSIT:
 					action = Action.createCompoundDeposit(source, target);
 					break;
-				case COMPOUNDPRODUCE:
-					action = Action.createCompoundProduction(source, target);
-					break;
+//				case COMPOUNDPRODUCE:
+//					action = Action.createCompoundProduction(source, target);
+//					break;
 				case COMPOUNDBUILD:
 					action = Action.createCompoundBuild(source, target, x, y);
 					break;
@@ -353,68 +368,72 @@ public class GamePanel extends JPanel {
 				default:
 					return;
 				}
-				//agent.writeLineVisual("=> Action: " + action); //TODO - add in visual log
+				// agent.writeLineVisual("=> Action: " + action); //TODO - add
+				// in visual log
 				agent.addAction(action);
 			}
 		}
-		
+
 	}
-	
+
 	private void infoVisual(MouseEvent e) {
 		int x = latestContext.convertPixelToGameWorldX(e.getX());
 		int y = latestContext.convertPixelToGameWorldY(e.getY());
 		StateView state = currentState;
-		if(e.getButton()==MouseEvent.BUTTON1 && e.getClickCount()==2) { // double click
-			//System.out.println("double clicked!");
+		if(e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) { // double
+																			// click
+			// System.out.println("double clicked!");
 			infoVisSelectedID = -1;
 			info = null;
-			if(state.unitAt(x, y)!=null) {
+			if(state.unitAt(x, y) != null) {
 				infoVisSelectedID = state.unitAt(x, y);
 				info = new Info(state, infoVisSelectedID);
-			} else if(state.resourceAt(x, y)!=null) {
+			} else if(state.resourceAt(x, y) != null) {
 				infoVisSelectedID = state.resourceAt(x, y);
 				info = new Info(state, infoVisSelectedID);
 			}
 		}
 	}
-	
+
 	private void humanControl(MouseEvent e) {
 		int x = latestContext.convertPixelToGameWorldX(e.getX());
 		int y = latestContext.convertPixelToGameWorldY(e.getY());
 		StateView state = currentState;
-		//System.out.println(x+","+y);
-		if(e.getButton()==MouseEvent.BUTTON1) { // left click
-			//System.out.println("Left clicked");
+		// System.out.println(x+","+y);
+		if(e.getButton() == MouseEvent.BUTTON1) { // left click
+			// System.out.println("Left clicked");
 			selectedID = -1;
-			if(state.unitAt(x, y)!=null) {
+			if(state.unitAt(x, y) != null) {
 				int leftSelected = state.unitAt(x, y);
-				if(state.getUnit(leftSelected).getTemplateView().getPlayer()==playernum)
+				if(state.getUnit(leftSelected).getTemplateView().getPlayer() == playernum)
 					selectedID = leftSelected;
-				return ;
+				return;
 			}
-		} else if(e.getButton()==MouseEvent.BUTTON3) { // right click
-			//System.out.println("Right clicked");
-			if(selectedID>=0) {
+		} else if(e.getButton() == MouseEvent.BUTTON3) { // right click
+			// System.out.println("Right clicked");
+			if(selectedID >= 0) {
 				UnitView myUnit = state.getUnit(selectedID);
-				if(myUnit==null) { // the selected unit is dead or you can't see it
+				if(myUnit == null) { // the selected unit is dead or you can't
+										// see it
 					selectedID = -1;
-					return ;
+					return;
 				}
 				PopupActionMenu actionMenu = new PopupActionMenu(currentState, e, myUnit);
 				actionMenu.show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
 	}
-	
-	private class Info{
+
+	private class Info {
 		StateView state;
 		int id;
 		String info;
-		
+
 		public Info(StateView state, int id) {
 			this.state = state;
 			this.id = id;
 		}
+
 		public int getX() {
 			if(state.getUnit(id)!=null)
 				return latestContext.convertGameWorldToPixelX(state.getUnit(id).getXPosition());
@@ -423,6 +442,7 @@ public class GamePanel extends JPanel {
 			else
 				return -1;
 		}
+
 		public int getY() {
 			if(state.getUnit(id)!=null)
 				return latestContext.convertGameWorldToPixelY(state.getUnit(id).getYPosition());
@@ -430,17 +450,18 @@ public class GamePanel extends JPanel {
 				return latestContext.convertGameWorldToPixelY(state.getResourceNode(id).getYPosition()); 
 			return -1;
 		}
-		public String getInfo() { 
-			if(state.getUnit(id)!=null) {
+
+		public String getInfo() {
+			if(state.getUnit(id) != null) {
 				info = "ID: " + id;
 				UnitView unit = state.getUnit(id);
 				info += "\nHP: " + unit.getHP();
 				if(unit.getTemplateView().canGather()) {
 					if(unit.getCargoAmount()>0)
-						info += "\n" + unit.getCargoType().toString() + ": " + unit.getCargoAmount();
+						info += "\n" + unit.getCargoType().toString() + ": "
+								+ unit.getCargoAmount();
 				}
-			}
-			else {
+			} else {
 				info = "";
 				ResourceView resource = state.getResourceNode(id);
 				info += resource.getType().toString() + ": " + resource.getAmountRemaining();

@@ -29,7 +29,7 @@ import edu.cwru.sepia.model.history.History.HistoryView;
 import edu.cwru.sepia.model.history.RevealedResourceNodeLog;
 import edu.cwru.sepia.model.state.ResourceNode;
 import edu.cwru.sepia.model.state.ResourceNode.ResourceView;
-import edu.cwru.sepia.model.state.ResourceNode.Type;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Tile.TerrainType;
@@ -40,7 +40,8 @@ import edu.cwru.sepia.model.state.Unit.UnitView;
  *
  */
 public class DefaultGameDrawer implements GameDrawer {
-
+	static String TREE_TYPE_NAME = "TREE";
+	static String GOLD_MINE_TYPE_NAME = "GOLD_MINE";
 	private StateView state;
 	private HistoryView history;
 	private Color[] playerColors;
@@ -146,11 +147,11 @@ public class DefaultGameDrawer implements GameDrawer {
 	        for (RevealedResourceNodeLog rrl : history.getRevealedResourceNodeLogs())
 	        {
 	        	if (rrl.getResourceNodeXPosition() == x && rrl.getResourceNodeYPosition() == y)
-	        	if (rrl.getResourceNodeType()==Type.GOLD_MINE)
+	        	if (GOLD_MINE_TYPE_NAME.equals(rrl.getResourceNodeType().getName()))
 	        	{
 	        		revealedMine.draw(g, context.convertGameWorldToPixelX(x), context.convertGameWorldToPixelY(y));
 	        	}
-	        	else if (rrl.getResourceNodeType()==Type.TREE)
+	        	else if (TREE_TYPE_NAME.equals(rrl.getResourceNodeType().getName()))
 	        	{
 	        		revealedTree.draw(g, context.convertGameWorldToPixelX(x), context.convertGameWorldToPixelY(y));
 	        	}
@@ -244,16 +245,15 @@ public class DefaultGameDrawer implements GameDrawer {
 	 */
 	public void drawResourceNode(DrawingContext context, Graphics g, int x,
 			int y, ResourceView resourceNode) {
-		switch(resourceNode.getType()) {
-        case TREE:
+		String resourceTypeName = resourceNode.getType().getName();
+        if (TREE_TYPE_NAME.equals(resourceTypeName)) {
         	drawTree(g, context.convertGameWorldToPixelX(resourceNode.getXPosition()), context.convertGameWorldToPixelY(resourceNode.getYPosition()));
-        	break;
-        case GOLD_MINE:
+        } else if (GOLD_MINE_TYPE_NAME.equals(resourceTypeName)) {
         	drawMine(g, context.convertGameWorldToPixelX(resourceNode.getXPosition()), context.convertGameWorldToPixelY(resourceNode.getYPosition()));
-        	break;
-        default:
-        	break;
+        } else {
+        	drawUnknownResource(g, context.convertGameWorldToPixelX(resourceNode.getXPosition()), context.convertGameWorldToPixelY(resourceNode.getYPosition()));
         }
+        
 	}
 	/**
 	 * Draws a unit in a specific place on the map
@@ -359,6 +359,22 @@ public class DefaultGameDrawer implements GameDrawer {
 		Color previous = g.getColor();
 		g.setColor(new Color(0xFF,0xFF,0x33));					
 		g.fillRect(topLeftX+6, topLeftY+6, 20, 20);
+		g.setColor(previous);
+	}
+	
+	/**
+	 * Internal method to draw an unknown resource
+	 * <br>Override 
+	 * @param g
+	 * @param scaleX
+	 * @param scaleY
+	 */
+	void drawUnknownResource(Graphics g, int topLeftX, int topLeftY) {
+		Color previous = g.getColor();
+		g.setColor(new Color(0x0F,0x8,0x33));					
+		g.fillRect(topLeftX+6, topLeftY+6, 20, 20);
+		g.setColor(new Color(0x0F,0x33,0x8));
+		g.drawString("?", topLeftX, topLeftY+18);
 		g.setColor(previous);
 	}
 	/* (non-Javadoc)

@@ -19,7 +19,7 @@
  */
 package edu.cwru.sepia.environment.persistence;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.Random;
@@ -32,14 +32,12 @@ import edu.cwru.sepia.model.history.History;
 import edu.cwru.sepia.model.persistence.HistoryAdapter;
 
 public class HistoryAdapterTest {
-	
-	
+
 	@Test
 	public void test() throws JAXBException, IOException {
 		History h = AdapterTestUtil.createExampleHistory(new Random());
 		History copy = HistoryAdapter.fromXml(HistoryAdapter.toXml(h));
-//		JAXBContext.newInstance(XmlHistory.class).createMarshaller().marshal(HistoryAdapter.toXml(h), new FileWriter(new File("temp.temp")));
-		assertTrue("Problem in either copying to or copying from xml",h.deepEquals(copy));
-		assertTrue("Problem in either copying to or copying from xml, and also deepequals isn't symmetric",copy.deepEquals(h));
+		assertEquals("Problem in either copying to or copying from xml", h, copy);
+		assertEquals("Problem in either copying to or copying from xml, and also equals isn't symmetric", copy, h);
 	}
 }

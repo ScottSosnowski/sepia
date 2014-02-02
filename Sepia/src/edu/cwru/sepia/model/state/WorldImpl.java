@@ -24,6 +24,7 @@ import java.util.Arrays;
 
 import edu.cwru.sepia.model.state.Tile.TerrainType;
 import edu.cwru.sepia.util.DeepEquatableUtil;
+import edu.cwru.sepia.util.Rectangle;
 import edu.cwru.sepia.util.Util;
 
 /**
@@ -139,6 +140,15 @@ public class WorldImpl implements World, WorldBuilder, Serializable {
 	{
 		return x >= 0 && y >= 0 && x < getXExtent() && y < getYExtent(); 
 	}
+	
+	@Override
+	public boolean inBounds(Rectangle rect) {
+		return rect.getLeft() >= 0 &&
+				rect.getRight() <= getXExtent() &&
+				rect.getTop() >= 0 &&
+				rect.getBottom() <= getYExtent();
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.cwru.sepia.environment.model.state.WorldBuilder#getWorld()
 	 */

@@ -19,69 +19,49 @@
  */
 package edu.cwru.sepia.action;
 
-import edu.cwru.sepia.util.DeepEquatable;
-import edu.cwru.sepia.util.DeepEquatableUtil;
-
 /**
- * An immutable (so long as Action is) result giving feedback on a specific action.
+ * An immutable (so long as Action is) result giving feedback on a specific
+ * action.
+ * 
  * @author The Condor
- *
+ * 
  */
-public class ActionResult implements DeepEquatable {
+public class ActionResult {
 	private final Action action;
 	private final ActionResultType result;
-	
-	public ActionResult(Action action, ActionResultType result)
-	{
+
+	public ActionResult(Action action, ActionResultType result) {
 		this.action = action;
 		this.result = result;
 	}
-	
-	public Action getAction()
-	{
+
+	public Action getAction() {
 		return action;
 	}
-	
-	public ActionResultType getFeedback()
-	{
+
+	public ActionResultType getFeedback() {
 		return result;
 	}
-	
+
 	@Override
-	public boolean equals(Object other)
-	{
-		if (this == other)
+	public boolean equals(Object other) {
+		if(this == other)
 			return true;
-		if (!(other instanceof ActionResult))
+		if(!(other instanceof ActionResult))
 			return false;
-		ActionResult arother= (ActionResult)other;
+		ActionResult arother = (ActionResult)other;
 		return this.action.equals(arother.action) && this.result == arother.result;
 	}
-	
+
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		int prime = 61;
-		return prime*action.hashCode() + result.hashCode();
+		return prime * action.hashCode() + result.hashCode();
 	}
-	
-	@Override 
-	public String toString()
-	{
-		return "ActionResult: "+action + " result:"+result;
-	}
-	
+
 	@Override
-	public boolean deepEquals(Object other) {
-		if (this == other)
-			return true;
-		if (other == null || !this.getClass().equals(other.getClass()))
-			return false;
-		ActionResult o = (ActionResult)other;
-		if (!DeepEquatableUtil.deepEquals(this.action,o.action))
-			return false;
-		if (this.result != o.result)
-			return false;
-		return true;
+	public String toString() {
+		return "ActionResult: " + action + " result:" + result;
 	}
+
 }

@@ -18,8 +18,10 @@
     along with SEPIA.  If not, see <http://www.gnu.org/licenses/>.
  */
 package edu.cwru.sepia.environment.persistence;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.Random;
@@ -27,51 +29,53 @@ import java.util.Random;
 import org.junit.Test;
 
 import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
+import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.StateCreator;
+
 public class RawStateCreatorTest {
-	
+
 	/**
 	 * Uses the xml methods for compares because they are already there. <br/>
 	 * TODO: make a state generating method in test that doesn't use xml
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	@Test
-	public void testState() throws IOException
-	{
+	public void testState() throws IOException {
 		Random r = new Random();
 		State.StateBuilder s = new State.StateBuilder();
-		int nplayers=r.nextInt(6);
-		int nresource=r.nextInt(12)+2;
-		for (int i = 0; i<nplayers; i++)
-		{
+		int nplayers = r.nextInt(6);
+		int nresource = r.nextInt(12) + 2;
+		for(int i = 0; i < nplayers; i++) {
 			AdapterTestUtil.createExamplePlayer(r);
 		}
-		for (int i = 0; i<nresource; i++) {
-//			AdapterTestUtil.createExampleResource(, );
+		for(int i = 0; i < nresource; i++) {
+			// AdapterTestUtil.createExampleResource(, );
 		}
 		State state = s.build();
 		StateCreator stateCreator = state.getStateCreator();
-		
-		//Sanity Check
-		assertTrue("state doesn't deep equal itself",state.deepEquals(state));
-		
+
+		// Sanity Check
+		assertEquals("state doesn't deep equal itself", state, state);
+
 		State stateCopy = stateCreator.createState();
 		State stateCopy2 = stateCreator.createState();
-		
-		assertTrue("Bad copy made",state.deepEquals(stateCopy));
-		assertTrue("Bad copy made",state.deepEquals(stateCopy2));
-		
-		
-		//Make sure that the new are not linked to the old one 
-		state.addResource(new ResourceNode(ResourceNode.Type.GOLD_MINE, 4, 4, 343, state.nextTargetId()));
-		assertFalse("Copy linked to original",state.deepEquals(stateCopy));
-		assertFalse("Copy linked to original",state.deepEquals(stateCopy2));
-		
-		//Do the same thing to a copy 
-		stateCopy.addResource(new ResourceNode(ResourceNode.Type.GOLD_MINE, 4, 4, 343, stateCopy.nextTargetId()));
-		
-		assertTrue("Deep Equals not doing equivalent",stateCopy.deepEquals(state));
-		assertFalse("Copies linked to each other",stateCopy.deepEquals(stateCopy2));
+
+		assertEquals("Bad copy made", state, stateCopy);
+		assertEquals("Bad copy made", state, stateCopy2);
+
+		ResourceNodeType mine = new ResourceNodeType("GOLD_MINE", new ResourceType("GOLD"));
+		// Make sure that the new are not linked to the old one
+		state.addResource(new ResourceNode(mine, 4, 4, 343, state.nextTargetId()));
+		assertThat("Copy linked to original", state, not(stateCopy));
+		assertThat("Copy linked to original", state, not(stateCopy2));
+
+		// Do the same thing to a copy
+		stateCopy.addResource(new ResourceNode(mine, 4, 4, 343, stateCopy.nextTargetId()));
+
+		assertEquals("Equals not doing equivalent", stateCopy, state);
+		assertThat("Copies linked to each other", stateCopy, not(stateCopy2));
 	}
 }

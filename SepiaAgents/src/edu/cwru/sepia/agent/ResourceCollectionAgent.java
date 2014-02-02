@@ -44,7 +44,7 @@ import edu.cwru.sepia.model.history.History;
 import edu.cwru.sepia.model.history.History.HistoryView;
 import edu.cwru.sepia.model.state.ResourceNode;
 import edu.cwru.sepia.model.state.ResourceNode.ResourceView;
-import edu.cwru.sepia.model.state.ResourceNode.Type;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Template.TemplateView;
@@ -328,11 +328,11 @@ public class ResourceCollectionAgent extends Agent {
 			continueWorking(builder, state, workingWorkers, workingTownHalls);
 			break;
 		case GOLD:
-			assignPeasantsToResource(builder, state, new ArrayList<Integer>(idleWorkers), ResourceNode.Type.GOLD_MINE);
+			assignPeasantsToResource(builder, state, new ArrayList<Integer>(idleWorkers), new ResourceNodeType("GOLD_MINE", new ResourceType("GOLD")));
 			continueWorking(builder, state, workingWorkers, workingTownHalls);
 			break;
 		case WOOD:
-			assignPeasantsToResource(builder, state, new ArrayList<Integer>(idleWorkers), ResourceNode.Type.TREE);
+			assignPeasantsToResource(builder, state, new ArrayList<Integer>(idleWorkers), new ResourceNodeType("TREE", new ResourceType("WOOD")));
 			continueWorking(builder, state, workingWorkers, workingTownHalls);
 			break;
 		}
@@ -364,7 +364,7 @@ public class ResourceCollectionAgent extends Agent {
 	 * @param resourceNodeType
 	 */
 	private void assignPeasantsToResource(Map<Integer, Action> builder, StateView state,
-			List<Integer> workerIds, ResourceNode.Type resourceNodeType) {
+			List<Integer> workerIds, ResourceNodeType resourceNodeType) {
 		for (Integer workerId : workerIds) {
 			assignPeasantToResource(builder, state, workerId, resourceNodeType);
 		}
@@ -378,11 +378,11 @@ public class ResourceCollectionAgent extends Agent {
 	 * @param resourceNodeType
 	 */
 	private void assignPeasantToResource(Map<Integer, Action> builder,
-			StateView state, Integer workerId, ResourceNode.Type resourceNodeType) {
+			StateView state, Integer workerId, ResourceNodeType resourceNodeType) {
 		UnitView worker = state.getUnit(workerId);
 		logger.finest("Trying to give unit "+workerId + " gather/deposit task for " + resourceNodeType);
 		
-		if (worker.getCargoType() == ResourceNode.Type.getResourceType(resourceNodeType) && worker.getCargoAmount() > 0) {
+		if (resourceNodeType.equals(worker.getCargoType()) && worker.getCargoAmount() > 0) {
 			//If you are carrying any of the right resource, go home
 			Integer closestTownHallId = null;
 			int closestTownHallDistance = -1;
@@ -414,7 +414,7 @@ public class ResourceCollectionAgent extends Agent {
 			Integer closestResourceNodeId = null;
 			int closestResourceNodeDistance = -1;
 			
-			for (ResourceView resourceNode : state.getResourceNodes(resourceNodeType)) {
+			for (ResourceView resourceNode : state.getResourceNodes(resourceNodeType.getName())) {
 				int distance = DistanceMetrics.chebyshevDistance(worker.getXPosition(), worker.getYPosition(), resourceNode.getXPosition(), resourceNode.getYPosition());
 				if (closestResourceNodeId == null || closestResourceNodeDistance > distance) {
 					closestResourceNodeId = resourceNode.getID();
@@ -457,7 +457,7 @@ public class ResourceCollectionAgent extends Agent {
 				action = Action.createCompoundBuild(idleBuilderId, builtTemplate.getID(), closestXY[0], closestXY[1]);
 				logger.finest("Unit ordered to build a " + builtTemplate.getName() + " at "+closestXY[0] + "," + closestXY[1]);
 			} else {
-				action = Action.createCompoundProduction(idleBuilderId, builtTemplate.getID());
+				action = Action.createPrimitiveProduction(idleBuilderId, builtTemplate.getID());
 			}
 			actionMap.put(idleBuilderId, action);
 			if (idleWorkers.remove(idleBuilderId)) {

@@ -40,12 +40,14 @@ import edu.cwru.sepia.model.history.EventLogger;
 import edu.cwru.sepia.model.history.History;
 import edu.cwru.sepia.model.history.PlayerHistory;
 import edu.cwru.sepia.model.persistence.ActionAdapter;
+import edu.cwru.sepia.model.persistence.ResourceAdapter;
 import edu.cwru.sepia.model.persistence.generated.XmlAction;
 import edu.cwru.sepia.model.persistence.generated.XmlDirectedAction;
 import edu.cwru.sepia.model.persistence.generated.XmlLocatedAction;
 import edu.cwru.sepia.model.persistence.generated.XmlLocatedProductionAction;
 import edu.cwru.sepia.model.persistence.generated.XmlPlayer;
 import edu.cwru.sepia.model.persistence.generated.XmlProductionAction;
+import edu.cwru.sepia.model.persistence.generated.XmlResourceParameters;
 import edu.cwru.sepia.model.persistence.generated.XmlResourceQuantity;
 import edu.cwru.sepia.model.persistence.generated.XmlTargetedAction;
 import edu.cwru.sepia.model.persistence.generated.XmlTemplate;
@@ -54,7 +56,7 @@ import edu.cwru.sepia.model.persistence.generated.XmlUnit;
 import edu.cwru.sepia.model.persistence.generated.XmlUnitTemplate;
 import edu.cwru.sepia.model.persistence.generated.XmlUpgradeTemplate;
 import edu.cwru.sepia.model.state.Direction;
-import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.Template;
@@ -65,73 +67,73 @@ public class AdapterTestUtil {
 
 	@SuppressWarnings("rawtypes")
 	@BeforeClass
-	public static Map<Integer,Template> loadTemplates() throws FileNotFoundException, JAXBException {
-		Map<Integer,Template> templates = new HashMap<Integer,Template>();
-		List<Template<?>> templateList = TypeLoader.loadFromFile("data/unit_templates", 0,new State());
-		for(Template t : templateList)
-		{
-			templates.put(t.getID(),t);
+	public static Map<Integer, Template> loadTemplates() throws FileNotFoundException,
+			JAXBException {
+		Map<Integer, Template> templates = new HashMap<Integer, Template>();
+		List<Template<?>> templateList = TypeLoader.loadFromFile("../Sepia/data/templates.xml", 0,
+				new State());
+		for(Template t : templateList) {
+			templates.put(t.getID(), t);
 		}
 		return templates;
 	}
-	
-	public static XmlUnit createExampleUnit(Random r, List<XmlUnitTemplate> unittemplates, List<XmlTemplate> alltemplates) {
+
+	public static XmlUnit createExampleUnit(Random r, List<XmlUnitTemplate> unittemplates,
+			List<XmlTemplate> alltemplates) {
 		XmlUnit xml = new XmlUnit();
 		XmlUnitTemplate chosentemplate = unittemplates.get(r.nextInt(unittemplates.size()));
 		xml.setID(r.nextInt());
-		if (chosentemplate.isCanGather())
-		{
+		if(chosentemplate.isCanGather()) {
 			xml.setCargoAmount(r.nextInt());
-			xml.setCargoType(ResourceType.values()[r.nextInt(ResourceType.values().length)]);
+			ResourceType[] types = new ResourceType[] { new ResourceType("GOLD"),
+					new ResourceType("WOOD") };
+			xml.setCargoType(ResourceAdapter.toXml(types[r.nextInt(types.length)]));
 		}
-		xml.setCurrentHealth(r.nextInt(chosentemplate.getBaseHealth())+1);
-		
-//		//random template it can make:
-//		boolean invalidproduction = true;
-//		Integer thingtoproduce = null;
-//		while (invalidproduction)
-//		{
-//			XmlTemplate toproduces = alltemplates.get(r.nextInt(alltemplates.size()));
-//			if (chosentemplate.getProduces().contains(toproduces.getName()))
-//			{
-//				thingtoproduce = toproduces.getID();
-//				invalidproduction=false;
-//			}
-//		}
+		xml.setCurrentHealth(r.nextInt(chosentemplate.getBaseHealth()) + 1);
+
+		// //random template it can make:
+		// boolean invalidproduction = true;
+		// Integer thingtoproduce = null;
+		// while (invalidproduction)
+		// {
+		// XmlTemplate toproduces =
+		// alltemplates.get(r.nextInt(alltemplates.size()));
+		// if (chosentemplate.getProduces().contains(toproduces.getName()))
+		// {
+		// thingtoproduce = toproduces.getID();
+		// invalidproduction=false;
+		// }
+		// }
 		xml.setProgressAmount(r.nextInt());
-		xml.setProgressPrimitive(createExampleAction(xml.getID(),r));
+		xml.setProgressPrimitive(createExampleAction(xml.getID(), r));
 		xml.setTemplateID(chosentemplate.getID());
 		xml.setXPosition(r.nextInt());
 		xml.setYPosition(r.nextInt());
 		return xml;
 	}
-	public static XmlAction createExampleAction(int unitId,Random r)
-	{
-		//pick a random type or null, then pick some random arguments
+
+	public static XmlAction createExampleAction(int unitId, Random r) {
+		// pick a random type or null, then pick some random arguments
 		int ntypes = ActionType.values().length;
-		int typeind=r.nextInt(ntypes);
-		
+		int typeind = r.nextInt(ntypes);
+
 		ActionType type = ActionType.values()[typeind];
-		switch (type)
-		{
-		case COMPOUNDATTACK:
-		{
+		switch(type) {
+		case COMPOUNDATTACK: {
 			XmlTargetedAction a = new XmlTargetedAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			a.setTargetId(r.nextInt());
 			return a;
 		}
-		case COMPOUNDDEPOSIT:
-		{
+		case COMPOUNDDEPOSIT: {
 			XmlTargetedAction a = new XmlTargetedAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			a.setTargetId(r.nextInt());
 			return a;
 		}
-		case COMPOUNDMOVE:
-		{
+		case COMPOUNDMOVE: {
 			XmlLocatedAction a = new XmlLocatedAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
@@ -139,24 +141,14 @@ public class AdapterTestUtil {
 			a.setY(r.nextInt());
 			return a;
 		}
-		case COMPOUNDGATHER:
-		{
+		case COMPOUNDGATHER: {
 			XmlTargetedAction a = new XmlTargetedAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			a.setTargetId(r.nextInt());
 			return a;
 		}
-		case COMPOUNDPRODUCE:
-		{
-			XmlProductionAction a = new XmlProductionAction();
-			a.setActionType(type);
-			a.setUnitId(unitId);
-			a.setTemplateId(r.nextInt());
-			return a;
-		}
-		case COMPOUNDBUILD:
-		{
+		case COMPOUNDBUILD: {
 			XmlLocatedProductionAction a = new XmlLocatedProductionAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
@@ -165,74 +157,69 @@ public class AdapterTestUtil {
 			a.setTemplateId(r.nextInt());
 			return a;
 		}
-		case PRIMITIVEATTACK:
-		{
+		case PRIMITIVEATTACK: {
 			XmlTargetedAction a = new XmlTargetedAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			a.setTargetId(r.nextInt());
 			return a;
 		}
-		case PRIMITIVEDEPOSIT:
-		{
+		case PRIMITIVEDEPOSIT: {
 			XmlDirectedAction a = new XmlDirectedAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			a.setDirection(Direction.values()[r.nextInt(Direction.values().length)]);
 			return a;
 		}
-		case PRIMITIVEMOVE:
-		{
+		case PRIMITIVEMOVE: {
 			XmlDirectedAction a = new XmlDirectedAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			a.setDirection(Direction.values()[r.nextInt(Direction.values().length)]);
 			return a;
 		}
-		case PRIMITIVEGATHER:
-		{
+		case PRIMITIVEGATHER: {
 			XmlDirectedAction a = new XmlDirectedAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			a.setDirection(Direction.values()[r.nextInt(Direction.values().length)]);
 			return a;
 		}
-		case PRIMITIVEPRODUCE:
-		{
+		case PRIMITIVEPRODUCE: {
 			XmlProductionAction a = new XmlProductionAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			a.setTemplateId(r.nextInt());
 			return a;
 		}
-		case PRIMITIVEBUILD:
-		{
+		case PRIMITIVEBUILD: {
 			XmlProductionAction a = new XmlProductionAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			a.setTemplateId(r.nextInt());
 			return a;
 		}
-		case FAILED:
-		{
+		case FAILED: {
 			XmlAction a = new XmlAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			return a;
 		}
-		case FAILEDPERMANENTLY:
-		{
+		case FAILEDPERMANENTLY: {
 			XmlAction a = new XmlAction();
 			a.setActionType(type);
 			a.setUnitId(unitId);
 			return a;
 		}
 		default:
-			throw new RuntimeException("Test is not up to date with action types: "+type +" is not covered");
+			throw new RuntimeException("Test is not up to date with action types: " + type
+					+ " is not covered");
 		}
-		
+
 	}
-	public static XmlUpgradeTemplate createExampleUpgradeTemplate(Random r, List<Integer> idsofunits, List<Integer> idsofupgrades) {
+
+	public static XmlUpgradeTemplate createExampleUpgradeTemplate(Random r,
+			List<String> idsofunits, List<String> idsofupgrades) {
 		XmlUpgradeTemplate xml = new XmlUpgradeTemplate();
 		xml.setID(r.nextInt());
 		xml.setPiercingAttackChange(r.nextInt());
@@ -241,51 +228,52 @@ public class AdapterTestUtil {
 		xml.setHealthChange(r.nextInt());
 		xml.setRangeChange(r.nextInt());
 		xml.setSightRangeChange(r.nextInt());
-		char[] name = new char[r.nextInt(5)+8];
-		for (int i = 0; i<name.length;i++)name[i]=(char)('a'+r.nextInt(26));
+		char[] name = new char[r.nextInt(5) + 8];
+		for(int i = 0; i < name.length; i++)
+			name[i] = (char) ('a' + r.nextInt(26));
 		xml.setName(new String(name));
 		xml.setTimeCost(r.nextInt());
 		xml.setWoodCost(r.nextInt());
-		for (Integer i : idsofunits)
-		{
-			if (r.nextBoolean())
-				xml.getAffectedUnitTypes().add(i);
+		for(String s : idsofunits) {
+			if(r.nextBoolean())
+				xml.getAffectedUnitTypes().add(s);
 		}
-		for (Integer i : idsofunits)
-		{
-			if (r.nextBoolean())
-				xml.getUnitPrerequisite().add(i);
+		for(String s : idsofunits) {
+			if(r.nextBoolean())
+				xml.getUnitPrerequisite().add(s);
 		}
-		for (Integer i : idsofupgrades)
-		{
-			if (r.nextBoolean())
-				xml.getUpgradePrerequisite().add(i);
+		for(String s : idsofupgrades) {
+			if(r.nextBoolean())
+				xml.getUpgradePrerequisite().add(s);
 		}
 		return xml;
 	}
-	public static XmlUnitTemplate createExampleUnitTemplate(Random r, List<Integer> idsofunits, List<Integer> idsofupgrades) {
+
+	public static XmlUnitTemplate createExampleUnitTemplate(Random r, List<String> idsofunits,
+			List<String> idsofupgrades) {
 		XmlUnitTemplate xml = new XmlUnitTemplate();
 		xml.setID(r.nextInt());
-		char[] name = new char[r.nextInt(4)+3];
-		for (int i = 0; i<name.length;i++)name[i]=(char)('a'+r.nextInt(26));
+		char[] name = new char[r.nextInt(4) + 3];
+		for(int i = 0; i < name.length; i++)
+			name[i] = (char) ('a' + r.nextInt(26));
 		xml.setName(new String(name));
 		xml.setTimeCost(r.nextInt());
 		xml.setWoodCost(r.nextInt());
 		xml.setArmor(r.nextInt());
 		xml.setBaseAttack(r.nextInt());
-		xml.setBaseHealth(r.nextInt(Integer.MAX_VALUE-1)+1);
-		xml.setCanAcceptGold(r.nextBoolean());
-		xml.setCanAcceptWood(r.nextBoolean());
+		xml.setBaseHealth(r.nextInt(Integer.MAX_VALUE - 1) + 1);
+		if(r.nextBoolean())
+			xml.getAccepts().add("GOLD");
+		if(r.nextBoolean())
+			xml.getAccepts().add("WOOD");
 		xml.setCanBuild(r.nextBoolean());
 		xml.setCanGather(r.nextBoolean());
 		xml.setCanMove(r.nextBoolean());
-		xml.setCharacter((short)('a'+r.nextInt(26)));
+		xml.setCharacter((short) ('a' + r.nextInt(26)));
 		xml.setFoodProvided(r.nextInt());
-		xml.setGoldGatherRate(r.nextInt());
 		xml.setPiercingAttack(r.nextInt());
 		xml.setRange(r.nextInt());
 		xml.setSightRange(r.nextInt());
-		xml.setWoodGatherRate(r.nextInt());
 		xml.setDurationAttack(r.nextInt());
 		for (TerrainType terrainType : TerrainType.values()) {
 			XmlTerrainDuration terrainDuration = new XmlTerrainDuration();
@@ -294,145 +282,137 @@ public class AdapterTestUtil {
 			xml.getDurationMove().add(terrainDuration);
 		}
 		xml.setDurationDeposit(r.nextInt());
-		xml.setDurationGatherGold(r.nextInt());
-		xml.setDurationGatherWood(r.nextInt());
-		for (Integer i : idsofunits)
-		{
-			if (r.nextBoolean())
-				xml.getProduces().add(i);
+		for(String s : idsofunits) {
+			if(r.nextBoolean())
+				xml.getProduces().add(s);
 		}
-		for (Integer i : idsofupgrades)
-		{
-			if (r.nextBoolean())
-				xml.getProduces().add(i);
+		for(String s : idsofupgrades) {
+			if(r.nextBoolean())
+				xml.getProduces().add(s);
 		}
-		for (Integer i : idsofunits)
-		{
-			if (r.nextBoolean())
-				xml.getUnitPrerequisite().add(i);
+		for(String s : idsofunits) {
+			if(r.nextBoolean())
+				xml.getUnitPrerequisite().add(s);
 		}
-		for (Integer i : idsofupgrades)
-		{
-			if (r.nextBoolean())
-				xml.getUpgradePrerequisite().add(i);
+		for(String s : idsofupgrades) {
+			if(r.nextBoolean())
+				xml.getUpgradePrerequisite().add(s);
 		}
-		
+
+		for(String type : new String[] { "GOLD", "WOOD" }) {
+			XmlResourceParameters params = new XmlResourceParameters();
+			params.setResourceType(type);
+			params.setGatherDuration(r.nextInt());
+			params.setGatherRate(r.nextInt());
+			params.setCapacity(r.nextInt());
+			xml.getResourceParameters().add(params);
+		}
+
 		return xml;
 	}
+
 	public static XmlPlayer createExamplePlayer(Random r) {
 		XmlPlayer xml = new XmlPlayer();
-		
+
 		List<Integer> targetidssofar = new ArrayList<Integer>();
-		List<Integer> unitidssofar=new ArrayList<Integer>();
-		List<Integer> upgradeidssofar=new ArrayList<Integer>();
+		List<String> unitidssofar = new ArrayList<String>();
+		List<String> upgradeidssofar = new ArrayList<String>();
 		List<Integer> unittemplateidssofar = new ArrayList<Integer>();
 		List<Integer> alltemplateidssofar = new ArrayList<Integer>();
 		List<XmlTemplate> alltemplatessofar = new ArrayList<XmlTemplate>();
 		List<Integer> upgradetemplateidssofar = new ArrayList<Integer>();
 		List<XmlUnitTemplate> unittemplatessofar = new ArrayList<XmlUnitTemplate>();
-		for(int i = 0; i < r.nextInt(15)+6; i++)
-		{
-			if  (r.nextBoolean())
-			{
-				XmlUpgradeTemplate toadd = createExampleUpgradeTemplate(r,unitidssofar,upgradeidssofar);
+		for(int i = 0; i < r.nextInt(15) + 6; i++) {
+			if(r.nextBoolean()) {
+				XmlUpgradeTemplate toadd = createExampleUpgradeTemplate(r, unitidssofar,
+						upgradeidssofar);
 				xml.getTemplate().add(toadd);
-				upgradeidssofar.add(toadd.getID());
+				upgradeidssofar.add(toadd.getName());
 				alltemplateidssofar.add(toadd.getID());
 				alltemplatessofar.add(toadd);
 				upgradetemplateidssofar.add(toadd.getID());
-			}
-			else
-			{
-				XmlUnitTemplate toadd = createExampleUnitTemplate(r,unitidssofar,upgradeidssofar);
+			} else {
+				XmlUnitTemplate toadd = createExampleUnitTemplate(r, unitidssofar, upgradeidssofar);
 				xml.getTemplate().add(toadd);
-				unitidssofar.add(toadd.getID());
+				unitidssofar.add(toadd.getName());
 				alltemplateidssofar.add(toadd.getID());
 				alltemplatessofar.add(toadd);
 				unittemplateidssofar.add(toadd.getID());
 				unittemplatessofar.add(toadd);
 			}
 		}
-		//verify ids and names, if they are not unique, the test isn't valid, need to regenerate stuff again
-		for (Integer id :alltemplateidssofar)
-		{
-			if (alltemplateidssofar.indexOf(id) != alltemplateidssofar.lastIndexOf(id))
-			{
+		// verify ids and names, if they are not unique, the test isn't valid,
+		// need to regenerate stuff again
+		for(Integer id : alltemplateidssofar) {
+			if(alltemplateidssofar.indexOf(id) != alltemplateidssofar.lastIndexOf(id)) {
 				return createExamplePlayer(r);
 			}
 		}
-		for (Integer id: unitidssofar)
-		{
-			if (unitidssofar.indexOf(id) != unitidssofar.lastIndexOf(id) || upgradeidssofar.contains(id))
-			{
+		for(String s : unitidssofar) {
+			if(unitidssofar.indexOf(s) != unitidssofar.lastIndexOf(s)
+					|| upgradeidssofar.contains(s)) {
 				return createExamplePlayer(r);
 			}
 		}
-		for (Integer id : upgradeidssofar)
-		{
-			if (upgradeidssofar.indexOf(id) != upgradeidssofar.lastIndexOf(id) || unitidssofar.contains(id))
-			{
+		for(String s : upgradeidssofar) {
+			if(upgradeidssofar.indexOf(s) != upgradeidssofar.lastIndexOf(s)
+					|| unitidssofar.contains(s)) {
 				return createExamplePlayer(r);
 			}
 		}
-		
-		int numunits = r.nextInt(4)+3;
-		for (int i = 0; i<numunits;i++)
-		{
-			XmlUnit toadd = createExampleUnit(r,unittemplatessofar, alltemplatessofar);
+
+		int numunits = r.nextInt(4) + 3;
+		for(int i = 0; i < numunits; i++) {
+			XmlUnit toadd = createExampleUnit(r, unittemplatessofar, alltemplatessofar);
 			xml.getUnit().add(toadd);
 			targetidssofar.add(toadd.getID());
 		}
-		for (Integer id :targetidssofar)
-		{
-			if (targetidssofar.indexOf(id) != targetidssofar.lastIndexOf(id))
-			{
+		for(Integer id : targetidssofar) {
+			if(targetidssofar.indexOf(id) != targetidssofar.lastIndexOf(id)) {
 				return createExamplePlayer(r);
 			}
 		}
 		xml.setID(r.nextInt());
 		xml.setSupply(r.nextInt());
 		xml.setSupplyCap(r.nextInt());
-		
+
 		XmlResourceQuantity gold = new XmlResourceQuantity();
-		gold.setType(ResourceType.GOLD);
+		gold.setType(ResourceAdapter.toXml(ResourceType.GOLD));
 		gold.setQuantity(r.nextInt());
 		xml.getResourceAmount().add(gold);
-		
+
 		XmlResourceQuantity wood = new XmlResourceQuantity();
-		wood.setType(ResourceType.WOOD);
-		wood.setQuantity(r.nextInt());		
+		wood.setType(ResourceAdapter.toXml(ResourceType.WOOD));
+		wood.setQuantity(r.nextInt());
 		xml.getResourceAmount().add(wood);
-		
-		for (Integer i : upgradetemplateidssofar)
-		{
-			if (r.nextBoolean())
+
+		for(Integer i : upgradetemplateidssofar) {
+			if(r.nextBoolean())
 				xml.getUpgrade().add(i);
 		}
-		
+
 		return xml;
 	}
-	
+
 	public static History createExampleHistory(Random r) {
 		final int playerDiff = 20;
 		final int minPlayers = 5;
 		History h = new History();
 		h.setFogOfWar(r.nextBoolean());
-		h.setObserverHistory(createExamplePlayerHistory(r,Agent.OBSERVER_ID));
-		int numPlayers = r.nextInt(playerDiff)+minPlayers;
-		for (int i = 0; i<numPlayers; i++)
-		{
-			//Give it an unused random number
+		h.setObserverHistory(createExamplePlayerHistory(r, Agent.OBSERVER_ID));
+		int numPlayers = r.nextInt(playerDiff) + minPlayers;
+		for(int i = 0; i < numPlayers; i++) {
+			// Give it an unused random number
 			int newplayernum;
-			while (h.getPlayerHistory(newplayernum = r.nextInt(Integer.MAX_VALUE))!=null)
+			while(h.getPlayerHistory(newplayernum = r.nextInt(Integer.MAX_VALUE)) != null)
 				;
-			
-			h.setPlayerHistory(createExamplePlayerHistory(r,newplayernum));
+
+			h.setPlayerHistory(createExamplePlayerHistory(r, newplayernum));
 		}
 		return h;
 	}
 
-	private static PlayerHistory createExamplePlayerHistory(Random r,
-			int newplayernum) {
+	private static PlayerHistory createExamplePlayerHistory(Random r, int newplayernum) {
 		PlayerHistory h = new PlayerHistory(newplayernum);
 		h.setEventLogger(createExampleEventLogger(r));
 		h.setCommandFeedback(createExampleActionResultLogger(r));
@@ -447,20 +427,20 @@ public class AdapterTestUtil {
 		final int numStepsDiff = 100;
 		final double zeroChanceActions = 0.1;
 		final int numActionsDiff = 100;
-		
+
 		int numSteps;
-		if (r.nextDouble()<zeroChanceSteps)
+		if(r.nextDouble() < zeroChanceSteps)
 			numSteps = 0;
 		else
-			numSteps= r.nextInt(numStepsDiff);
-		
-		for (int i = 0; i<numSteps; i++) {
+			numSteps = r.nextInt(numStepsDiff);
+
+		for(int i = 0; i < numSteps; i++) {
 			int numActions;
-			if (r.nextDouble()<zeroChanceActions)
+			if(r.nextDouble() < zeroChanceActions)
 				numActions = 0;
 			else
-				numActions= r.nextInt(numActionsDiff);
-			for (int j = 0; j<numActions; j++)
+				numActions = r.nextInt(numActionsDiff);
+			for(int j = 0; j < numActions; j++)
 				al.addAction(i, ActionAdapter.fromXml(createExampleAction(r.nextInt(), r)));
 		}
 		return al;
@@ -472,21 +452,25 @@ public class AdapterTestUtil {
 		final int numStepsDiff = 100;
 		final double zeroChanceActions = 0.1;
 		final int numActionsDiff = 100;
-		
+
 		int numSteps;
-		if (r.nextDouble()<zeroChanceSteps)
+		if(r.nextDouble() < zeroChanceSteps)
 			numSteps = 0;
 		else
-			numSteps= r.nextInt(numStepsDiff);
-		
-		for (int i = 0; i<numSteps; i++) {
+			numSteps = r.nextInt(numStepsDiff);
+
+		for(int i = 0; i < numSteps; i++) {
 			int numActions;
-			if (r.nextDouble()<zeroChanceActions)
+			if(r.nextDouble() < zeroChanceActions)
 				numActions = 0;
 			else
-				numActions= r.nextInt(numActionsDiff);
-			for (int j = 0; j<numActions; j++)
-				al.addActionResult(i, new ActionResult(ActionAdapter.fromXml(createExampleAction(r.nextInt(), r)),ActionResultType.values()[r.nextInt(ActionResultType.values().length)]));
+				numActions = r.nextInt(numActionsDiff);
+			for(int j = 0; j < numActions; j++)
+				al.addActionResult(
+						i,
+						new ActionResult(
+								ActionAdapter.fromXml(createExampleAction(r.nextInt(), r)),
+								ActionResultType.values()[r.nextInt(ActionResultType.values().length)]));
 		}
 		return al;
 	}
@@ -497,134 +481,142 @@ public class AdapterTestUtil {
 		final int numStepsDiff = 100;
 		final double zeroChanceLogs = 0.1;
 		final int numLogsDiff = 100;
-		
+
 		{
 			int numSteps;
-			if (r.nextDouble()<zeroChanceSteps)
+			if(r.nextDouble() < zeroChanceSteps)
 				numSteps = 0;
 			else
-				numSteps= r.nextInt(numStepsDiff);
-			
-			for (int i = 0; i<numSteps; i++) {
+				numSteps = r.nextInt(numStepsDiff);
+
+			for(int i = 0; i < numSteps; i++) {
 				int numLogs;
-				if (r.nextDouble()<zeroChanceLogs)
+				if(r.nextDouble() < zeroChanceLogs)
 					numLogs = 0;
 				else
-					numLogs= r.nextInt(numLogsDiff);
-				for (int j = 0; j<numLogs; j++)
+					numLogs = r.nextInt(numLogsDiff);
+				for(int j = 0; j < numLogs; j++)
 					el.recordBirth(i, r.nextInt(), r.nextInt(), r.nextInt());
 			}
 		}
 		{
 			int numSteps;
-			if (r.nextDouble()<zeroChanceSteps)
+			if(r.nextDouble() < zeroChanceSteps)
 				numSteps = 0;
 			else
-				numSteps= r.nextInt(numStepsDiff);
-			
-			for (int i = 0; i<numSteps; i++) {
+				numSteps = r.nextInt(numStepsDiff);
+
+			for(int i = 0; i < numSteps; i++) {
 				int numLogs;
-				if (r.nextDouble()<zeroChanceLogs)
+				if(r.nextDouble() < zeroChanceLogs)
 					numLogs = 0;
 				else
-					numLogs= r.nextInt(numLogsDiff);
-				for (int j = 0; j<numLogs; j++)
-					el.recordDamage(i, r.nextInt(), r.nextInt(), r.nextInt(), r.nextInt(), r.nextInt());
+					numLogs = r.nextInt(numLogsDiff);
+				for(int j = 0; j < numLogs; j++)
+					el.recordDamage(i, r.nextInt(), r.nextInt(), r.nextInt(), r.nextInt(),
+							r.nextInt());
 			}
 		}
 		{
 			int numSteps;
-			if (r.nextDouble()<zeroChanceSteps)
+			if(r.nextDouble() < zeroChanceSteps)
 				numSteps = 0;
 			else
-				numSteps= r.nextInt(numStepsDiff);
-			
-			for (int i = 0; i<numSteps; i++) {
+				numSteps = r.nextInt(numStepsDiff);
+
+			for(int i = 0; i < numSteps; i++) {
 				int numLogs;
-				if (r.nextDouble()<zeroChanceLogs)
+				if(r.nextDouble() < zeroChanceLogs)
 					numLogs = 0;
 				else
-					numLogs= r.nextInt(numLogsDiff);
-				for (int j = 0; j<numLogs; j++)
+					numLogs = r.nextInt(numLogsDiff);
+				for(int j = 0; j < numLogs; j++)
 					el.recordDeath(i, r.nextInt(), r.nextInt());
 			}
 		}
+		ResourceType[] types = new ResourceType[] { new ResourceType("GOLD"),
+				new ResourceType("WOOD") };
 		{
 			int numSteps;
-			if (r.nextDouble()<zeroChanceSteps)
+			if(r.nextDouble() < zeroChanceSteps)
 				numSteps = 0;
 			else
-				numSteps= r.nextInt(numStepsDiff);
-			
-			for (int i = 0; i<numSteps; i++) {
+				numSteps = r.nextInt(numStepsDiff);
+
+			for(int i = 0; i < numSteps; i++) {
 				int numLogs;
-				if (r.nextDouble()<zeroChanceLogs)
+				if(r.nextDouble() < zeroChanceLogs)
 					numLogs = 0;
 				else
-					numLogs= r.nextInt(numLogsDiff);
-				for (int j = 0; j<numLogs; j++)
-					el.recordResourceDropoff(i, r.nextInt(), r.nextInt(), r.nextInt(), ResourceType.values()[r.nextInt(ResourceType.values().length)], r.nextInt());
+					numLogs = r.nextInt(numLogsDiff);
+				for(int j = 0; j < numLogs; j++)
+					el.recordResourceDropoff(i, r.nextInt(), r.nextInt(), r.nextInt(),
+							types[r.nextInt(types.length)], r.nextInt());
 			}
 		}
 		{
 			int numSteps;
-			if (r.nextDouble()<zeroChanceSteps)
+			if(r.nextDouble() < zeroChanceSteps)
 				numSteps = 0;
 			else
-				numSteps= r.nextInt(numStepsDiff);
-			
-			for (int i = 0; i<numSteps; i++) {
+				numSteps = r.nextInt(numStepsDiff);
+
+			for(int i = 0; i < numSteps; i++) {
 				int numLogs;
-				if (r.nextDouble()<zeroChanceLogs)
+				if(r.nextDouble() < zeroChanceLogs)
 					numLogs = 0;
 				else
-					numLogs= r.nextInt(numLogsDiff);
-				for (int j = 0; j<numLogs; j++)
-					el.recordResourceNodeExhaustion(i, r.nextInt(), ResourceNode.Type.values()[r.nextInt(ResourceNode.Type.values().length)]);
+					numLogs = r.nextInt(numLogsDiff);
+				for(int j = 0; j < numLogs; j++)
+					el.recordResourceNodeExhaustion(i, r.nextInt(), new ResourceNodeType(
+							"GOLD_MINE", new ResourceType("GOLD")));
 			}
 		}
 		{
 			int numSteps;
-			if (r.nextDouble()<zeroChanceSteps)
+			if(r.nextDouble() < zeroChanceSteps)
 				numSteps = 0;
 			else
-				numSteps= r.nextInt(numStepsDiff);
-			
-			for (int i = 0; i<numSteps; i++) {
+				numSteps = r.nextInt(numStepsDiff);
+
+			for(int i = 0; i < numSteps; i++) {
 				int numLogs;
-				if (r.nextDouble()<zeroChanceLogs)
+				if(r.nextDouble() < zeroChanceLogs)
 					numLogs = 0;
 				else
-					numLogs= r.nextInt(numLogsDiff);
-				for (int j = 0; j<numLogs; j++)
-					el.recordResourcePickup(i, r.nextInt(), r.nextInt(), ResourceType.values()[r.nextInt(ResourceType.values().length)], r.nextInt(), r.nextInt(), ResourceNode.Type.values()[r.nextInt(ResourceNode.Type.values().length)]);
+					numLogs = r.nextInt(numLogsDiff);
+				for(int j = 0; j < numLogs; j++)
+					el.recordResourcePickup(i, r.nextInt(), r.nextInt(),
+							types[r.nextInt(types.length)], r.nextInt(), r.nextInt(),
+							new ResourceNodeType("TREE", new ResourceType("WOOD")));
 			}
 		}
 		{
 			int numSteps;
-			if (r.nextDouble()<zeroChanceSteps)
+			if(r.nextDouble() < zeroChanceSteps)
 				numSteps = 0;
 			else
-				numSteps= r.nextInt(numStepsDiff);
-			
-			for (int i = 0; i<numSteps; i++) {
+				numSteps = r.nextInt(numStepsDiff);
+
+			for(int i = 0; i < numSteps; i++) {
 				int numLogs;
-				if (r.nextDouble()<zeroChanceLogs)
+				if(r.nextDouble() < zeroChanceLogs)
 					numLogs = 0;
 				else
-					numLogs= r.nextInt(numLogsDiff);
-				for (int j = 0; j<numLogs; j++)
+					numLogs = r.nextInt(numLogsDiff);
+				for(int j = 0; j < numLogs; j++)
 					el.recordUpgrade(i, r.nextInt(), r.nextInt(), r.nextInt());
 			}
 		}
 		{
 			int numLogs;
-			if (r.nextDouble()<zeroChanceLogs)
+			if(r.nextDouble() < zeroChanceLogs)
 				numLogs = 0;
 			else
-				numLogs= r.nextInt(numLogsDiff);
-			for (int j = 0; j<numLogs; j++)
-				el.recordRevealedResourceNode(r.nextInt(), r.nextInt(), ResourceNode.Type.values()[r.nextInt(ResourceNode.Type.values().length)]);
+				numLogs = r.nextInt(numLogsDiff);
+			for(int j = 0; j < numLogs; j++)
+				el.recordRevealedResourceNode(r.nextInt(), r.nextInt(), new ResourceNodeType(
+						"TREE", new ResourceType("WOOD")));
 		}
 		return el;
 	}

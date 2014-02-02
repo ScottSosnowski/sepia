@@ -29,7 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.cwru.sepia.action.Action;
-import edu.cwru.sepia.model.LessSimpleModel;
+import edu.cwru.sepia.model.SimpleDurativeModel;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.Template;
 import edu.cwru.sepia.model.state.Unit;
@@ -39,7 +39,7 @@ import edu.cwru.sepia.util.TypeLoader;
 
 
 public class CombatAgentDuelTest {
-	static LessSimpleModel model;
+	static SimpleDurativeModel model;
 	static SimplePlanner planner;
 	static List<Template<?>> templates1;
 	static List<Template<?>> templates2;
@@ -70,33 +70,33 @@ public class CombatAgentDuelTest {
 		
 		{
 			Unit u = ((UnitTemplate)builder.getTemplate(player1, "Footman")).produceInstance(state);
-			u.setxPosition(5);
-			u.setyPosition(5);
-			builder.addUnit(u,u.getxPosition(),u.getyPosition());
+			u.setXPosition(5);
+			u.setYPosition(5);
+			builder.addUnit(u,u.getXPosition(),u.getYPosition());
 		}
 		{
 			Unit u = ((UnitTemplate)builder.getTemplate(player1, "Footman")).produceInstance(state);
-			u.setxPosition(5);
-			u.setyPosition(4);
-			builder.addUnit(u,u.getxPosition(),u.getyPosition());
+			u.setXPosition(5);
+			u.setYPosition(4);
+			builder.addUnit(u,u.getXPosition(),u.getYPosition());
 		}
 		
 		
 		{
 			Unit u = ((UnitTemplate)builder.getTemplate(player2, "Footman")).produceInstance(state);
-			u.setxPosition(6);
-			u.setyPosition(5);
-			builder.addUnit(u,u.getxPosition(),u.getyPosition());
+			u.setXPosition(6);
+			u.setYPosition(5);
+			builder.addUnit(u,u.getXPosition(),u.getYPosition());
 		}
 		{
 			Unit u = ((UnitTemplate)builder.getTemplate(player2, "Footman")).produceInstance(state);
-			u.setxPosition(6);
-			u.setyPosition(4);
-			builder.addUnit(u,u.getxPosition(),u.getyPosition());
+			u.setXPosition(6);
+			u.setYPosition(4);
+			builder.addUnit(u,u.getXPosition(),u.getYPosition());
 		}
 		
 		planner = new SimplePlanner(state);
-		model=new LessSimpleModel(state, null, new BaseConfiguration());
+		model=new SimpleDurativeModel(state, null, new BaseConfiguration());
 	}
 	
 	public void setUp() throws Exception {
@@ -145,7 +145,7 @@ public class CombatAgentDuelTest {
 //			System.out.println("Assets("+state.getUnits(player1).values().size()+"):");
 //			Collection<Unit> units = state.getUnits(player1).values();
 //			for (Unit u : units) {
-//				System.out.println(u.getTemplate().getName() + " (ID: "+u.ID+") at "+u.getxPosition() + "," + u.getyPosition());
+//				System.out.println(u.getTemplate().getName() + " (ID: "+u.ID+") at "+u.getXPosition() + "," + u.getYPosition());
 //				System.out.println("Carrying: " + u.getCurrentCargoAmount() + " (" + u.getCurrentCargoType() + ")");
 //			}
 //			System.out.println("All agents control a combined " + state.getUnits().values().size() + " units");

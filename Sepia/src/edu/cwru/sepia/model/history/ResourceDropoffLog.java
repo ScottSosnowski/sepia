@@ -22,20 +22,22 @@ package edu.cwru.sepia.model.history;
 import java.io.Serializable;
 
 import edu.cwru.sepia.model.state.ResourceType;
-import edu.cwru.sepia.util.DeepEquatable;
 
 /**
- * A read only class documenting an historic event wherein resources are dropped off (deposited)
+ * A read only class documenting an historic event wherein resources are dropped
+ * off (deposited)
+ * 
  * @author The Condor
- *
+ * 
  */
-public class ResourceDropoffLog implements Serializable, DeepEquatable {
-	private static final long	serialVersionUID	= 1L;
+public class ResourceDropoffLog implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private int pickuperid;
 	private ResourceType resource;
 	private int amount;
 	private int depotid;
 	private int controller;
+
 	public ResourceDropoffLog(int gathererid, int controller, int amountpickedup, ResourceType resource, int depotid) {
 		pickuperid = gathererid;
 		this.resource = resource;
@@ -43,49 +45,61 @@ public class ResourceDropoffLog implements Serializable, DeepEquatable {
 		this.depotid = depotid;
 		this.controller = controller;
 	}
+
 	public ResourceType getResourceType() {
 		return resource;
 	}
+
 	public int getGathererID() {
 		return pickuperid;
 	}
+
 	public int getAmountDroppedOff() {
 		return amount;
 	}
+
 	public int getDepotID() {
 		return depotid;
 	}
+
 	public int getController() {
 		return controller;
 	}
-	@Override public boolean equals(Object other) {
-		if (other == null || !this.getClass().equals(other.getClass()))
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + amount;
+		result = prime * result + controller;
+		result = prime * result + depotid;
+		result = prime * result + pickuperid;
+		result = prime * result + ((resource == null) ? 0 : resource.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj)
+			return true;
+		if(obj == null)
 			return false;
-		ResourceDropoffLog o = (ResourceDropoffLog)other;
-		if (resource != o.resource)
+		if(getClass() != obj.getClass())
 			return false;
-		if (pickuperid != o.pickuperid)
+		ResourceDropoffLog other = (ResourceDropoffLog)obj;
+		if(amount != other.amount)
 			return false;
-		if (amount != o.amount)
+		if(controller != other.controller)
 			return false;
-		if (depotid != o.depotid)
+		if(depotid != other.depotid)
 			return false;
-		if (controller != o.controller)
+		if(pickuperid != other.pickuperid)
+			return false;
+		if(resource == null) {
+			if(other.resource != null)
+				return false;
+		} else if(!resource.equals(other.resource))
 			return false;
 		return true;
-	}
-	@Override public int hashCode() {
-		int product = 1;
-		int sum = 0;
-		int prime = 31;
-		sum += (product = product*prime)*resource.ordinal();
-		sum += (product = product*prime)*pickuperid;
-		sum += (product = product*prime)*amount;
-		sum += (product = product*prime)*depotid;
-		sum += (product = product*prime)*controller;
-		return sum;
-	}
-	@Override public boolean deepEquals(Object other) {
-		return equals(other);
 	}
 }

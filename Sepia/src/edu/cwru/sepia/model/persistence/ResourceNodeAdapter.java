@@ -25,15 +25,15 @@ import edu.cwru.sepia.model.state.ResourceNode;
 public class ResourceNodeAdapter {
 
 	public ResourceNode fromXml(XmlResourceNode xml) {
-		return new ResourceNode(xml.getType(), xml.getXPosition(), xml.getYPosition(), xml.getAmountRemaining(), xml.getID());
+		return new ResourceNode(ResourceAdapter.fromXml(xml.getType()), xml.getXPosition(), xml.getYPosition(), xml.getAmountRemaining(), xml.getID());
 	}
 	
 	public XmlResourceNode toXml(ResourceNode node) {
 		XmlResourceNode xml = new XmlResourceNode();
-		xml.setType(node.getType());
+		xml.setType(ResourceAdapter.toXml(node.getType()));
 		xml.setAmountRemaining(node.getAmountRemaining());
-		xml.setXPosition(node.getxPosition());
-		xml.setYPosition(node.getyPosition());
+		xml.setXPosition(node.getXPosition());
+		xml.setYPosition(node.getYPosition());
 		xml.setID(node.id);
 		return xml;
 	}

@@ -36,7 +36,6 @@ import edu.cwru.sepia.model.history.History.HistoryView;
 import edu.cwru.sepia.model.state.Direction;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Unit.UnitView;
-import edu.cwru.sepia.util.DistanceMetrics;
 
 public class SimpleAgent2 extends Agent {
 	private static final long serialVersionUID = 1L;
@@ -73,7 +72,7 @@ public class SimpleAgent2 extends Agent {
 				UnitView v = currentState.getUnit(enemy);
 				if (v.getTemplateView().getPlayer() == playernum)
 					continue;
-				int distance = DistanceMetrics.chebyshevDistance(u.getXPosition(), u.getYPosition(), v.getXPosition(), v.getYPosition());
+				int distance = u.getBounds().distanceTo(v.getBounds());
 				if(distance <= sightRange)
 				{
 					targetsInRange.add(enemy);
@@ -102,7 +101,7 @@ public class SimpleAgent2 extends Agent {
 				for(int enemy : targetCounts.keySet())
 				{
 					UnitView v = currentState.getUnit(enemy);
-					double distance = DistanceMetrics.chebyshevDistance(u.getXPosition(), u.getYPosition(), v.getXPosition(), v.getYPosition());
+					double distance = u.getBounds().distanceTo(v.getBounds());
 					if(distance < minDist)
 					{
 						target = enemy;

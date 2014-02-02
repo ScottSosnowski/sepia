@@ -1,5 +1,0 @@
-[paths]
-default = ssh://time6.dyndns.org:9000/workspace/Sepia
-
-[ui]
-username = tim@pathos

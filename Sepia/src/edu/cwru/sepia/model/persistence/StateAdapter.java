@@ -32,7 +32,6 @@ import edu.cwru.sepia.model.state.State.StateBuilder;
 public class StateAdapter {
 	
 	PlayerAdapter playerAdapter = new PlayerAdapter();
-	ResourceNodeAdapter resourceNodeAdapter = new ResourceNodeAdapter();
 
 	public XmlState toXml(State state) {
 		XmlState xml = new XmlState();
@@ -46,7 +45,7 @@ public class StateAdapter {
 		List<XmlResourceNode> resources = xml.getResourceNode();
 		for(ResourceNode rn : state.getResources())
 		{
-			resources.add(resourceNodeAdapter.toXml(rn));
+			resources.add(ResourceAdapter.toXml(rn));
 		}
 		
 		xml.setXExtent(state.getXExtent());		
@@ -71,7 +70,7 @@ public class StateAdapter {
 		{
 			for(XmlResourceNode resource : xml.getResourceNode())
 			{
-				builder.addResource(resourceNodeAdapter.fromXml(resource));
+				builder.addResource(ResourceAdapter.fromXml(resource));
 			}
 		}
 		

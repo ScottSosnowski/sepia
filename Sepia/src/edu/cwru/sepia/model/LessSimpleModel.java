@@ -199,11 +199,11 @@ public class LessSimpleModel extends AbstractDurativeModel {
 								
 								DirectedAction da =(DirectedAction)a;
 								Direction d = da.getDirection();
-								int xdest = u.getxPosition() + d.xComponent();
-								int ydest = u.getyPosition() + d.yComponent();
+								int xdest = u.getXPosition() + d.xComponent();
+								int ydest = u.getYPosition() + d.yComponent();
 								
 								//if it is not empty there is a problem
-								if (!accessible(u.getTemplate(), xdest, ydest))
+								if (!accessible(u, xdest, ydest))
 								{ 
 									failed.add(aq);
 									//recalcAndStuff();//This marks a place where recalculation would be called for
@@ -219,7 +219,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 									{
 										newdurativeamount = 1;
 									}
-									boolean willcompletethisturn = newdurativeamount== DurativePlanner.calculateMoveDuration(u,u.getxPosition(),u.getyPosition(), d, state);
+									boolean willcompletethisturn = newdurativeamount== DurativePlanner.calculateMoveDuration(u,u.getXPosition(),u.getYPosition(), d, state);
 									//if it will finish, then verify claim stuff
 									if (willcompletethisturn)
 									{
@@ -268,8 +268,8 @@ public class LessSimpleModel extends AbstractDurativeModel {
 						{
 							DirectedAction da =(DirectedAction)a;
 							Direction d = da.getDirection();
-							int xdest = u.getxPosition() + d.xComponent();
-							int ydest = u.getyPosition() + d.yComponent();
+							int xdest = u.getXPosition() + d.xComponent();
+							int ydest = u.getYPosition() + d.yComponent();
 							Unit townHall = state.unitAt(xdest, ydest);
 							if (townHall == null || townHall.getPlayer() != u.getPlayer())
 							{//no unit there on your team
@@ -279,11 +279,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 							else //there is a unit on your team
 							{
 								//check if the unit can accept the kind of resources that you have
-								boolean canAccept=false;
-								if (u.getCurrentCargoType() == ResourceType.GOLD && townHall.getTemplate().canAcceptGold())
-									canAccept=true;
-								else if (u.getCurrentCargoType() == ResourceType.WOOD && townHall.getTemplate().canAcceptWood())
-									canAccept=true;
+								boolean canAccept=townHall.getTemplate().canAccept(u.getCurrentCargoType());
 								if (!canAccept)
 								{//then it isn't a town hall of the right type
 									failed.add(aq);
@@ -538,8 +534,8 @@ public class LessSimpleModel extends AbstractDurativeModel {
 							//find the node you want to gather from, and make sure it exists
 							DirectedAction da =(DirectedAction)a;
 							Direction d = da.getDirection();
-							int xdest = u.getxPosition() + d.xComponent();
-							int ydest = u.getyPosition() + d.yComponent();
+							int xdest = u.getXPosition() + d.xComponent();
+							int ydest = u.getYPosition() + d.yComponent();
 							ResourceNode rn  = state.resourceAt(xdest,ydest);
 							//check if the node exists and was not exhausted last turn
 							if (rn==null || rn.getAmountRemaining() <= 0)
@@ -582,7 +578,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 											isotherclaimant=false;
 											otherclaims=0;
 										}
-										int updatedclaim = otherclaims + u.getTemplate().getGatherRate(rn.getType());
+										int updatedclaim = otherclaims + u.getTemplate().getGatherRate(rn.getType().getResource());
 										//if the claim is too much, then the node has a problem
 											//but don't fail if this is the only claimant
 												//in that case, the result should be that this mines out the resource
@@ -653,7 +649,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 					else
 					{
 						//find the nearest open position, which will be null if there is none
-						int[] newposition = getClosestEmptyUnclaimedPosition((UnitTemplate)producedTemplate, u.getxPosition(), u.getyPosition(), moveclaimedspaces, productionclaimedspaces);
+						int[] newposition = getClosestEmptyUnclaimedPosition((UnitTemplate)producedTemplate, u.getXPosition(), u.getYPosition(), moveclaimedspaces, productionclaimedspaces);
 						if (newposition == null)
 						{//if no place for new unit
 							//then this fails
@@ -704,7 +700,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 						{
 							newdurativeamount = 1;
 						}
-						willcompletethisturn = newdurativeamount== DurativePlanner.calculateMoveDuration(u,u.getxPosition(),u.getyPosition(),d, state);
+						willcompletethisturn = newdurativeamount== DurativePlanner.calculateMoveDuration(u,u.getXPosition(),u.getYPosition(),d, state);
 						//if it will finish, then execute the atomic action
 						if (willcompletethisturn)
 						{
@@ -725,8 +721,8 @@ public class LessSimpleModel extends AbstractDurativeModel {
 			{
 				DirectedAction da =(DirectedAction)a;
 				Direction d = da.getDirection();
-				int xdest = u.getxPosition() + d.xComponent();
-				int ydest = u.getyPosition() + d.yComponent();
+				int xdest = u.getXPosition() + d.xComponent();
+				int ydest = u.getYPosition() + d.yComponent();
 				Unit townHall = state.unitAt(xdest, ydest);
 
 				//calculate the amount of duration
@@ -815,8 +811,8 @@ public class LessSimpleModel extends AbstractDurativeModel {
 						int[] newxy = productionplaces.get(aq);
 						if (u.canBuild())
 						{
-							int oldx = u.getxPosition();
-							int oldy = u.getyPosition();
+							int oldx = u.getXPosition();
+							int oldy = u.getYPosition();
 							state.transportUnit(u, newxy[0], newxy[1]);
 							if (state.tryProduceUnit(produced,oldx,oldy))
 							{
@@ -853,8 +849,8 @@ public class LessSimpleModel extends AbstractDurativeModel {
 				//find the right node
 				DirectedAction da =(DirectedAction)a;
 				Direction d = da.getDirection();
-				int xdest = u.getxPosition() + d.xComponent();
-				int ydest = u.getyPosition() + d.yComponent();
+				int xdest = u.getXPosition() + d.xComponent();
+				int ydest = u.getYPosition() + d.yComponent();
 				ResourceNode rn  = state.resourceAt(xdest,ydest);
 				int newdurativeamount;
 				if (da.equals(u.getActionProgressPrimitive()))
@@ -870,7 +866,7 @@ public class LessSimpleModel extends AbstractDurativeModel {
 				if (willcompletethisturn)
 				{
 					//do the atomic action
-					int amountPickedUp = rn.reduceAmountRemaining(u.getTemplate().getGatherRate(rn.getType()));
+					int amountPickedUp = rn.reduceAmountRemaining(u.getTemplate().getGatherRate(rn.getType().getResource()));
 					u.setCargo(rn.getResourceType(), amountPickedUp);
 					history.recordResourcePickup(u, rn, amountPickedUp, state);
 					//you have finished the primitive, so progress resets
@@ -976,13 +972,13 @@ public class LessSimpleModel extends AbstractDurativeModel {
 		
 		boolean prerequisitesMet = true;
 		//check if the prerequisites for the template's production are met
-		for (Integer buildingtemplateid : t.getBuildPrerequisites()) {
+		for (String buildingtemplateid : t.getBuildPrerequisites()) {
 			if (!state.hasUnit(playerNumber, buildingtemplateid)) {
 				return false;
 			}
 		}
 		if (prerequisitesMet) {
-			for (Integer upgradetemplateid : t.getUpgradePrerequisites()) {
+			for (String upgradetemplateid : t.getUpgradePrerequisites()) {
 				if (!state.hasUpgrade(playerNumber,upgradetemplateid)) {
 					return false;
 				}
@@ -1049,8 +1045,9 @@ public class LessSimpleModel extends AbstractDurativeModel {
 		}
 		return null;
 	}
+
 	private boolean inRange(Unit u, Unit target) {
-		return DistanceMetrics.chebyshevDistance(u.getxPosition(), u.getyPosition(), target.getxPosition(), target.getyPosition()) <= u.getTemplate().getRange();
+		return DistanceMetrics.chebyshevDistance(u.getXPosition(), u.getYPosition(), target.getXPosition(), target.getYPosition()) <= u.getTemplate().getRange();
 	}
 	private Integer getCoordInt(int xdest, int ydest) {
 		return xdest*state.getYExtent()+ydest;

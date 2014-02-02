@@ -19,120 +19,147 @@
  */
 package edu.cwru.sepia.pathing;
 
-import java.util.Arrays;
-
 import edu.cwru.sepia.model.state.Direction;
-
+import edu.cwru.sepia.util.Rectangle;
 
 /**
- * Note: compareTo and equals are not equivalently implemented
- * equals checks xs and ys, but no other fields
- *
+ * Note: compareTo and equals are not equivalently implemented equals checks xs
+ * and ys, but no other fields
+ * 
  */
 public class AStarNode implements Comparable<AStarNode> {
-	final int x;
-	final int y;
-	final int hashCode;
-	final int g; //the distance from the start
-	final int value; //the distance from the start + the heuristic value
-	final Direction directionfromprevious;
-	final int durativesteps;
-	final AStarNode previous;
+	private final int x;
+	private final int y;
+	private final int distanceFromRoot; // the distance from the first node
+	private final int value; // the distance from the start + the heuristic value
+	private final Direction directionFromPrevious;
+	private final int durativeSteps;
+
+	private final AStarNode previous;
+
 	/**
-	 * Create a nonroot node with fields for backtracking.
+	 * Create a new root node
+	 * 
 	 * @param x
 	 * @param y
-	 * @param g
-	 * @param value
+	 * @param heuristic
+	 */
+	public AStarNode(int x, int y, int heuristic) {
+		this(x, y, heuristic, null, null, -1);
+	}
+	
+	/**
+	 * Create a non-root node with fields for backtracking.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param heuristic
 	 * @param previous
 	 * @param directionfromprevious
 	 */
-	public AStarNode(int x, int y, int g, int value, AStarNode previous, Direction directionfromprevious)
-	{
-		this.x =x;
-		this.y=y;
-		this.hashCode = Arrays.hashCode(new int[]{x,y});
-		this.g = g;
-		this.value = value;
-		this.directionfromprevious = directionfromprevious;
-		this.previous = previous;
-		this.durativesteps = 1;
+	public AStarNode(int x, int y, int heuristic, AStarNode previous, Direction directionfromprevious) {
+		this(x, y, heuristic, previous, directionfromprevious, 1);
 	}
+
 	/**
-	 * Create a nonroot node with fields so for backtracking.
+	 * Create a non-root node with fields for backtracking.
+	 * 
 	 * @param x
 	 * @param y
-	 * @param g
-	 * @param value
+	 * @param heuristic
 	 * @param previous
 	 * @param directionfromprevious
 	 * @param durativesteps
 	 */
-	public AStarNode(int x, int y, int g, int value, AStarNode previous, Direction directionfromprevious, int durativesteps)
-	{
-		this.x =x;
-		this.y=y;
-		this.hashCode = Arrays.hashCode(new int[]{x,y});
-		this.g = g;
-		this.value = value;
-		this.directionfromprevious = directionfromprevious;
+	public AStarNode(int x, int y, int heuristic, AStarNode previous, Direction directionfromprevious,
+			int durativesteps) {
+		this.x = x;
+		this.y = y;
+		if(previous != null)
+			this.distanceFromRoot = previous.getDistanceFromStart() + durativesteps;
+		else
+			this.distanceFromRoot = 0;
+		this.value = distanceFromRoot + heuristic;
+		this.directionFromPrevious = directionfromprevious;
 		this.previous = previous;
-		this.durativesteps = durativesteps;
+		this.durativeSteps = durativesteps;
 	}
-	/**
-	 * Create a new root node
-	 * @param x
-	 * @param y
-	 * @param distfromgoal
-	 */
-	public AStarNode(int x, int y, int distfromgoal)
-	{
-		this.x=x;
-		this.y=y;
-		this.hashCode = Arrays.hashCode(new int[]{x,y});
-		g = 0;
-		value = distfromgoal;
-		//there is no previous node, so no need to store backtracking related quantities;
-		directionfromprevious = null;
-		durativesteps = -1;
-		previous=null;
+
+	public int getX() {
+		return x;
 	}
-	public int compareTo(AStarNode other)
-	{
+
+	public int getY() {
+		return y;
+	}
+
+	public Rectangle asRectangle() {
+		return new Rectangle(x, y, 1, 1);
+	}
+
+	public Rectangle asRectangle(int width, int height) {
+		return new Rectangle(x, y, width, height);
+	}
+	
+	public int getDistanceFromStart() {
+		return distanceFromRoot;
+	}
+	
+	public AStarNode getPrevious() {
+		return previous;
+	}
+	
+	public Direction getDirectionFromPrevious() {
+		return directionFromPrevious;
+	}
+
+	public int getDurativeSteps() {
+		return durativeSteps;
+	}
+	
+	public int compareTo(AStarNode other) {
 		AStarNode o = (AStarNode)other;
-		if (o.value == value)
-		{
-			if(directionfromprevious.toString().length() > o.directionfromprevious.toString().length())
-				return 1;
-			else if(directionfromprevious.toString().length() < o.directionfromprevious.toString().length())
-				return -1;
-			else
-				return 0;
-		}
-		else if (value > o.value)
-			return 1;
-		else
-			return -1;
+		int diff = value - o.value;
+		if(diff != 0)
+			return diff;
+		diff = distanceFromRoot - o.distanceFromRoot;
+		if(diff != 0)
+			return diff;
+		diff = x - o.x;
+		if(diff != 0)
+			return diff;
+		return y - o.y;
 	}
+	//TODO - get hashCode and equals to match compareTo (not sure if this will break older planners
 	@Override
-	public boolean equals(Object other)
-	{
-		if (!(other instanceof AStarNode))
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + x;
+		result = prime * result + y;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj)
+			return true;
+		if(obj == null)
 			return false;
-		else
-		{
-			AStarNode o = (AStarNode)other;
-			return x==o.x && y==o.y;
-		}
+		if(getClass() != obj.getClass())
+			return false;
+		AStarNode other = (AStarNode)obj;
+		if(x != other.x)
+			return false;
+		if(y != other.y)
+			return false;
+		return true;
 	}
-	public int hashCode()
-	{
-		return hashCode;
-	}
+
 	@Override
 	public String toString() {
-		return "AStarNode [x=" + x + ", y=" + y + ", g=" + g + 
-				", value=" + value + ", directionfromprevious=" + directionfromprevious +", duration=" + durativesteps +"]";
+		return "AStarNode [x=" + x + ", y=" + y + ", distanceFromRoot=" + distanceFromRoot + ", value=" + value + ", directionfromprevious="
+				+ directionFromPrevious + ", duration=" + durativeSteps + "]";
 	}
 
 }

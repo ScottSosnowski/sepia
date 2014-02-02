@@ -104,7 +104,7 @@ public class EventLoggerAdapter {
 					xmllog.setGathererID(log.getGathererID());
 					xmllog.setDepotID(log.getDepotID());
 					xmllog.setController(log.getController());
-					xmllog.setResourceType(log.getResourceType());
+					xmllog.setResourceType(ResourceAdapter.toXml(log.getResourceType()));
 					xmllog.setDepositAmount(log.getAmountDroppedOff());
 					xmlloglist.getResourceDropoffLog().add(xmllog);
 				}
@@ -120,10 +120,10 @@ public class EventLoggerAdapter {
 					XmlResourcePickupLog xmllog = new XmlResourcePickupLog();
 					xmllog.setGathererID(log.getGathererID());
 					xmllog.setNodeID(log.getNodeID());
-					xmllog.setResourceType(log.getResourceType());
+					xmllog.setResourceType(ResourceAdapter.toXml(log.getResourceType()));
 					xmllog.setPickupAmount(log.getAmountPickedUp());
 					xmllog.setController(log.getController());
-					xmllog.setNodeType(log.getNodeType());
+					xmllog.setNodeType(ResourceAdapter.toXml(log.getNodeType()));
 					xmlloglist.getResourcePickupLog().add(xmllog);
 				}
 				xml.getResourcePickupLogList().add(xmlloglist);
@@ -137,7 +137,7 @@ public class EventLoggerAdapter {
 				for (ResourceNodeExhaustionLog log : eventLogger.getResourceNodeExhaustions(roundNumber)) {
 					XmlResourceNodeExhaustionLog xmllog = new XmlResourceNodeExhaustionLog();
 					xmllog.setExhaustedNodeID(log.getExhaustedNodeID());
-					xmllog.setExhaustedNodeType(log.getResourceNodeType());
+					xmllog.setExhaustedNodeType(ResourceAdapter.toXml(log.getResourceNodeType()));
 					xmlloglist.getResourceNodeExhaustionLog().add(xmllog);
 				}
 				xml.getResourceNodeExhaustionLogList().add(xmlloglist);
@@ -162,7 +162,7 @@ public class EventLoggerAdapter {
 			XmlRevealedResourceNodeLog xmllog = new XmlRevealedResourceNodeLog();
 			xmllog.setXPosition(log.getResourceNodeXPosition());
 			xmllog.setYPosition(log.getResourceNodeYPosition());
-			xmllog.setNodeType(log.getResourceNodeType());
+			xmllog.setNodeType(ResourceAdapter.toXml(log.getResourceNodeType()));
 			xml.getRevealedResourceNodeLog().add(xmllog);
 		}
 		return xml;
@@ -191,23 +191,23 @@ public class EventLoggerAdapter {
 		for (XmlResourceDropoffLogList xmlSingleTurn : xml.getResourceDropoffLogList())
 		{
 			for (XmlResourceDropoffLog xmlSingleEvent : xmlSingleTurn.getResourceDropoffLog()) {
-				e.recordResourceDropoff(xmlSingleTurn.getRoundNumber(), xmlSingleEvent.getGathererID(), xmlSingleEvent.getDepotID(), xmlSingleEvent.getController() , xmlSingleEvent.getResourceType(), xmlSingleEvent.getDepositAmount());
+				e.recordResourceDropoff(xmlSingleTurn.getRoundNumber(), xmlSingleEvent.getGathererID(), xmlSingleEvent.getDepotID(), xmlSingleEvent.getController() , ResourceAdapter.fromXml(xmlSingleEvent.getResourceType()), xmlSingleEvent.getDepositAmount());
 			}
 		}
 		for (XmlResourcePickupLogList xmlSingleTurn : xml.getResourcePickupLogList())
 		{
 			for (XmlResourcePickupLog xmlSingleEvent : xmlSingleTurn.getResourcePickupLog()) {
-				e.recordResourcePickup(xmlSingleTurn.getRoundNumber(), xmlSingleEvent.getGathererID(), xmlSingleEvent.getController(), xmlSingleEvent.getResourceType(), xmlSingleEvent.getPickupAmount(), xmlSingleEvent.getNodeID(), xmlSingleEvent.getNodeType());
+				e.recordResourcePickup(xmlSingleTurn.getRoundNumber(), xmlSingleEvent.getGathererID(), xmlSingleEvent.getController(), ResourceAdapter.fromXml(xmlSingleEvent.getResourceType()), xmlSingleEvent.getPickupAmount(), xmlSingleEvent.getNodeID(), ResourceAdapter.fromXml(xmlSingleEvent.getNodeType()));
 			}
 		}
 		for (XmlResourceNodeExhaustionLogList xmlSingleTurn : xml.getResourceNodeExhaustionLogList())
 		{
 			for (XmlResourceNodeExhaustionLog xmlSingleEvent : xmlSingleTurn.getResourceNodeExhaustionLog()) {
-				e.recordResourceNodeExhaustion(xmlSingleTurn.getRoundNumber(), xmlSingleEvent.getExhaustedNodeID(), xmlSingleEvent.getExhaustedNodeType());
+				e.recordResourceNodeExhaustion(xmlSingleTurn.getRoundNumber(), xmlSingleEvent.getExhaustedNodeID(), ResourceAdapter.fromXml(xmlSingleEvent.getExhaustedNodeType()));
 			}
 		}
 		for (XmlRevealedResourceNodeLog xmlSingleEvent : xml.getRevealedResourceNodeLog()) {
-			e.recordRevealedResourceNode(xmlSingleEvent.getXPosition(), xmlSingleEvent.getYPosition(), xmlSingleEvent.getNodeType());
+			e.recordRevealedResourceNode(xmlSingleEvent.getXPosition(), xmlSingleEvent.getYPosition(), ResourceAdapter.fromXml(xmlSingleEvent.getNodeType()));
 		}
 		for (XmlUpgradeLogList xmlSingleTurn : xml.getUpgradeLogList())
 		{

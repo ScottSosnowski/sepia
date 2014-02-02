@@ -45,7 +45,6 @@ import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State.StateView;
 import edu.cwru.sepia.model.state.Template.TemplateView;
 import edu.cwru.sepia.model.state.Unit.UnitView;
-import edu.cwru.sepia.util.DistanceMetrics;
 
 /**
  * An agent based around the concept of build orders.
@@ -208,7 +207,7 @@ public class ScriptedGoalAgent extends Agent implements Serializable {
 				for (Integer id : relstate.myUnitIDs) {
 					if (agent.busycoordinator.isIdle(id) && 
 							(type==GoalType.Produce||agent.gathercoordinator.hasIdleWorker(id)) && 
-							state.getUnit(id).getTemplateView().canProduce(template.getID())) {
+							state.getUnit(id).getTemplateView().canProduce(template.getName())) {
 						foundaproducer=true;
 						break;
 					}
@@ -302,7 +301,7 @@ public class ScriptedGoalAgent extends Agent implements Serializable {
 			{	
 				int[] placetobuild = state.getClosestOpenPosition(agent.centeroftown[0]+xoffset,agent.centeroftown[1]+yoffset);
 				Integer id = agent.gathercoordinator.getIdleWorker();
-					if (state.getUnit(id).getTemplateView().canProduce(template.getID())) {
+					if (state.getUnit(id).getTemplateView().canProduce(template.getName())) {
 						Action newact = Action.createCompoundBuild(id, template.getID(),placetobuild[0],placetobuild[1]);
 						actions.add(newact);
 						
@@ -323,8 +322,8 @@ public class ScriptedGoalAgent extends Agent implements Serializable {
 			case Produce:
 				//Find a unit that isn't busy and can produce it, then produce it from that one
 				for (Integer id : relstate.myUnitIDs) {
-					if (agent.busycoordinator.isIdle(id) && state.getUnit(id).getTemplateView().canProduce(template.getID())) {
-						actions.add(Action.createCompoundProduction(id, template.getID()));
+					if (agent.busycoordinator.isIdle(id) && state.getUnit(id).getTemplateView().canProduce(template.getName())) {
+						actions.add(Action.createPrimitiveProduction(id, template.getID()));
 						agent.busycoordinator.assignBusy(id);
 						//and reduce the amount of resources you have to distribute
 						relstate.ngold-=template.getGoldCost();
@@ -365,14 +364,16 @@ public class ScriptedGoalAgent extends Agent implements Serializable {
 
 				if (id==null)
 					break;
-					ResourceNode.Type nodetype = endtype == GathererTask.Gold?ResourceNode.Type.GOLD_MINE:ResourceNode.Type.TREE;
+					String nodetype = null;
+					if(endtype == GathererTask.Gold)
+						nodetype = "GOLD_MINE";
+					else
+						nodetype = "TREE";
 					for (int i = 0; i<numgatherers;i++) {
 						
 						
 						
 						UnitView worker = state.getUnit(id);
-						int workerx=worker.getXPosition();
-						int workery=worker.getYPosition();
 						//Find the nearest appropriate resource
 						List<Integer> resources = state.getResourceNodeIds(nodetype);
 						int closestdist=Integer.MAX_VALUE;
@@ -380,7 +381,7 @@ public class ScriptedGoalAgent extends Agent implements Serializable {
 						if (endtype == GathererTask.Gold || endtype == GathererTask.Wood) {
 							for (Integer resourceID : resources) {
 								ResourceNode.ResourceView node = state.getResourceNode(resourceID);
-								int dist = DistanceMetrics.chebyshevDistance(workerx,workery, node.getXPosition(), node.getYPosition());
+								int dist = worker.getBounds().distanceTo(node.getBounds());
 								
 								if (dist < closestdist) {
 									closest = resourceID;

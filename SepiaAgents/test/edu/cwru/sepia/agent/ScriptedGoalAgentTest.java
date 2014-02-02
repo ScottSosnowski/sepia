@@ -32,7 +32,9 @@ import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.model.LessSimpleModel;
 import edu.cwru.sepia.model.Model;
 import edu.cwru.sepia.model.SimpleModel;
+import edu.cwru.sepia.model.SimpleDurativeModel;
 import edu.cwru.sepia.model.state.ResourceNode;
+import edu.cwru.sepia.model.state.ResourceNodeType;
 import edu.cwru.sepia.model.state.ResourceType;
 import edu.cwru.sepia.model.state.State;
 import edu.cwru.sepia.model.state.Template;
@@ -54,7 +56,7 @@ public class ScriptedGoalAgentTest {
 		
 		State.StateBuilder builder = new State.StateBuilder();
 		state = builder.build();
-		templates = TypeLoader.loadFromFile("data/unit_templates",player,state);
+		templates = TypeLoader.loadFromFile("../Sepia/data/templates.xml",player,state);
 		System.out.println("Sucessfully loaded templates");
 		
 		
@@ -68,17 +70,17 @@ public class ScriptedGoalAgentTest {
 		{
 			
 			Unit u = ((UnitTemplate)builder.getTemplate(player, "Peasant")).produceInstance(state);
-			u.setxPosition(5);
-			u.setyPosition(5);
+			u.setXPosition(5);
+			u.setYPosition(5);
 			founder = u;
-			builder.addUnit(u,u.getxPosition(),u.getyPosition());
+			builder.addUnit(u,u.getXPosition(),u.getYPosition());
 		}
 		{
-			ResourceNode rn = new ResourceNode(ResourceNode.Type.GOLD_MINE, 2, 2, 70000,state.nextTargetId());
+			ResourceNode rn = new ResourceNode(new ResourceNodeType("GOLD_MINE", new ResourceType("GOLD")), 2, 2, 70000,state.nextTargetId());
 			builder.addResource(rn);
 		}
 		{
-			ResourceNode rn = new ResourceNode(ResourceNode.Type.TREE, 1, 1, 70000,state.nextTargetId());
+			ResourceNode rn = new ResourceNode(new ResourceNodeType("TREE", new ResourceType("WOOD")), 1, 1, 70000,state.nextTargetId());
 			builder.addResource(rn);
 		}
 		
@@ -149,7 +151,7 @@ public class ScriptedGoalAgentTest {
 			System.out.println("Assets("+state.getUnits(player).values().size()+"):");
 			Collection<Unit> units = state.getUnits(player).values();
 			for (Unit u : units) {
-				System.out.println(u.getTemplate().getName() + " (ID: "+u.id+") at "+u.getxPosition() + "," + u.getyPosition());
+				System.out.println(u.getTemplate().getName() + " (ID: "+u.id+") at "+u.getXPosition() + "," + u.getYPosition());
 				System.out.println("Carrying: " + u.getCurrentCargoAmount() + " (" + u.getCurrentCargoType() + ")");
 			}
 			System.out.println("Resources:");

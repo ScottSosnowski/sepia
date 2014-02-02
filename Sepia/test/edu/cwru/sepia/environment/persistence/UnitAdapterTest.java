@@ -41,23 +41,22 @@ import edu.cwru.sepia.util.TypeLoader;
 
 public class UnitAdapterTest {
 
-	@SuppressWarnings("rawtypes")
-	private static Map<Integer,Template> templates;
+	private static Map<Integer,Template<?>> templates;
 	
 	@Test
 	public void testToXml() throws FileNotFoundException, JAXBException {
 		int player = 0;
-		templates = new HashMap<Integer, Template>();
-		List<? extends Template> templateList = TypeLoader.loadFromFile("data/unit_templates", player, new State());
-		for(Template t : templateList)
+		templates = new HashMap<Integer, Template<?>>();
+		List<? extends Template<?>> templateList = TypeLoader.loadFromFile("data/unit_templates", player, new State());
+		for(Template<?> t : templateList)
 		{
 			if (t instanceof UnitTemplate)
 				templates.put(t.getID(),t);
 		}
 		UnitAdapter adapter = new UnitAdapter(templates);
 		Unit unit = new Unit((UnitTemplate)templates.get(player),34);
-		unit.setxPosition(1);
-		unit.setyPosition(2);
+		unit.setXPosition(1);
+		unit.setYPosition(2);
 		
 		XmlUnit xml = adapter.toXml(unit);
 		
@@ -83,8 +82,8 @@ public class UnitAdapterTest {
 	public static void checkEquality(XmlUnit xml, Unit unit)
 	{
 		assertEquals("template did not match!", unit.getTemplate().getID(), xml.getTemplateID());
-		assertEquals("x position did not match!", unit.getxPosition(), xml.getXPosition());
-		assertEquals("y position did not match!", unit.getyPosition(), xml.getYPosition());
+		assertEquals("x position did not match!", unit.getXPosition(), xml.getXPosition());
+		assertEquals("y position did not match!", unit.getYPosition(), xml.getYPosition());
 		assertEquals("cargo type did not match!", unit.getCurrentCargoType(), xml.getCargoType());
 		assertEquals("cargo amount did not match!", unit.getCurrentCargoAmount(), xml.getCargoAmount());
 		assertEquals("current health did not match!", unit.getCurrentHealth(), xml.getCurrentHealth());

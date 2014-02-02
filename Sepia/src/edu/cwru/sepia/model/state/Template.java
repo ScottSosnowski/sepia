@@ -24,8 +24,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import edu.cwru.sepia.util.DeepEquatable;
-
 /**
  * Signifies that an implementing class provides generic details about a specific object.
  * Also provides a means for creating factory methods for specific kinds of game objects.
@@ -33,7 +31,7 @@ import edu.cwru.sepia.util.DeepEquatable;
  *
  * @param <T>
  */
-public abstract class Template<T> implements Serializable, DeepEquatable{
+public abstract class Template<T> implements Serializable {
 	/**
 	 * 
 	 */
@@ -43,8 +41,8 @@ public abstract class Template<T> implements Serializable, DeepEquatable{
 	protected int woodCost;
 	protected int foodCost;
 	protected int player;
-	protected Set<Integer> buildPrerequisites;
-	protected Set<Integer> upgradePrerequisites;
+	protected Set<String> buildPrerequisites;
+	protected Set<String> upgradePrerequisites;
 	protected String name;
 	private int ID;
 	/**
@@ -55,17 +53,17 @@ public abstract class Template<T> implements Serializable, DeepEquatable{
 	public Template(int ID)
 	{
 		this.setID(ID);
-		buildPrerequisites = new HashSet<Integer>();
-		upgradePrerequisites = new HashSet<Integer>();
+		buildPrerequisites = new HashSet<String>();
+		upgradePrerequisites = new HashSet<String>();
 	}
 	/**
 	 * @param view
 	 */
 	public Template(TemplateView view) {
 		this.setID(view.ID);
-		for (Integer prereqUnitId : view.buildPrerequisites)
+		for (String prereqUnitId : view.buildPrerequisites)
 			addBuildPrerequisite(prereqUnitId);
-		for (Integer prereqUpgradeId : view.upgradePrerequisites)
+		for (String prereqUpgradeId : view.upgradePrerequisites)
 			addUpgradePrerequisite(prereqUpgradeId);
 		setFoodCost(view.foodCost);
 		setGoldCost(view.goldCost);
@@ -122,7 +120,7 @@ public abstract class Template<T> implements Serializable, DeepEquatable{
 	 * <br>This list is mutable, changing it will alter the things needed to make this template.
 	 * @return A set of template ids for prerequisite buildings/units
 	 */
-	public Set<Integer> getBuildPrerequisites() {
+	public Set<String> getBuildPrerequisites() {
 		return buildPrerequisites;
 	}
 	/**
@@ -130,7 +128,7 @@ public abstract class Template<T> implements Serializable, DeepEquatable{
 	 * <br>This list is mutable, changing it will alter the things needed to make this template.
 	 * @return A set of template ids for prerequisite upgrades.
 	 */
-	public Set<Integer> getUpgradePrerequisites() {
+	public Set<String> getUpgradePrerequisites() {
 		return upgradePrerequisites;
 	}
 	@Override
@@ -154,8 +152,8 @@ public abstract class Template<T> implements Serializable, DeepEquatable{
 		private final int ID;
 		private final int player;
 		private final String name;
-		private final Set<Integer> buildPrerequisites;
-		private final Set<Integer> upgradePrerequisites;
+		private final Set<String> buildPrerequisites;
+		private final Set<String> upgradePrerequisites;
 		public TemplateView(Template<?> template){
 			timeCost = template.getTimeCost();
 			goldCost = template.getGoldCost();
@@ -164,14 +162,14 @@ public abstract class Template<T> implements Serializable, DeepEquatable{
 			ID = template.getID();
 			player = template.getPlayer();
 			name = template.getName();
-			Set<Integer> tbuild = new HashSet<Integer>();
-			for (Integer i : template.buildPrerequisites) {
-				tbuild.add(i);
+			Set<String> tbuild = new HashSet<String>();
+			for (String s : template.buildPrerequisites) {
+				tbuild.add(s);
 			}
 			buildPrerequisites = Collections.unmodifiableSet(tbuild);
-			Set<Integer> tupgrade = new HashSet<Integer>();
-			for (Integer i : template.upgradePrerequisites) {
-				tupgrade.add(i);
+			Set<String> tupgrade = new HashSet<String>();
+			for (String s : template.upgradePrerequisites) {
+				tupgrade.add(s);
 			}
 			upgradePrerequisites = Collections.unmodifiableSet(tupgrade);
 		}
@@ -179,14 +177,14 @@ public abstract class Template<T> implements Serializable, DeepEquatable{
 		 * Get a(n unmodifiable) set of buildings or other units that must be built before a unit can be made with this template
 		 * @return The ids of the templates of the required buildings/units
 		 */
-		public Set<Integer> getBuildPrerequisites() {
+		public Set<String> getBuildPrerequisites() {
 			return buildPrerequisites;
 		}
 		/**
 		 * Get a(n unmodifiable) set of upgrades 
 		 * @return The ids of the templates of the required upgrades
 		 */
-		public Set<Integer> getUpgradePrerequisites() {
+		public Set<String> getUpgradePrerequisites() {
 			return upgradePrerequisites;
 		}
 		public int getTimeCost() {
@@ -214,16 +212,16 @@ public abstract class Template<T> implements Serializable, DeepEquatable{
 	}
 	/**
 	 * Add an upgrade prerequisite (An upgrade that must be done before this template can be made)
-	 * @param templateID
+	 * @param templateName
 	 */
-	public void addUpgradePrerequisite(Integer templateID) {
-		upgradePrerequisites.add(templateID);
+	public void addUpgradePrerequisite(String templateName) {
+		upgradePrerequisites.add(templateName);
 	}
 	/**
 	 * Add a building prerequisite (A unit that must be built before this template can be made)
-	 * @param templateID
+	 * @param templateName
 	 */
-	public void addBuildPrerequisite(Integer templateID) {
-		buildPrerequisites.add(templateID);
+	public void addBuildPrerequisite(String templateName) {
+		buildPrerequisites.add(templateName);
 	}
 }

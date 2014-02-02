@@ -28,10 +28,9 @@ import edu.cwru.sepia.model.state.UnitTemplate;
 
 public class UnitAdapter {
 
-	@SuppressWarnings("rawtypes")
-	private Map<Integer,Template> templates;
+	private Map<Integer,Template<?>> templates;
 	
-	public UnitAdapter(@SuppressWarnings("rawtypes") Map<Integer,Template> templates) {
+	public UnitAdapter(Map<Integer,Template<?>> templates) {
 		this.templates = templates;
 	}
 	
@@ -39,9 +38,10 @@ public class UnitAdapter {
 		int templateId = xml.getTemplateID();
 		UnitTemplate template = (UnitTemplate) templates.get(templateId);
 		Unit unit = new Unit(template,xml.getID());
-		unit.setxPosition(xml.getXPosition());
-		unit.setyPosition(xml.getYPosition());
-		unit.setCargo(xml.getCargoType(), xml.getCargoAmount());
+		unit.setXPosition(xml.getXPosition());
+		unit.setYPosition(xml.getYPosition());
+		if(xml.getCargoAmount() > 0)
+			unit.setCargo(ResourceAdapter.fromXml(xml.getCargoType()), xml.getCargoAmount());
 		unit.setHP(xml.getCurrentHealth());
 		unit.setDurativeStatus(ActionAdapter.fromXml(xml.getProgressPrimitive()), xml.getProgressAmount());
 		return unit;
@@ -51,10 +51,11 @@ public class UnitAdapter {
 		XmlUnit xml = new XmlUnit();
 		xml.setID(unit.id);
 		xml.setCurrentHealth(unit.getCurrentHealth());
-		xml.setXPosition(unit.getxPosition());
-		xml.setYPosition(unit.getyPosition());
-		xml.setCargoType(unit.getCurrentCargoType());
-		xml.setCargoAmount(unit.getCurrentCargoAmount());
+		xml.setXPosition(unit.getXPosition());
+		xml.setYPosition(unit.getYPosition());
+		xml.setCargoType(ResourceAdapter.toXml(unit.getCurrentCargoType()));
+		if(unit.getCurrentCargoAmount() > 0)
+			xml.setCargoAmount(unit.getCurrentCargoAmount());
 		xml.setTemplateID(unit.getTemplate().getID());
 		xml.setProgressPrimitive(ActionAdapter.toXml(unit.getActionProgressPrimitive()));
 		xml.setProgressAmount(unit.getActionProgressAmount());

@@ -21,6 +21,7 @@ package edu.cwru.sepia.model.state;
 
 import edu.cwru.sepia.model.state.Tile.TerrainType;
 import edu.cwru.sepia.util.DeepEquatable;
+import edu.cwru.sepia.util.Rectangle;
 
 /**
  * The interface for being the source of information about the world.
@@ -54,7 +55,14 @@ public interface World extends DeepEquatable {
 	 * @return
 	 */
 	boolean inBounds(int x, int y);
-
+	
+	/**
+	 * A convenience method for whether a rectangular set of tiles are on the map
+	 * @param rect
+	 * @return true if the rectangle is entirely on the map, false if any part is not
+	 */
+	boolean inBounds(Rectangle rect);
+	
 	/**
 	 * Return an unlinked view of the world
 	 * @return

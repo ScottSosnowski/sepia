@@ -21,8 +21,6 @@ package edu.cwru.sepia.model.state;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import edu.cwru.sepia.util.DeepEquatableUtil;
 public class UpgradeTemplate extends Template<Upgrade>
 {
 	
@@ -36,12 +34,12 @@ public class UpgradeTemplate extends Template<Upgrade>
 	private int healthChange;
 	private int rangeChange;
 	private int sightRangeChange;
-	private List<Integer> unitTemplatesAffected;
+	private List<String> unitTemplatesAffected;
 	private UpgradeTemplateView view;
 	public UpgradeTemplate(int ID)
 	{
 		super(ID);
-		unitTemplatesAffected = new ArrayList<Integer>();
+		unitTemplatesAffected = new ArrayList<String>();
 	}
 	/**
 	 * A constructor to make an object from a view.
@@ -54,7 +52,7 @@ public class UpgradeTemplate extends Template<Upgrade>
 		setHealthChange(view.healthChange);
 		setRangeChange(view.rangeChange);
 		setSightRangeChange(view.sightRangeChange);
-		for (Integer affectedUnitTemplate : view.affectedUnitTypes) {
+		for (String affectedUnitTemplate : view.affectedUnitTypes) {
 			addAffectedUnit(affectedUnitTemplate);
 		}
 	}
@@ -62,7 +60,7 @@ public class UpgradeTemplate extends Template<Upgrade>
 	{
 		return new Upgrade(this);
 	}
-	public List<Integer> getAffectedUnits()
+	public List<String> getAffectedUnits()
 	{
 		return unitTemplatesAffected;
 	}
@@ -102,9 +100,9 @@ public class UpgradeTemplate extends Template<Upgrade>
 	public int getSightRangeChange() {
 		return sightRangeChange;
 	}
-	public void addAffectedUnit(Integer templateID)
-	{//needs to be list, kept as array to avoid breaking serialized stuff,hopefully
-		unitTemplatesAffected.add(templateID);
+	public void addAffectedUnit(String templateName)
+	{
+		unitTemplatesAffected.add(templateName);
 	}
 	@Override
 	public UpgradeTemplateView getView() {
@@ -125,7 +123,7 @@ public class UpgradeTemplate extends Template<Upgrade>
 		private final int healthChange;
 		private final int rangeChange;
 		private final int sightRangeChange;
-		private final List<Integer> affectedUnitTypes;
+		private final List<String> affectedUnitTypes;
 		public UpgradeTemplateView(UpgradeTemplate template)
 		{
 			super(template);
@@ -135,7 +133,7 @@ public class UpgradeTemplate extends Template<Upgrade>
 			rangeChange = template.rangeChange;
 			sightRangeChange = template.sightRangeChange;
 			healthChange = template.healthChange;
-			List<Integer> taffectedUnitTypes = new ArrayList<Integer>(template.unitTemplatesAffected.size());
+			List<String> taffectedUnitTypes = new ArrayList<String>(template.unitTemplatesAffected.size());
 			taffectedUnitTypes.addAll(template.unitTemplatesAffected);
 			affectedUnitTypes = Collections.unmodifiableList(taffectedUnitTypes);
 		}
@@ -186,73 +184,9 @@ public class UpgradeTemplate extends Template<Upgrade>
 		 * Get an unmodifyable list of IDs representing the unit templates that are affected by this upgrade
 		 * @return
 		 */
-		public List<Integer> getAffectedUnitTypes()
+		public List<String> getAffectedUnitTypes()
 		{
 			return affectedUnitTypes;
 		}
 	}
-	@Override
-	public boolean deepEquals(Object other) {
-		//note, this method ignores the view.  Hopefully that is not an issue
-		
-				if (other == null || !this.getClass().equals(other.getClass()))
-					return false;
-				UpgradeTemplate o = (UpgradeTemplate)other;
-				
-				
-				//Stuff common to all templates
-				if (this.getID() != o.getID())
-					return false;
-				
-				if (this.timeCost != o.timeCost)
-					return false;
-				if (this.goldCost != o.goldCost)
-					return false;
-				if (this.woodCost != o.woodCost)
-					return false;
-				if (this.foodCost != o.foodCost)
-					return false;
-				if (this.player != o.player)
-					return false;
-				if (!DeepEquatableUtil.deepEqualsIntSet(this.buildPrerequisites, o.buildPrerequisites))
-					return false;
-				if (!DeepEquatableUtil.deepEqualsIntSet(this.upgradePrerequisites, o.upgradePrerequisites))
-					return false;
-				{
-					boolean thisnull = this.name== null;
-					boolean othernull = o.name == null;
-					if ((thisnull == othernull)==false)
-					{
-						return false;
-					}
-					//if both aren't null, need to check deeper
-					if (!thisnull && !othernull)
-					{
-						if (!this.name.equals(o.name))
-							return false;
-					}
-				}
-				
-				
-				//UpgradeTemplate specific methods
-				if (this.piercingAttackChange != o.piercingAttackChange)
-					return false;
-				if (this.basicAttackChange != o.basicAttackChange)
-					return false;
-				if (this.armorChange != o.armorChange)
-					return false;
-				if (this.healthChange != o.healthChange)
-					return false;
-				if (this.rangeChange != o.rangeChange)
-					return false;
-				if (this.sightRangeChange != o.sightRangeChange)
-					return false;
-				if (!DeepEquatableUtil.deepEqualsIntList(unitTemplatesAffected, o.unitTemplatesAffected))
-					return false;
-				return true;
-	}
-	
-	
-	
-	
 }

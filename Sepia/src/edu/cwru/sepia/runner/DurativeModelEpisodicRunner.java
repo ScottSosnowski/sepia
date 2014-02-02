@@ -8,8 +8,8 @@ import org.apache.commons.configuration.Configuration;
 
 import edu.cwru.sepia.agent.Agent;
 import edu.cwru.sepia.environment.Environment;
-import edu.cwru.sepia.model.LessSimpleModel;
 import edu.cwru.sepia.model.Model;
+import edu.cwru.sepia.model.SimpleDurativeModel;
 import edu.cwru.sepia.model.state.StateCreator;
 
 public class DurativeModelEpisodicRunner extends Runner {
@@ -32,7 +32,7 @@ public class DurativeModelEpisodicRunner extends Runner {
 		episodesPerSave = configuration.getInt("EpisodesPerSave", 0);
 		saveAgents = configuration.getBoolean("SaveAgents", false);
 		
-		Model model = new LessSimpleModel(stateCreator.createState(), stateCreator, configuration);
+		Model model = new SimpleDurativeModel(stateCreator.createState(), stateCreator, configuration);
 		File baseDirectory = new File("saves");
 		baseDirectory.mkdirs();
 		env = new Environment(agents ,model, seed, configuration);

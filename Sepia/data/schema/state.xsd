@@ -125,18 +125,17 @@
 		<xs:element name="amountRemaining" type="xs:int" />	
 	</xs:sequence>	
 </xs:complexType>
-<xs:simpleType name="ResourceNodeType">
-	<xs:restriction base="xs:string">
-		<xs:enumeration value="TREE" />
-		<xs:enumeration value="GOLD_MINE" />
-	</xs:restriction>
-</xs:simpleType>
-<xs:simpleType name="ResourceType">
-	<xs:restriction base="xs:string">
-		<xs:enumeration value="WOOD" />
-		<xs:enumeration value="GOLD" />
-	</xs:restriction>
-</xs:simpleType>
+<xs:complexType name="ResourceNodeType">
+	<xs:sequence>
+		<xs:element name="name" type="xs:string"/>
+		<xs:element name="resource" type="ResourceType"/>
+	</xs:sequence>
+</xs:complexType>
+<xs:complexType name="ResourceType">
+	<xs:sequence>
+		<xs:element name="name" type="xs:string"/>
+	</xs:sequence>
+</xs:complexType>
 <xs:simpleType name="Direction">
 	<xs:restriction base="xs:string">
 		<xs:enumeration value="NORTH" />

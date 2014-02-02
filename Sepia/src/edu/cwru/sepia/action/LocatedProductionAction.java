@@ -20,66 +20,59 @@
 package edu.cwru.sepia.action;
 
 /**
- * A sub-type of {@code Action} which includes CompoundBuild. In addition to the base
- * attributes found in Action, this class also includes  coordinates that represent the
- * destination of the action and a template Id that represents the 
+ * A sub-type of {@code Action} which includes CompoundBuild. In addition to the
+ * base attributes found in Action, this class also includes coordinates that
+ * represent the destination of the action and a template Id that represents the
  * {@code edu.cwru.sepia.model.state.UnitTemplate} off of which the new unit
- * will be based. For non-production actions that target a specific location, see
- * {@code LocatedAction}. 
- *
+ * will be based. For non-production actions that target a specific location,
+ * see {@code LocatedAction}.
+ * 
  */
-public class LocatedProductionAction extends Action {	
+public class LocatedProductionAction extends LocatedAction {
 	private static final long serialVersionUID = 6137732739465321081L;
-	
+
 	protected final int templateid;
-	protected final int x;
-	protected final int y;
-	public LocatedProductionAction(int unitId, ActionType type, int templateId, int x, int y)
-	{
-		super(unitId, type);
+
+	public LocatedProductionAction(int unitId, ActionType type, int templateId, int x, int y) {
+		super(unitId, type, x, y);
 		this.templateid = templateId;
-		this.x=x;
-		this.y=y;
 	}
-	public int getTemplateId()
-	{
+
+	public int getTemplateId() {
 		return templateid;
 	}
-	public int getX()
-	{
+
+	public int getX() {
 		return x;
 	}
-	public int getY()
-	{
+
+	public int getY() {
 		return y;
 	}
+
 	@Override
-	public String toString() 
-	{
-		return "LocatedProductionAction [x="+x+", y="+y+", templateid=" + templateid + ", type=" + type
+	public String toString() {
+		return "LocatedProductionAction [x=" + x + ", y=" + y + ", templateid=" + templateid + ", type=" + type
 				+ ", unitIdOfBuilder=" + unitId + "]";
 	}
-	@Override 
-	public boolean equals(Object other)
-	{
-		if (this == other)
-		{
+
+	@Override
+	public boolean equals(Object other) {
+		if(this == other) {
 			return true;
-		}
-		else if (other == null || !this.getClass().equals(other.getClass()))
-		{
+		} else if(other == null || !this.getClass().equals(other.getClass())) {
 			return false;
-		}
-		else
-		{			
+		} else {
 			LocatedProductionAction aother = (LocatedProductionAction)other;
-			return aother.type == type && aother.unitId == unitId && aother.x == x && aother.y == y && aother.templateid == templateid;
+			return aother.type == type && aother.unitId == unitId && aother.x == x && aother.y == y
+					&& aother.templateid == templateid;
 		}
 	}
+
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		int prime = 61;
-		return prime*prime*prime*prime*x + prime*prime*prime*y+prime *prime* templateid + prime * type.hashCode() + unitId;
+		return prime * prime * prime * prime * x + prime * prime * prime * y + prime * prime * templateid + prime
+				* type.hashCode() + unitId;
 	}
 }

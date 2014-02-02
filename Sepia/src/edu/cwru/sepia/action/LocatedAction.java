@@ -20,64 +20,53 @@
 package edu.cwru.sepia.action;
 
 /**
- * A sub-type of {@code Action} that includes CompoundMove. In addition to the base
- * attributes found in Action, this class also includes coordinates that represent the
- * destination of the action. For actions that only target adjacent tiles. see 
- * {@code DirectedAction}. For actions that target a specific unit, see {@ TargetedAction}. 
- *
+ * A sub-type of {@code Action} that includes CompoundMove. In addition to the
+ * base attributes found in Action, this class also includes coordinates that
+ * represent the destination of the action. For actions that only target
+ * adjacent tiles. see {@code DirectedAction}. For actions that target a
+ * specific unit, see @ TargetedAction} .
+ * 
  */
 public class LocatedAction extends Action {
-	private static final long	serialVersionUID	= 1L;
-	
+	private static final long serialVersionUID = 1L;
+
 	protected final int x;
 	protected final int y;
-	
-	public LocatedAction(int unitid, ActionType type, int x, int y)
-	{
+
+	public LocatedAction(int unitid, ActionType type, int x, int y) {
 		super(unitid, type);
 		this.x = x;
 		this.y = y;
 	}
-	
-	public int getX()
-	{
+
+	public int getX() {
 		return x;
 	}
-	
-	public int getY()
-	{
+
+	public int getY() {
 		return y;
 	}
-	
+
 	@Override
-	public String toString() 
-	{
-		return "LocatedAction [x=" + x + ", y=" + y + ", type=" + type
-				+ ", unitId=" + unitId + "]";
+	public String toString() {
+		return "LocatedAction [x=" + x + ", y=" + y + ", type=" + type + ", unitId=" + unitId + "]";
 	}
-	
-	@Override 
-	public boolean equals(Object other)
-	{
-		if (this == other)
-		{
+
+	@Override
+	public boolean equals(Object other) {
+		if(this == other) {
 			return true;
-		}
-		else if (other == null || !this.getClass().equals(other.getClass()))
-		{
+		} else if(other == null || !this.getClass().equals(other.getClass())) {
 			return false;
-		}
-		else
-		{
-			
+		} else {
+
 			LocatedAction aother = (LocatedAction)other;
 			return aother.type == type && aother.unitId == unitId && aother.x == x && aother.y == y;
 		}
 	}
-	
-	@Override 
-	public int hashCode()
-	{
+
+	@Override
+	public int hashCode() {
 		int prime = 61;
 		return prime * prime * prime * x + prime * prime * y + prime * type.hashCode() + unitId;
 	}
